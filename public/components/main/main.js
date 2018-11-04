@@ -94,42 +94,40 @@ export class Main extends React.Component {
     render() {
         const {title} = this.props;
         return (
-            <Container>
-                <Row className="salih">
+                <Row className="overview">
                     <Col xl="3">
                         <Card>
                             <CardBody>
-                                <CardTitle>New Invocations</CardTitle>
-                                <CardText>{this.state.invocationCount}</CardText>
+                                <p>New Invocations</p>
+                                <h5 className="invocation-count">{this.state.invocationCount}</h5>
                             </CardBody>
                         </Card>
                     </Col>
                     <Col xl="3">
                         <Card>
                             <CardBody>
-                                <CardTitle>New Errors</CardTitle>
-                                <CardText>{this.state.errorCount}</CardText>
+                                <p>New Errors</p>
+                                <h5 className="error-count">{this.state.errorCount}</h5>
                             </CardBody>
                         </Card>
                     </Col>
                     <Col xl="3">
                         <Card>
                             <CardBody>
-                                <CardTitle>New Cold Starts</CardTitle>
-                                <CardText>{this.state.coldStartCount}</CardText>
+                                <p>New Cold Starts</p>
+                                <h5 className="cold-start">{this.state.coldStartCount}</h5>
                             </CardBody>
                         </Card>
                     </Col>
                     <Col xl="3">
                         <Card>
                             <CardBody>
-                                <CardTitle>Estimated Billed Cost</CardTitle>
-                                <CardText>${this.state.estimatedBilledCost}</CardText>
+                                <p>Estimated Billed Cost</p>
+                                <h5 className="billed-cost">${this.state.estimatedBilledCost}</h5>
                             </CardBody>
                         </Card>
                     </Col>
                 </Row>
-            </Container>
         );
     }
 }
