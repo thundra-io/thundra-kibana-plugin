@@ -91,7 +91,7 @@ export default function (server) {
                     }
                 };
                 callWithInternalUser('search', billedCostQuery).then(response => {
-                    reply({ estimatedBilledCost: response.aggregations.costAggregation.value });
+                    reply({ estimatedBilledCost: (response.aggregations.costAggregation.value).toFixed(2)});
                 });
             }
         }
