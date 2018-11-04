@@ -5,6 +5,7 @@ import { render, unmountComponentAtNode } from 'react-dom';
 
 import 'ui/autoload/styles';
 import './less/main.less';
+import './bootstrap.min.css';
 import { Main } from './components/main';
 
 const app = uiModules.get('apps/thundra');
@@ -33,6 +34,3 @@ function RootController($scope, $element, $http) {
 }
 
 chrome.setRootController('thundra', RootController);
-
-
-git remote set-url origin https://github.com/thundra-io/thundra-kibana-plugin.git
