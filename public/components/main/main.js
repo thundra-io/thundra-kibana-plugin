@@ -1,5 +1,5 @@
 import React from 'react';
-import { Container, Row, Col, Card, CardText, CardBody, CardTitle} from 'reactstrap';
+import {Card, CardBody, Col, Row} from 'reactstrap';
 import {
     EuiPage,
     EuiPageBody,
@@ -12,6 +12,47 @@ import {
 } from '@elastic/eui';
 
 export class Main extends React.Component {
+    getBilledCost = (e) => {
+        return e.toFixed(2);
+    };
+    getNavbar = () => {
+        return (
+            <div>
+                <Navbar color="light" light expand="md">
+                    <NavbarBrand href="/">reactstrap</NavbarBrand>
+                    <NavbarToggler onClick={this.toggle}/>
+                    <Collapse isOpen={this.state.isOpen} navbar>
+                        <Nav className="ml-auto" navbar>
+                            <NavItem>
+                                <NavLink href="/components/">Components</NavLink>
+                            </NavItem>
+                            <NavItem>
+                                <NavLink href="https://github.com/reactstrap/reactstrap">GitHub</NavLink>
+                            </NavItem>
+                            <UncontrolledDropdown nav inNavbar>
+                                <DropdownToggle nav caret>
+                                    Options
+                                </DropdownToggle>
+                                <DropdownMenu right>
+                                    <DropdownItem>
+                                        Option 1
+                                    </DropdownItem>
+                                    <DropdownItem>
+                                        Option 2
+                                    </DropdownItem>
+                                    <DropdownItem divider/>
+                                    <DropdownItem>
+                                        Reset
+                                    </DropdownItem>
+                                </DropdownMenu>
+                            </UncontrolledDropdown>
+                        </Nav>
+                    </Collapse>
+                </Navbar>
+            </div>
+        );
+    };
+
     constructor(props) {
         super(props);
         this.state = {};
@@ -49,85 +90,43 @@ export class Main extends React.Component {
         });
     }
 
-    getBilledCost = (e) => {
-        return e.toFixed(2);
-    };
-
-    getNavbar = () =>{
-        return (
-            <div>
-                <Navbar color="light" light expand="md">
-                    <NavbarBrand href="/">reactstrap</NavbarBrand>
-                    <NavbarToggler onClick={this.toggle} />
-                    <Collapse isOpen={this.state.isOpen} navbar>
-                        <Nav className="ml-auto" navbar>
-                            <NavItem>
-                                <NavLink href="/components/">Components</NavLink>
-                            </NavItem>
-                            <NavItem>
-                                <NavLink href="https://github.com/reactstrap/reactstrap">GitHub</NavLink>
-                            </NavItem>
-                            <UncontrolledDropdown nav inNavbar>
-                                <DropdownToggle nav caret>
-                                    Options
-                                </DropdownToggle>
-                                <DropdownMenu right>
-                                    <DropdownItem>
-                                        Option 1
-                                    </DropdownItem>
-                                    <DropdownItem>
-                                        Option 2
-                                    </DropdownItem>
-                                    <DropdownItem divider />
-                                    <DropdownItem>
-                                        Reset
-                                    </DropdownItem>
-                                </DropdownMenu>
-                            </UncontrolledDropdown>
-                        </Nav>
-                    </Collapse>
-                </Navbar>
-            </div>
-        );
-    };
-
     render() {
         const {title} = this.props;
         return (
-                <Row className="overview">
-                    <Col xl="3">
-                        <Card>
-                            <CardBody>
-                                <p>New Invocations</p>
-                                <h5 className="invocation-count">{this.state.invocationCount}</h5>
-                            </CardBody>
-                        </Card>
-                    </Col>
-                    <Col xl="3">
-                        <Card>
-                            <CardBody>
-                                <p>New Errors</p>
-                                <h5 className="error-count">{this.state.errorCount}</h5>
-                            </CardBody>
-                        </Card>
-                    </Col>
-                    <Col xl="3">
-                        <Card>
-                            <CardBody>
-                                <p>New Cold Starts</p>
-                                <h5 className="cold-start">{this.state.coldStartCount}</h5>
-                            </CardBody>
-                        </Card>
-                    </Col>
-                    <Col xl="3">
-                        <Card>
-                            <CardBody>
-                                <p>Estimated Billed Cost</p>
-                                <h5 className="billed-cost">${this.state.estimatedBilledCost}</h5>
-                            </CardBody>
-                        </Card>
-                    </Col>
-                </Row>
+            <Row className="overview">
+                <Col xl="3">
+                    <Card>
+                        <CardBody>
+                            <p>New Invocations</p>
+                            <h5 className="invocation-count">{this.state.invocationCount}</h5>
+                        </CardBody>
+                    </Card>
+                </Col>
+                <Col xl="3">
+                    <Card>
+                        <CardBody>
+                            <p>New Errors</p>
+                            <h5 className="error-count">{this.state.errorCount}</h5>
+                        </CardBody>
+                    </Card>
+                </Col>
+                <Col xl="3">
+                    <Card>
+                        <CardBody>
+                            <p>New Cold Starts</p>
+                            <h5 className="cold-start">{this.state.coldStartCount}</h5>
+                        </CardBody>
+                    </Card>
+                </Col>
+                <Col xl="3">
+                    <Card>
+                        <CardBody>
+                            <p>Estimated Billed Cost</p>
+                            <h5 className="billed-cost">${this.state.estimatedBilledCost}</h5>
+                        </CardBody>
+                    </Card>
+                </Col>
+            </Row>
         );
     }
 }

@@ -1,36 +1,36 @@
 import React from 'react';
-import { uiModules } from 'ui/modules';
+import {uiModules} from 'ui/modules';
 import chrome from 'ui/chrome';
-import { render, unmountComponentAtNode } from 'react-dom';
+import {render, unmountComponentAtNode} from 'react-dom';
 
 import 'ui/autoload/styles';
 import './less/main.less';
 import './bootstrap.min.css';
-import { Main } from './components/main';
+import {Main} from './components/main';
 
 const app = uiModules.get('apps/thundra');
 
 app.config($locationProvider => {
-  $locationProvider.html5Mode({
-    enabled: false,
-    requireBase: false,
-    rewriteLinks: false,
-  });
+    $locationProvider.html5Mode({
+        enabled: false,
+        requireBase: false,
+        rewriteLinks: false,
+    });
 });
 app.config(stateManagementConfigProvider =>
-  stateManagementConfigProvider.disable()
+    stateManagementConfigProvider.disable()
 );
 
 function RootController($scope, $element, $http) {
-  const domNode = $element[0];
+    const domNode = $element[0];
 
-  // render react to DOM
-  render(<Main title="thundra" httpClient={$http} />, domNode);
+    // render react to DOM
+    render(<Main title="thundra" httpClient={$http}/>, domNode);
 
-  // unmount react on controller destroy
-  $scope.$on('$destroy', () => {
-    unmountComponentAtNode(domNode);
-  });
+    // unmount react on controller destroy
+    $scope.$on('$destroy', () => {
+        unmountComponentAtNode(domNode);
+    });
 }
 
 chrome.setRootController('thundra', RootController);
