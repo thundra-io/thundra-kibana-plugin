@@ -1,4 +1,6 @@
 import exampleRoute from './server/routes/example';
+import overview from './server/routes/overview';
+
 
 export default function (kibana) {
   return new kibana.Plugin({
@@ -9,6 +11,7 @@ export default function (kibana) {
         title: 'Thundra',
         description: 'Thundra',
         main: 'plugins/thundra/app',
+        icon: 'plugins/thundra/thundra-bird-white.svg'
       },
       hacks: [
         'plugins/thundra/hack'
@@ -25,6 +28,7 @@ export default function (kibana) {
     init(server, options) { // eslint-disable-line no-unused-vars
       // Add server routes and initialize the plugin here
       exampleRoute(server);
+      overview(server);
     }
   });
 }
