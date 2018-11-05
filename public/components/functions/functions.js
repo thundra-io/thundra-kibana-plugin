@@ -33,12 +33,13 @@ export class Functions extends React.Component {
         });
     };
 
-    togglePerPageOptions = () => this.setState((state) => ({ showPerPageOptions: !state.showPerPageOptions }));
+    togglePerPageOptions = () => {
+        this.setState({showPerPageOptions: !this.state.showPerPageOptions});
+    };
 
     componentWillMount() {
         const {httpClient} = this.props;
         httpClient.get('../api/thundra/functions').then((resp) => {
-            console.log(resp.data.functions);
             this.setState({functions: resp.data.functions});
         });
     }
@@ -59,6 +60,10 @@ export class Functions extends React.Component {
         }
     ];
 
+    paginate (array, page_size, page_number) {
+        return array.slice(page_number * page_size, (page_number + 1) * page_size);
+    }
+
     render() {
         const {title} = this.props;
         const {
@@ -67,7 +72,8 @@ export class Functions extends React.Component {
             showPerPageOptions
         } = this.state;
 
-        const  totalItemCount = this.state.functions.length;
+        const totalItemCount = this.state.functions.length;
+        const pageOfItems = this.paginate(this.state.functions, pageSize, pageIndex);
         const pagination = {
             pageIndex,
             pageSize,
@@ -79,13 +85,13 @@ export class Functions extends React.Component {
         return (
             <div>
                 <EuiSwitch
-                    label={<span>Hide per page options with <EuiCode>{pagination.hidePerPageOptions = true}</EuiCode></span>}
+                    label={<span>Hide per page options with <EuiCode>pagination.hidePerPageOptions = true</EuiCode></span>}
                     onChange={this.togglePerPageOptions}
                 />
                 <EuiSpacer size="xl" />
                 <EuiBasicTable
-                    items={this.state.functions}
-                    pagination={this.pagination}
+                    items={pageOfItems}
+                    pagination={pagination}
                     columns={this.columns}
                     onChange={this.onTableChange}
                 />

@@ -32,8 +32,6 @@ app.config(stateManagementConfigProvider =>
 
 function RootController($scope, $element, $http) {
     const domNode = $element[0];
-
-    console.log("hello root")
     // render react to DOM
     render(<Main title="thundra" httpClient={$http}/>, domNode);
 
