@@ -1,5 +1,5 @@
 import exampleRoute from './server/routes/example';
-import overview from './server/routes/api';
+import api from './server/routes/api';
 
 
 export default function (kibana) {
@@ -31,7 +31,7 @@ export default function (kibana) {
     init(server, options) { // eslint-disable-line no-unused-vars
       // Add server routes and initialize the plugin here
       exampleRoute(server);
-      overview(server);
+      api(server);
     }
   });
 }
