@@ -4,7 +4,7 @@ import overview from './server/routes/overview';
 
 export default function (kibana) {
   return new kibana.Plugin({
-    require: ['elasticsearch'],
+    require: ['elasticsearch', 'kibana'],
     name: 'thundra',
     uiExports: {
       app: {
@@ -15,6 +15,9 @@ export default function (kibana) {
       },
       hacks: [
         'plugins/thundra/hack'
+      ],
+      navbarExtensions: [
+
       ],
       styleSheetPaths: require('path').resolve(__dirname, 'public/app.scss'),
     },

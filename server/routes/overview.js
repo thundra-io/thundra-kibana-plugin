@@ -96,4 +96,28 @@ export default function (server) {
             }
         }
     );
+    server.route(
+        {
+            path: '/api/thundra/functions',
+            method: 'GET',
+            handler(req, reply) {
+                let appNameQuery = {
+                    index: 'lab-invocation-*',
+                    body: {
+                        size: 0,
+                        aggregations: {
+                            applicationNameAggs: {
+                                terms: {
+                                    field: "applicationName"
+                                }
+                            }
+                        }
+                    }
+                };
+                callWithInternalUser('search', appNameQuery).then(response => {
+                    reply({ functions: (response.aggregations.applicationNameAggs.buckets)});
+                });
+            }
+        }
+    );
 }

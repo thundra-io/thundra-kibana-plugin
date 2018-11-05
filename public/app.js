@@ -1,7 +1,15 @@
 import React from 'react';
 import {uiModules} from 'ui/modules';
 import chrome from 'ui/chrome';
-import {render, unmountComponentAtNode} from 'react-dom';
+import {render} from 'react-dom';
+
+import {DocTitleProvider} from 'ui/doc_title';
+import {SavedObjectRegistryProvider} from 'ui/saved_objects/saved_object_registry';
+import {fatalError, notify, toastNotifications} from 'ui/notify';
+import {timezoneProvider} from 'ui/vis/lib/timezone';
+import {recentlyAccessed} from 'ui/persisted_log';
+import {timefilter} from 'ui/timefilter';
+
 
 import 'ui/autoload/styles';
 import './less/main.less';
@@ -17,6 +25,7 @@ app.config($locationProvider => {
         rewriteLinks: false,
     });
 });
+
 app.config(stateManagementConfigProvider =>
     stateManagementConfigProvider.disable()
 );
@@ -24,6 +33,7 @@ app.config(stateManagementConfigProvider =>
 function RootController($scope, $element, $http) {
     const domNode = $element[0];
 
+    console.log("hello root")
     // render react to DOM
     render(<Main title="thundra" httpClient={$http}/>, domNode);
 
