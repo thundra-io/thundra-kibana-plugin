@@ -10,7 +10,9 @@ export class Overview extends React.Component {
 
     constructor(props) {
         super(props);
-        this.state = {};
+        this.state = {
+            costCalculated : false
+        };
     }
 
     componentWillMount() {
@@ -28,7 +30,10 @@ export class Overview extends React.Component {
         });
 
         httpClient.get('../api/thundra/estimated-billed-cost').then((resp) => {
-            this.setState({estimatedBilledCost: resp.data.estimatedBilledCost});
+            this.setState({
+                costCalculated: true,
+                estimatedBilledCost: resp.data.estimatedBilledCost
+            });
         });
     }
 
@@ -67,7 +72,7 @@ export class Overview extends React.Component {
                     <Card>
                         <CardBody>
                             <p>Estimated Billed Cost</p>
-                            <h5 className="billed-cost">${this.state.estimatedBilledCost}</h5>
+                            <h5 className="billed-cost"> {this.state.costCalculated === true ? "$": ""}{this.state.estimatedBilledCost}</h5>
                         </CardBody>
                     </Card>
                 </Col>

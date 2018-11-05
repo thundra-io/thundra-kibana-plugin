@@ -1,5 +1,5 @@
 import exampleRoute from './server/routes/example';
-import overview from './server/routes/overview';
+import overview from './server/routes/api';
 
 
 export default function (kibana) {
