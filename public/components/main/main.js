@@ -62,7 +62,7 @@ export class Main extends React.Component {
         }];
 
         this.state = {
-            selectedTab: this.tabs[2],
+            selectedTab: this.tabs[0],
         };
     }
 
@@ -70,17 +70,6 @@ export class Main extends React.Component {
         this.setState({ selectedTab });
     };
 
-
-    componentDidMount() {
-        /*
-           FOR EXAMPLE PURPOSES ONLY.  There are much better ways to
-           manage state and update your UI than this.
-        */
-        // const {httpClient} = this.props;
-        // httpClient.get('../api/thundra/example').then((resp) => {
-        //     this.setState({time: resp.data.time});
-        // });
-    }
 
     render() {
         const {title} = this.props;

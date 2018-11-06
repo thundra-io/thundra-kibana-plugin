@@ -48,6 +48,39 @@ export default function (server) {
     );
     server.route(
         {
+            path: '/api/thundra/erronous-invocations',
+            method: 'GET',
+            handler(req, reply) {
+                let invocationCount = {
+                    index: 'lab-invocation-*',
+                    body: {
+                        size: 0,
+                        query: {
+                            bool: {
+                                filter: {
+                                    term: {
+                                        erroneous: true
+                                    }
+                                }
+                            }
+                        },
+                        aggregations: {
+                            errAggs: {
+                                terms: {
+                                    field: "applicationName"
+                                }
+                            }
+                        }
+                    }
+                };
+                callWithInternalUser('search', invocationCount).then(response => {
+                    reply({ erronousFunctions: response.aggregations.errAggs.buckets});
+                });
+            }
+        }
+    );
+    server.route(
+        {
             path: '/api/thundra/cold-start-count',
             method: 'GET',
             handler(req, reply) {
@@ -68,6 +101,39 @@ export default function (server) {
                 };
                 callWithInternalUser('search', coldStartQuery).then(response => {
                     reply({ coldStartCount: response.hits.total });
+                });
+            }
+        }
+    );
+    server.route(
+        {
+            path: '/api/thundra/cold-start-invocations',
+            method: 'GET',
+            handler(req, reply) {
+                let invocationCount = {
+                    index: 'lab-invocation-*',
+                    body: {
+                        size: 0,
+                        query: {
+                            bool: {
+                                filter: {
+                                    term: {
+                                        coldStart: true
+                                    }
+                                }
+                            }
+                        },
+                        aggregations: {
+                            coldStartAggs: {
+                                terms: {
+                                    field: "applicationName"
+                                }
+                            }
+                        }
+                    }
+                };
+                callWithInternalUser('search', invocationCount).then(response => {
+                    reply({ coldStartFunctions: response.aggregations.coldStartAggs.buckets});
                 });
             }
         }
@@ -104,7 +170,7 @@ export default function (server) {
                 let appNameQuery = {
                     index: 'lab-invocation-*',
                     body: {
-                        size: 0,
+                        size: 10,
                         aggregations: {
                             applicationNameAggs: {
                                 terms: {
@@ -149,6 +215,134 @@ export default function (server) {
                 };
                 callWithInternalUser('search', query).then(response => {
                     reply({ invocationCountOfFunction: (response.aggregations.histogram.buckets)});
+                });
+            }
+        }
+    );
+    server.route(
+        {
+            path: '/api/thundra/invocation-counts-per-day',
+            method: 'GET',
+            handler(req, reply) {
+                let query = {
+                    index: 'lab-invocation-*',
+                    body: {
+                        size: 0,
+                        aggregations: {
+                            histogram: {
+                                date_histogram: {
+                                    field: "collectedTimestamp",
+                                    interval: "day"
+                                }
+                            }
+                        }
+                    }
+                };
+                callWithInternalUser('search', query).then(response => {
+                    reply({ invocationCountPerDay: (response.aggregations.histogram.buckets)});
+                });
+            }
+        }
+    );
+    server.route(
+        {
+            path: '/api/thundra/invocation-counts-per-day-with-function-name',
+            method: 'GET',
+            handler(req, reply) {
+                let query = {
+                    index: 'lab-invocation-*',
+                    body: {
+                        size: 0,
+                        query: {
+                            term: {
+                                applicationName: {
+                                    value: req.query.functionName
+                                }
+                            }
+                        },
+                        aggregations: {
+                            histogram: {
+                                date_histogram: {
+                                    field: "collectedTimestamp",
+                                    interval: "day"
+                                }
+                            }
+                        }
+                    }
+                };
+                callWithInternalUser('search', query).then(response => {
+                    reply({ invocationCountPerDay: (response.aggregations.histogram.buckets)});
+                });
+            }
+        }
+    );
+    server.route(
+        {
+            path: '/api/thundra/invocation-duration-per-day',
+            method: 'GET',
+            handler(req, reply) {
+                let query = {
+                    index: 'lab-invocation-*',
+                    body: {
+                        size: 0,
+                        aggs: {
+                            sumOfDurations: {
+                                date_histogram: {
+                                    field: "collectedTimestamp",
+                                    interval: "day"
+                                },
+                                aggs: {
+                                    duration: {
+                                        sum: {
+                                            field: "duration"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                };
+                callWithInternalUser('search', query).then(response => {
+                    reply({ durationPerDay: (response.aggregations.sumOfDurations.buckets)});
+                });
+            }
+        }
+    );
+    server.route(
+        {
+            path: '/api/thundra/invocation-duration-per-day-with-function-name',
+            method: 'GET',
+            handler(req, reply) {
+                let query = {
+                    index: 'lab-invocation-*',
+                    body: {
+                        size: 0,
+                        query: {
+                            term: {
+                                applicationName: {
+                                    value: req.query.functionName
+                                }
+                            }
+                        },
+                        aggs: {
+                            sumOfDurations: {
+                                date_histogram: {
+                                    field: "collectedTimestamp",
+                                    interval: "day"
+                                },
+                                aggs: {
+                                    duration: {
+                                        sum: {
+                                            field: "duration"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                };
+                callWithInternalUser('search', query).then(response => {
+                    reply({ durationPerDay: (response.aggregations.sumOfDurations.buckets)});
                 });
             }
         }
