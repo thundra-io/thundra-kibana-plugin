@@ -17,6 +17,7 @@ import {
 
 import {Overview} from "../overview/overview";
 import {Functions} from "../functions/functions";
+import {Invocations} from "../invocations";
 
 
 export class Main extends React.Component {
@@ -46,10 +47,22 @@ export class Main extends React.Component {
                     </EuiText>
                 </Fragment>
             ),
+        }, {
+            id: 'invocations',
+            name: 'Invocations',
+            content: (
+                <Fragment>
+                    <EuiSpacer />
+                    <EuiTitle><h3>Invocations</h3></EuiTitle>
+                    <EuiText>
+                        <Invocations httpClient={httpClient}></Invocations>
+                    </EuiText>
+                </Fragment>
+            ),
         }];
 
         this.state = {
-            selectedTab: this.tabs[1],
+            selectedTab: this.tabs[2],
         };
     }
 

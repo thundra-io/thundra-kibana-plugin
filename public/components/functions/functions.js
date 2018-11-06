@@ -1,13 +1,15 @@
-import React from 'react';
-import {
-    EuiBasicTable,
-    EuiLink,
-    EuiHealth,
-    EuiSpacer,
-    EuiSwitch,
-    EuiCode
-} from '@elastic/eui';
+import React, {Fragment} from 'react';
+import {Col, Row} from 'reactstrap';
+import {EuiBasicTable, EuiButton, EuiCode, EuiHealth, EuiLink, EuiSpacer, EuiSwitch} from '@elastic/eui';
 
+import {EuiBarSeries, EuiLineSeries, EuiSeriesChart, EuiSeriesChartUtils} from '@elastic/eui/lib/experimental';
+
+const {
+    CURVE_MONOTONE_X,
+} = EuiSeriesChartUtils.CURVE;
+
+
+const { SCALE } = EuiSeriesChartUtils;
 
 export class Functions extends React.Component {
 
@@ -15,9 +17,10 @@ export class Functions extends React.Component {
         super(props);
         this.state = {
             functions : [],
+            invocationCountOfFunction : [],
             pageIndex: 0,
             pageSize: 5,
-            showPerPageOptions: true
+            showPerPageOptions: true,
         };
     }
 
@@ -41,6 +44,10 @@ export class Functions extends React.Component {
         const {httpClient} = this.props;
         httpClient.get('../api/thundra/functions').then((resp) => {
             this.setState({functions: resp.data.functions});
+        });
+
+        httpClient.get('../api/thundra/invocation-count-of-function').then((resp) => {
+            this.setState({invocationCountOfFunction: resp.data.invocationCountOfFunction});
         });
     }
 
@@ -82,8 +89,20 @@ export class Functions extends React.Component {
             hidePerPageOptions: !showPerPageOptions
         };
 
+        const myData = [];
+        const DATA_A = [];
+        for (let key in this.state.invocationCountOfFunction) {
+            let obj = this.state.invocationCountOfFunction[key];
+            DATA_A.push( { x: obj.key, y: obj.doc_count } );
+        }
+
+        myData[0] = {
+            data: DATA_A,
+            name: "InvocationCount"
+        };
+
         return (
-            <div>
+            <div className="overview">
                 <EuiSwitch
                     label={<span>Hide per page options with <EuiCode>pagination.hidePerPageOptions = true</EuiCode></span>}
                     onChange={this.togglePerPageOptions}
@@ -95,6 +114,21 @@ export class Functions extends React.Component {
                     columns={this.columns}
                     onChange={this.onTableChange}
                 />
+
+                <br/>
+                <hr/>
+
+                <Row>
+                    <Col xl="6">
+                        <Fragment>
+                            <EuiSeriesChart width={600} height={200} xType={SCALE.TIME}>
+                                {myData.map((d, i) => (
+                                    <EuiLineSeries key={i} name={d.name} data={d.data} showLineMarks={false} curve={CURVE_MONOTONE_X} lineSize={Number("2")}/>
+                                ))}
+                            </EuiSeriesChart>
+                        </Fragment>
+                    </Col>
+                </Row>
             </div>
         );
     }
