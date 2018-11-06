@@ -86,8 +86,9 @@ export class Invocations extends React.Component {
             this.options = [];
             this.options = options;
             this.setState({
-                functions: resp.data.functions,
+                functions: resp.data.functions
             });
+            this.onChange([this.options[0]])
         });
     }
 

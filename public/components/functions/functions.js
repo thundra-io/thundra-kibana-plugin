@@ -67,7 +67,7 @@ export class Functions extends React.Component {
         }
     ];
 
-    paginate (array, page_size, page_number) {
+    static paginate (array, page_size, page_number) {
         return array.slice(page_number * page_size, (page_number + 1) * page_size);
     }
 
@@ -80,7 +80,7 @@ export class Functions extends React.Component {
         } = this.state;
 
         const totalItemCount = this.state.functions.length;
-        const pageOfItems = this.paginate(this.state.functions, pageSize, pageIndex);
+        const pageOfItems = Functions.paginate(this.state.functions, pageSize, pageIndex);
         const pagination = {
             pageIndex,
             pageSize,
