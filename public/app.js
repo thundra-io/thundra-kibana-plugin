@@ -13,7 +13,6 @@ import {timefilter} from 'ui/timefilter';
 
 import 'ui/autoload/styles';
 import './less/main.less';
-import './bootstrap.min.css';
 import {Main} from './components/main';
 
 const app = uiModules.get('apps/thundra');

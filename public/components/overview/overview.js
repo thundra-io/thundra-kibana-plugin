@@ -1,10 +1,16 @@
 import React, {Fragment} from 'react';
-import {Card, CardBody, Col, Row} from 'reactstrap';
 import {
     EuiBasicTable,
     EuiLink,
     EuiHealth,
-    EuiText
+    EuiText,
+    EuiSpacer,
+    EuiStat,
+    EuiFlexItem,
+    EuiFlexGroup,
+    EuiPanel,
+    EuiIcon,
+    EuiFlexGrid
 } from '@elastic/eui';
 
 import {
@@ -120,30 +126,32 @@ export class Overview extends React.Component {
         };
 
         return (
-            <Row className="overview">
-                <Col xl="6">
-                    <EuiText grow={false}>
-                        <p> Total invocation count for <b>{ this.state.selectedFunctionName == null ?  'all' : this.state.selectedFunctionName }</b> function(s)</p>
-                    </EuiText>
-                    <EuiSeriesChart width={900} height={200} xType={SCALE.TIME}>
-                        {myData.map((d, i) => (
-                            <EuiLineSeries key={i} name={d.name} data={d.data} showLineMarks={false} curve={CURVE_MONOTONE_X} lineSize={Number("2")}/>
-                        ))}
-                    </EuiSeriesChart>
-                </Col>
+            <div>
+                <EuiFlexGrid columns={2}>
+                    <EuiFlexItem>
+                        <EuiText grow={false}>
+                            <p> Total invocation count for <b>{ this.state.selectedFunctionName == null ?  'all' : this.state.selectedFunctionName }</b> function(s)</p>
+                        </EuiText>
+                        <EuiSeriesChart height={250} xType={SCALE.TIME}>
+                            {myData.map((d, i) => (
+                                <EuiLineSeries key={i} name={d.name} data={d.data} showLineMarks={false} curve={CURVE_MONOTONE_X}/>
+                            ))}
+                        </EuiSeriesChart>
+                    </EuiFlexItem>
 
-                <Col xl="6">
-
-                    <EuiText grow={false}>
-                        <p>Total Invocation duration for <b>{ this.state.selectedFunctionName == null ?  'all' : this.state.selectedFunctionName }</b> function(s)</p>
-                    </EuiText>
-                    <EuiSeriesChart width={900} height={200} xType={SCALE.TIME}>
-                        {yourData.map((d, i) => (
-                            <EuiLineSeries key={i} name={d.name} data={d.data} showLineMarks={false} curve={CURVE_MONOTONE_X} lineSize={Number("2")}/>
-                        ))}
-                    </EuiSeriesChart>
-                </Col>
-            </Row>
+                    <EuiFlexItem>
+                        <EuiText grow={false}>
+                            <p>Total Invocation duration for <b>{ this.state.selectedFunctionName == null ?  'all' : this.state.selectedFunctionName }</b> function(s)</p>
+                        </EuiText>
+                        <EuiSeriesChart height={250} xType={SCALE.TIME}>
+                            {yourData.map((d, i) => (
+                                <EuiLineSeries key={i} name={d.name} data={d.data} showLineMarks={false} curve={CURVE_MONOTONE_X}/>
+                            ))}
+                        </EuiSeriesChart>
+                    </EuiFlexItem>
+                </EuiFlexGrid>
+                <EuiSpacer />
+            </div>
         );
     };
 
@@ -175,86 +183,91 @@ export class Overview extends React.Component {
 
         return (
             <div>
-                <Row className="overview">
-                    <Col xl="3">
-                        <Card>
-                            <CardBody>
-                                <p>New Invocations</p>
-                                <h5 className="invocation-count">{this.state.invocationCount}</h5>
-                            </CardBody>
-                        </Card>
-                    </Col>
-                    <Col xl="3">
-                        <Card>
-                            <CardBody>
-                                <p>New Errors</p>
-                                <h5 className="error-count">{this.state.errorCount}</h5>
-                            </CardBody>
-                        </Card>
-                    </Col>
-                    <Col xl="3">
-                        <Card>
-                            <CardBody>
-                                <p>New Cold Starts</p>
-                                <h5 className="cold-start">{this.state.coldStartCount}</h5>
-                            </CardBody>
-                        </Card>
-                    </Col>
-                    <Col xl="3">
-                        <Card>
-                            <CardBody>
-                                <p>Estimated Billed Cost</p>
-                                <h5 className="billed-cost"> {this.state.costCalculated === true ? "$": ""}{this.state.estimatedBilledCost}</h5>
-                            </CardBody>
-                        </Card>
-                    </Col>
-                </Row>
-
-                <br/>
-
-                <Row className="overview">
-                    <Col xl="4">
+                <EuiFlexGroup >
+                    <EuiFlexItem >
+                        <EuiStat
+                            title={this.state.invocationCount}
+                            description="New Invocations"
+                            titleColor="secondary"
+                            textAlign="left"
+                            titleSize="l"
+                        >
+                        </EuiStat>
+                    </EuiFlexItem>
+                    <EuiFlexItem>
+                        <EuiStat
+                            title={this.state.errorCount}
+                            description="New Errors"
+                            titleColor="danger"
+                            textAlign="left"
+                            titleSize="l"
+                        >
+                        </EuiStat>
+                    </EuiFlexItem>
+                    <EuiFlexItem>
+                        <EuiStat
+                            title={this.state.coldStartCount}
+                            description="New Cold Starts"
+                            textAlign="left"
+                            titleSize="l"
+                        >
+                        </EuiStat>
+                    </EuiFlexItem>
+                    <EuiFlexItem>
+                        <EuiStat
+                            title={(this.state.costCalculated === true ? "$": "" ) + this.state.estimatedBilledCost}
+                            description="Estimated Billed Cost"
+                            titleColor="accent"
+                            textAlign="left"
+                            titleSize="l"
+                        >
+                        </EuiStat>
+                    </EuiFlexItem>
+                </EuiFlexGroup>
+                <EuiSpacer />
+                <EuiSpacer />
+                <EuiFlexGroup>
+                    <EuiFlexItem>
                         <EuiText grow={false}>
                             <p>Top 10 invoked functions</p>
                         </EuiText>
                         <EuiSeriesChart
-                            width={600}
-                            height={300}
                             yType={SCALE.ORDINAL}
                             orientation={ORIENTATION.HORIZONTAL}
+                            height={250}
                         >
                             <EuiBarSeries name="Invocation Count" data={DATA} color={"#65a637"} onValueClick={(e) => this.onClick(e)}/>
                         </EuiSeriesChart>
-                    </Col>
-                    <Col xl="4">
+                    </EuiFlexItem>
+
+                    <EuiFlexItem>
                         <EuiText grow={false}>
                             <p>Top 10 erroneous functions</p>
                         </EuiText>
                         <EuiSeriesChart
-                            width={600}
-                            height={300}
                             yType={SCALE.ORDINAL}
                             orientation={ORIENTATION.HORIZONTAL}
+                            height={250}
                         >
                             <EuiBarSeries name="Invocation Count" data={EDATA}  color={"#d93f3c"} onValueClick={(e) => this.onClick(e)}/>
                         </EuiSeriesChart>
-                    </Col>
-                    <Col xl="4">
+                    </EuiFlexItem>
+
+                    <EuiFlexItem>
                         <EuiText grow={false}>
                             <p>Top 10 cold started functions</p>
                         </EuiText>
                         <EuiSeriesChart
-                            width={600}
-                            height={300}
                             yType={SCALE.ORDINAL}
                             orientation={ORIENTATION.HORIZONTAL}
+                            height={250}
                         >
                             <EuiBarSeries name="Invocation Count" data={CDATA}  color={"#6db7c6"} onValueClick={(e) => this.onClick(e)}/>
                         </EuiSeriesChart>
-                    </Col>
-                </Row>
-
-                <br/>
+                    </EuiFlexItem>
+                </EuiFlexGroup>
+                <EuiSpacer />
+                <EuiSpacer />
                 {this.renderBelowGraphs()}
             </div>
         );
