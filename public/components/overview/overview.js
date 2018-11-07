@@ -38,12 +38,11 @@ export class Overview extends React.Component {
         };
     }
 
-    componentWillMount() {
-        const {httpClient} = this.props;
-        console.log( this.props.startDate );
+    componentWillReceiveProps(nextProps) {
+        const {httpClient} = nextProps;
         httpClient.get('../api/thundra/invocation-count', {
             params: {
-                startTimeStamp: this.props.startDate
+                startTimeStamp: nextProps.startDate
             }
         }).then((resp) => {
             this.setState({invocationCount: resp.data.invocationCount});
@@ -51,7 +50,7 @@ export class Overview extends React.Component {
 
         httpClient.get('../api/thundra/erronous-invocation-count', {
             params: {
-                startTimeStamp: this.props.startDate
+                startTimeStamp: nextProps.startDate
             }
         }).then((resp) => {
             this.setState({errorCount: resp.data.errorCount});
@@ -59,7 +58,7 @@ export class Overview extends React.Component {
 
         httpClient.get('../api/thundra/cold-start-count', {
             params: {
-                startTimeStamp: this.props.startDate
+                startTimeStamp: nextProps.startDate
             }
         }).then((resp) => {
             this.setState({coldStartCount: resp.data.coldStartCount});
@@ -67,7 +66,7 @@ export class Overview extends React.Component {
 
         httpClient.get('../api/thundra/estimated-billed-cost', {
             params: {
-                startTimeStamp: this.props.startDate
+                startTimeStamp: nextProps.startDate
             }
         }).then((resp) => {
             this.setState({
@@ -78,7 +77,7 @@ export class Overview extends React.Component {
 
         httpClient.get('../api/thundra/functions', {
             params: {
-                startTimeStamp: this.props.startDate
+                startTimeStamp: nextProps.startDate
             }
         }).then((resp) => {
             this.setState({functions: resp.data.functions});
@@ -86,7 +85,7 @@ export class Overview extends React.Component {
 
         httpClient.get('../api/thundra/erronous-invocations', {
             params: {
-                startTimeStamp: this.props.startDate
+                startTimeStamp: nextProps.startDate
             }
         }).then((resp) => {
             this.setState({erronousFunctions: resp.data.erronousFunctions});
@@ -94,22 +93,24 @@ export class Overview extends React.Component {
 
         httpClient.get('../api/thundra/cold-start-invocations', {
             params: {
-                startTimeStamp: this.props.startDate
+                startTimeStamp: nextProps.startDate
             }
         }).then((resp) => {
             this.setState({coldStartFunctions: resp.data.coldStartFunctions});
         });
 
-        httpClient.get('../api/thundra/invocation-counts-per-day', {
+        httpClient.get('../api/thundra/invocation-counts-per-hour', {
             params: {
-                startTimeStamp: this.props.startDate
+                startTimeStamp: nextProps.startDate
             }
         }).then((resp) => {
             this.setState({invocationCountPerDay: resp.data.invocationCountPerDay});
         });
 
-        httpClient.get('../api/thundra/invocation-duration-per-day', {
-
+        httpClient.get('../api/thundra/invocation-duration-per-hour', {
+            params: {
+                startTimeStamp: nextProps.startDate
+            }
         }).then((resp) => {
             this.setState({durationPerDay: resp.data.durationPerDay});
         });
@@ -118,7 +119,7 @@ export class Overview extends React.Component {
     onClick = (e) => {
         this.setState({selectedFunctionName: e.y});
         const {httpClient} = this.props;
-        httpClient.get('../api/thundra/invocation-counts-per-day-with-function-name', {
+        httpClient.get('../api/thundra/invocation-counts-per-hour-with-function-name', {
             params: {
                 functionName: e.y
             }
@@ -126,7 +127,7 @@ export class Overview extends React.Component {
             this.setState({invocationCountPerDay: resp.data.invocationCountPerDay});
         });
 
-        httpClient.get('../api/thundra/invocation-duration-per-day-with-function-name', {
+        httpClient.get('../api/thundra/invocation-duration-per-hour-with-function-name', {
             params: {
                 functionName: e.y
             }

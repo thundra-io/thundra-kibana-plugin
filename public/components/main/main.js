@@ -19,38 +19,66 @@ import {
     EuiComboBox,
     EuiFlexGroup,
     EuiFlexItem,
-    EuiFlexGrid
+    EuiFlexGrid,
+    EuiTextColor
 } from '@elastic/eui';
 
 import {Overview} from "../overview/overview";
 import {Functions} from "../functions/functions";
 import {Invocations} from "../invocations";
-
+const MS_PER_MINUTE = 60000;
 
 export class Main extends React.Component {
     constructor(props) {
         super(props);
 
         this.options = [{
-                label: '1 hour',
+                label: 'Last 1 hour',
                 value: 60
             }, {
-                label: '2 hour',
+                label: 'Last 2 hours',
                 value: 120
             }, {
-                label: '4 hour',
+                label: 'Last 4 hours',
                 value: 240
             }, {
-                label: '1 day',
+                label: 'Last 1 day',
                 value: 1440
             }
         ];
 
         this.state = {
-            startDate: 1541414646000,
-            selectedOptions: []
+            startDate: 1541595720724,
+            selectedOptions: [this.options[0]]
         };
+    }
 
+    componentDidMount(){
+        this.setState({
+           startDate: this.oneHourAgo()
+        })
+    };
+
+    onTabClick = (selectedTab) => {
+        this.setState({ selectedTab });
+    };
+
+    oneHourAgo = () => {
+        let d = new Date();
+        let date = new Date(d - (MS_PER_MINUTE));
+        return date.getTime();
+    };
+
+    onChange = (selectedOptions) => {
+        let d = new Date();
+        let date = new Date(d - ((Number(selectedOptions[0].value)) * MS_PER_MINUTE));
+        this.setState({
+            selectedOptions: selectedOptions,
+            startDate: date.getTime()
+        });
+    };
+
+    renderTab = () => {
         const {httpClient} = this.props;
         this.tabs = [{
             id: 'overview',
@@ -87,38 +115,25 @@ export class Main extends React.Component {
                 </Fragment>
             ),
         }];
-
-        this.state = {
-            selectedTab: this.tabs[0],
-        };
-    }
-
-    onTabClick = (selectedTab) => {
-        this.setState({ selectedTab });
-    };
-
-
-    onChange = (selectedOptions) => {
-        let MS_PER_MINUTE = 60000;
-        let d = new Date();
-        let myStartDate = new Date(d - ((Number(selectedOptions[0].value)) * MS_PER_MINUTE));
-        this.setState({
-            selectedOptions: selectedOptions,
-            startDate: myStartDate.getTime()
-        });
-        this.render();
+        return( this.tabs)
     };
 
     render() {
         const {title} = this.props;
+        let tabs = this.renderTab();
         return (
             <div className="overview">
                 <Fragment>
                     <EuiSpacer size="m" />
-
-                    <EuiFlexGrid columns={4}>
-                        <EuiFlexItem><div></div></EuiFlexItem>
-                        <EuiFlexItem><div></div></EuiFlexItem>
+                    <EuiFlexGrid columns={3}>
+                        <EuiFlexItem>
+                            <EuiTitle>
+                                <h2>
+                                    <EuiTextColor color="secondary">Thundra Serverless Observability</EuiTextColor>
+                                </h2>
+                            </EuiTitle>
+                        </EuiFlexItem>
+                        <EuiSpacer size="s"/>
                         <EuiFlexItem><div></div></EuiFlexItem>
                         <EuiFlexItem grow={true}>
                             <EuiComboBox
@@ -128,16 +143,13 @@ export class Main extends React.Component {
                                 selectedOptions={this.state.selectedOptions}
                                 onChange={this.onChange}
                                 isClearable={false}
-                                fullWidth={true}
-                                compressed={true}
                             />
                         </EuiFlexItem>
                     </EuiFlexGrid>
 
-
                     <EuiTabbedContent
-                        tabs={this.tabs}
-                        selectedTab={this.state.selectedTab}
+                        tabs={tabs}
+                        initialSelectedTab={tabs[0]}
                         onTabClick={this.onTabClick}
                     />
                 </Fragment>

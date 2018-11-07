@@ -276,7 +276,7 @@ export default function (server) {
     );
     server.route(
         {
-            path: '/api/thundra/invocation-counts-per-day',
+            path: '/api/thundra/invocation-counts-per-hour',
             method: 'GET',
             handler(req, reply) {
                 let query = {
@@ -294,7 +294,7 @@ export default function (server) {
                             histogram: {
                                 date_histogram: {
                                     field: "collectedTimestamp",
-                                    interval: "day"
+                                    interval: "hour"
                                 }
                             }
                         }
@@ -308,7 +308,7 @@ export default function (server) {
     );
     server.route(
         {
-            path: '/api/thundra/invocation-counts-per-day-with-function-name',
+            path: '/api/thundra/invocation-counts-per-hour-with-function-name',
             method: 'GET',
             handler(req, reply) {
                 let query = {
@@ -326,7 +326,7 @@ export default function (server) {
                             histogram: {
                                 date_histogram: {
                                     field: "collectedTimestamp",
-                                    interval: "day"
+                                    interval: "hour"
                                 }
                             }
                         }
@@ -340,7 +340,7 @@ export default function (server) {
     );
     server.route(
         {
-            path: '/api/thundra/invocation-duration-per-day',
+            path: '/api/thundra/invocation-duration-per-hour',
             method: 'GET',
             handler(req, reply) {
                 let query = {
@@ -358,7 +358,7 @@ export default function (server) {
                             sumOfDurations: {
                                 date_histogram: {
                                     field: "collectedTimestamp",
-                                    interval: "day"
+                                    interval: "hour"
                                 },
                                 aggs: {
                                     duration: {
@@ -379,7 +379,7 @@ export default function (server) {
     );
     server.route(
         {
-            path: '/api/thundra/invocation-duration-per-day-with-function-name',
+            path: '/api/thundra/invocation-duration-per-hour-with-function-name',
             method: 'GET',
             handler(req, reply) {
                 let query = {
@@ -397,7 +397,7 @@ export default function (server) {
                             sumOfDurations: {
                                 date_histogram: {
                                     field: "collectedTimestamp",
-                                    interval: "day"
+                                    interval: "hour"
                                 },
                                 aggs: {
                                     duration: {
