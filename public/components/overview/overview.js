@@ -34,48 +34,83 @@ export class Overview extends React.Component {
             coldStartFunctions: [],
             invocationCountPerDay: [],
             durationPerDay: [],
-            selectedFunctionName: null,
+            selectedFunctionName: null
         };
     }
 
     componentWillMount() {
         const {httpClient} = this.props;
-        httpClient.get('../api/thundra/invocation-count').then((resp) => {
+        console.log( this.props.startDate );
+        httpClient.get('../api/thundra/invocation-count', {
+            params: {
+                startTimeStamp: this.props.startDate
+            }
+        }).then((resp) => {
             this.setState({invocationCount: resp.data.invocationCount});
         });
 
-        httpClient.get('../api/thundra/erronous-invocation-count').then((resp) => {
+        httpClient.get('../api/thundra/erronous-invocation-count', {
+            params: {
+                startTimeStamp: this.props.startDate
+            }
+        }).then((resp) => {
             this.setState({errorCount: resp.data.errorCount});
         });
 
-        httpClient.get('../api/thundra/cold-start-count').then((resp) => {
+        httpClient.get('../api/thundra/cold-start-count', {
+            params: {
+                startTimeStamp: this.props.startDate
+            }
+        }).then((resp) => {
             this.setState({coldStartCount: resp.data.coldStartCount});
         });
 
-        httpClient.get('../api/thundra/estimated-billed-cost').then((resp) => {
+        httpClient.get('../api/thundra/estimated-billed-cost', {
+            params: {
+                startTimeStamp: this.props.startDate
+            }
+        }).then((resp) => {
             this.setState({
                 costCalculated: true,
                 estimatedBilledCost: resp.data.estimatedBilledCost
             });
         });
 
-        httpClient.get('../api/thundra/functions').then((resp) => {
+        httpClient.get('../api/thundra/functions', {
+            params: {
+                startTimeStamp: this.props.startDate
+            }
+        }).then((resp) => {
             this.setState({functions: resp.data.functions});
         });
 
-        httpClient.get('../api/thundra/erronous-invocations').then((resp) => {
+        httpClient.get('../api/thundra/erronous-invocations', {
+            params: {
+                startTimeStamp: this.props.startDate
+            }
+        }).then((resp) => {
             this.setState({erronousFunctions: resp.data.erronousFunctions});
         });
 
-        httpClient.get('../api/thundra/cold-start-invocations').then((resp) => {
+        httpClient.get('../api/thundra/cold-start-invocations', {
+            params: {
+                startTimeStamp: this.props.startDate
+            }
+        }).then((resp) => {
             this.setState({coldStartFunctions: resp.data.coldStartFunctions});
         });
 
-        httpClient.get('../api/thundra/invocation-counts-per-day').then((resp) => {
+        httpClient.get('../api/thundra/invocation-counts-per-day', {
+            params: {
+                startTimeStamp: this.props.startDate
+            }
+        }).then((resp) => {
             this.setState({invocationCountPerDay: resp.data.invocationCountPerDay});
         });
 
-        httpClient.get('../api/thundra/invocation-duration-per-day').then((resp) => {
+        httpClient.get('../api/thundra/invocation-duration-per-day', {
+
+        }).then((resp) => {
             this.setState({durationPerDay: resp.data.durationPerDay});
         });
     }

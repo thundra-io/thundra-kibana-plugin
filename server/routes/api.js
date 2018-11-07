@@ -10,7 +10,11 @@ export default function (server) {
                     index: 'lab-invocation-*',
                     body: {
                         query: {
-                            match_all: {}
+                            range: {
+                                collectedTimestamp: {
+                                    gte: req.query.startTimeStamp
+                                }
+                            }
                         }
                     }
                 };
@@ -20,6 +24,7 @@ export default function (server) {
             }
         }
     );
+
     server.route(
         {
             path: '/api/thundra/erronous-invocation-count',
@@ -35,7 +40,16 @@ export default function (server) {
                                     term: {
                                         erroneous: true
                                     }
-                                }
+                                },
+                                must: [
+                                    {
+                                        range: {
+                                            collectedTimestamp: {
+                                                gte: req.query.startTimeStamp
+                                            }
+                                        }
+                                    }
+                                ]
                             }
                         }
                     }
@@ -61,7 +75,16 @@ export default function (server) {
                                     term: {
                                         erroneous: true
                                     }
-                                }
+                                },
+                                must: [
+                                    {
+                                        range: {
+                                            collectedTimestamp: {
+                                                gte: req.query.startTimeStamp
+                                            }
+                                        }
+                                    }
+                                ]
                             }
                         },
                         aggregations: {
@@ -94,7 +117,16 @@ export default function (server) {
                                     term: {
                                         coldStart: true
                                     }
-                                }
+                                },
+                                must: [
+                                    {
+                                        range: {
+                                            collectedTimestamp: {
+                                                gte: req.query.startTimeStamp
+                                            }
+                                        }
+                                    }
+                                ]
                             }
                         }
                     }
@@ -120,7 +152,16 @@ export default function (server) {
                                     term: {
                                         coldStart: true
                                     }
-                                }
+                                },
+                                must: [
+                                    {
+                                        range: {
+                                            collectedTimestamp: {
+                                                gte: req.query.startTimeStamp
+                                            }
+                                        }
+                                    }
+                                ]
                             }
                         },
                         aggregations: {
@@ -147,6 +188,13 @@ export default function (server) {
                     index: 'lab-invocation-*',
                     body: {
                         size: 0,
+                        query: {
+                            range: {
+                                collectedTimestamp: {
+                                    gte: req.query.startTimeStamp
+                                }
+                            }
+                        },
                         aggregations: {
                             costAggregation: {
                                 sum: {
@@ -171,6 +219,13 @@ export default function (server) {
                     index: 'lab-invocation-*',
                     body: {
                         size: 10,
+                        query: {
+                            range: {
+                                collectedTimestamp: {
+                                    gte: req.query.startTimeStamp
+                                }
+                            }
+                        },
                         aggregations: {
                             applicationNameAggs: {
                                 terms: {
@@ -228,6 +283,13 @@ export default function (server) {
                     index: 'lab-invocation-*',
                     body: {
                         size: 0,
+                        query: {
+                            range: {
+                                collectedTimestamp: {
+                                    gte: req.query.startTimeStamp
+                                }
+                            }
+                        },
                         aggregations: {
                             histogram: {
                                 date_histogram: {
@@ -285,6 +347,13 @@ export default function (server) {
                     index: 'lab-invocation-*',
                     body: {
                         size: 0,
+                        query: {
+                            range: {
+                                collectedTimestamp: {
+                                    gte: req.query.startTimeStamp
+                                }
+                            }
+                        },
                         aggs: {
                             sumOfDurations: {
                                 date_histogram: {
