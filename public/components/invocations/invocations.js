@@ -8,8 +8,11 @@ import {
     EuiSwitch,
     EuiCode,
     EuiButton,
-    EuiComboBox
-
+    EuiComboBox,
+    EuiFlexGrid,
+    EuiFlexItem,
+    EuiText,
+    EuiTextColor
 } from '@elastic/eui';
 
 import {
@@ -26,12 +29,9 @@ const {
 const { SCALE } = EuiSeriesChartUtils;
 
 export class Invocations extends React.Component {
-
     constructor(props) {
         super(props);
-
         this.options = [];
-
         this.state = {
             invocations : [],
             pageIndex: 0,
@@ -41,11 +41,47 @@ export class Invocations extends React.Component {
         };
     }
 
+    componentWillMount() {
+        const {httpClient} = this.props;
+        const {startDate} = this.props;
+        this.doRequest(httpClient, startDate)
+    }
+
+    componentWillReceiveProps(nextProps) {
+        const {httpClient} = nextProps;
+        const {startDate} = nextProps;
+        this.doRequest(httpClient, startDate)
+    }
+
+    doRequest = (httpClient, startDate) => {
+        httpClient.get('../api/thundra/functions', {
+            params:{
+                startTimeStamp: startDate
+            }
+        }).then((resp) => {
+            let options = [];
+            for (let key in resp.data.functions) {
+                let obj = resp.data.functions[key];
+                options.push( {
+                    label: obj.key
+                });
+            }
+            this.options = [];
+            this.options = options;
+            this.setState({
+                functions: resp.data.functions
+            });
+            this.onChange([this.options[0]])
+        });
+    };
+
     onChange = (selectedOptions) => {
         const {httpClient} = this.props;
+        const {startDate} = this.props;
         httpClient.get('../api/thundra/invocations-with-function-name', {
             params:{
-                functionName: selectedOptions[0].label
+                functionName: selectedOptions[0].label,
+                startTimeStamp: startDate
             }
         }).then((resp) => {
             this.setState({invocations: resp.data.invocations});
@@ -73,24 +109,7 @@ export class Invocations extends React.Component {
         this.setState({showPerPageOptions: !this.state.showPerPageOptions});
     };
 
-    componentWillMount() {
-        const {httpClient} = this.props;
-        httpClient.get('../api/thundra/functions').then((resp) => {
-            let options = [];
-            for (let key in resp.data.functions) {
-                let obj = resp.data.functions[key];
-                options.push( {
-                    label: obj.key
-                });
-            }
-            this.options = [];
-            this.options = options;
-            this.setState({
-                functions: resp.data.functions
-            });
-            this.onChange([this.options[0]])
-        });
-    }
+
 
     columns = [
         {
@@ -182,7 +201,7 @@ export class Invocations extends React.Component {
         };
 
         return (
-            <div className="overview">
+            <div>
                 <EuiComboBox
                     placeholder="Select a single option"
                     singleSelection={{ asPlainText: true }}
@@ -197,17 +216,23 @@ export class Invocations extends React.Component {
                 <br/>
                 <hr/>
 
-                <Row>
-                    <Col xl="6">
-                        <Fragment>
-                            <EuiSeriesChart width={600} height={200} xType={SCALE.TIME}>
+                <EuiSpacer/>
+                <EuiSpacer/>
+                <div>
+                    <EuiFlexGrid columns={2}>
+                        <EuiFlexItem>
+                            <EuiText grow={false}>
+                                <p> Total invocation count for <EuiTextColor color="subdued"> { this.state.selectedFunctionName == null ?  'all' : this.state.selectedFunctionName }</EuiTextColor> function(s)</p>
+                            </EuiText>
+                            <EuiSeriesChart height={250} xType={SCALE.TIME}>
                                 {myData.map((d, i) => (
                                     <EuiLineSeries key={i} name={d.name} data={d.data} showLineMarks={false} curve={CURVE_MONOTONE_X} lineSize={Number("2")}/>
                                 ))}
                             </EuiSeriesChart>
-                        </Fragment>
-                    </Col>
-                </Row>
+                        </EuiFlexItem>
+                    </EuiFlexGrid>
+                    <EuiSpacer />
+                </div>
             </div>
         );
     }

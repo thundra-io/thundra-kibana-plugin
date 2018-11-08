@@ -1,8 +1,19 @@
-import React, {Fragment} from 'react';
-import {Col, Row} from 'reactstrap';
-import {EuiBasicTable, EuiButton, EuiCode, EuiHealth, EuiLink, EuiSpacer, EuiSwitch} from '@elastic/eui';
+import React from 'react';
+import {EuiBasicTable,
+    EuiButton,
+    EuiCode,
+    EuiHealth,
+    EuiLink,
+    EuiSpacer,
+    EuiSwitch,
+    EuiComboBox,
+    EuiFlexGrid,
+    EuiFlexItem,
+    EuiText,
+    EuiTextColor
+} from '@elastic/eui';
 
-import {EuiBarSeries, EuiLineSeries, EuiSeriesChart, EuiSeriesChartUtils} from '@elastic/eui/lib/experimental';
+import {EuiLineSeries, EuiSeriesChart, EuiSeriesChartUtils} from '@elastic/eui/lib/experimental';
 
 const {
     CURVE_MONOTONE_X,
@@ -42,17 +53,33 @@ export class Functions extends React.Component {
 
     componentWillMount() {
         const {httpClient} = this.props;
-        httpClient.get('../api/thundra/functions').then((resp) => {
+        const {startDate} = this.props;
+        this.doRequest(httpClient, startDate)
+    }
+
+    componentWillReceiveProps(nextProps) {
+        const {httpClient} = nextProps;
+        const {startDate} = nextProps;
+        this.doRequest(httpClient, startDate)
+    }
+
+    doRequest = (httpClient, startDate) => {
+        httpClient.get('../api/thundra/functions', {
+            params:{
+                startTimeStamp: startDate
+            }
+        }).then((resp) => {
             this.setState({functions: resp.data.functions});
         });
 
-        httpClient.get('../api/thundra/invocation-count-of-function').then((resp) => {
+        httpClient.get('../api/thundra/invocation-count-of-function', {
+            params:{
+                startTimeStamp: startDate
+            }
+        }).then((resp) => {
             this.setState({invocationCountOfFunction: resp.data.invocationCountOfFunction});
         });
-    }
-
-    componentDidMount() {
-    }
+    };
 
     columns = [
         {
@@ -118,17 +145,23 @@ export class Functions extends React.Component {
                 <br/>
                 <hr/>
 
-                <Row>
-                    <Col xl="6">
-                        <Fragment>
-                            <EuiSeriesChart width={600} height={200} xType={SCALE.TIME}>
+                <EuiSpacer/>
+                <EuiSpacer/>
+                <div>
+                    <EuiFlexGrid columns={2}>
+                        <EuiFlexItem>
+                            <EuiText grow={false}>
+                                <p> Total invocation count for <EuiTextColor color="subdued"> { this.state.selectedFunctionName == null ?  'all' : this.state.selectedFunctionName }</EuiTextColor> function(s)</p>
+                            </EuiText>
+                            <EuiSeriesChart height={250} xType={SCALE.TIME}>
                                 {myData.map((d, i) => (
                                     <EuiLineSeries key={i} name={d.name} data={d.data} showLineMarks={false} curve={CURVE_MONOTONE_X} lineSize={Number("2")}/>
                                 ))}
                             </EuiSeriesChart>
-                        </Fragment>
-                    </Col>
-                </Row>
+                        </EuiFlexItem>
+                    </EuiFlexGrid>
+                    <EuiSpacer />
+                </div>
             </div>
         );
     }

@@ -132,10 +132,23 @@ export default function (server) {
                     index: 'lab-invocation-*',
                     body: {
                         query: {
-                            term: {
-                                applicationName: {
-                                    value: req.query.functionName
-                                }
+                            bool: {
+                                must: [
+                                    {
+                                        range: {
+                                            collectedTimestamp: {
+                                                gte: req.query.startTimeStamp
+                                            }
+                                        }
+                                    },
+                                    {
+                                        term: {
+                                            applicationName: {
+                                                value: req.query.functionName
+                                            }
+                                        }
+                                    }
+                                ]
                             }
                         }
                     }
