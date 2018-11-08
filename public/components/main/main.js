@@ -27,12 +27,9 @@ import {Invocations} from "../invocations";
 import Counter from "../counter/Counter";
 import {connect} from "react-redux";
 
-const MS_PER_MINUTE = 60000;
-
 class Main extends Component {
     constructor(props) {
         super(props);
-
         this.options = [{
                 label: 'Last 1 hour',
                 value: 60
@@ -49,25 +46,16 @@ class Main extends Component {
         ];
 
         this.state = {
-            startDate: this.xHourAgo(1),
             selectedOptions: [this.options[0]]
         };
     }
-
 
     onTabClick = (selectedTab) => {
         this.setState({ selectedTab });
     };
 
-    xHourAgo = (x) => {
-        let d = new Date();
-        let date = new Date(d - x*(MS_PER_MINUTE));
-        return date.getTime();
-    };
 
     onChange = (selectedOptions) => {
-        let d = new Date();
-        let date = new Date(d - ((Number(selectedOptions[0].value)) * MS_PER_MINUTE));
         this.props.changeTime((Number(selectedOptions[0].value)));
         this.setState({
             selectedOptions: selectedOptions
@@ -76,7 +64,7 @@ class Main extends Component {
 
     renderTab = () => {
         const {httpClient} = this.props;
-        const { startDate } = this.props;
+        const {startDate} = this.props;
 
         this.tabs = [{
             id: 'overview',
@@ -125,7 +113,6 @@ class Main extends Component {
     };
 
     render() {
-        const {title} = this.props;
         let tabs = this.renderTab();
         return (
             <div className="overview">
@@ -173,6 +160,7 @@ const mapStateToProps = state => {
 const mapDispatchToProps = dispatch => {
     return {
         changeTime: (x) => {
+            const MS_PER_MINUTE = 60000;
             let d = new Date();
             let date = new Date(d - x*(MS_PER_MINUTE));
             return dispatch({type: 'CHANGE_TIME', val: date.getTime()});

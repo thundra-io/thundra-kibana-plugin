@@ -35,8 +35,6 @@ app.config(stateManagementConfigProvider =>
     stateManagementConfigProvider.disable()
 );
 
-const MS_PER_MINUTE = 60000;
-
 const myapp = combineReducers({
     firstReducer,
     timeSelectorReducer

@@ -1,6 +1,7 @@
-
+let d = new Date();
+let date = new Date(d - 3600000);
 const initialState = {
-    startDate: 1541675862000
+    startDate: date.getTime()
 };
 
 export default (state = initialState, action) => {
