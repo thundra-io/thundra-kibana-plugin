@@ -39,12 +39,14 @@ export class Overview extends React.Component {
 
     componentWillMount() {
         const {httpClient} = this.props;
-        this.doRequest(httpClient, this.state.startDate)
+        const {startDate} = this.props;
+        this.doRequest(httpClient, startDate)
     }
 
     componentWillReceiveProps(nextProps) {
-        const {httpClient} = this.props;
-        this.doRequest(httpClient, nextProps.startDate)
+        const {httpClient} = nextProps;
+        const {startDate} = nextProps;
+        this.doRequest(httpClient, startDate)
     }
 
     doRequest = (httpClient, startTime) => {

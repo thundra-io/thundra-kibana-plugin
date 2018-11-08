@@ -1,6 +1,6 @@
 
 const initialState = {
-    time: 0,
+    startDate: 1541675862000
 };
 
 export default (state = initialState, action) => {
@@ -8,7 +8,7 @@ export default (state = initialState, action) => {
         case 'CHANGE_TIME':
             return{
                 ...state,
-                time : action.time
+                startDate : action.val
             };
         default:
             return state

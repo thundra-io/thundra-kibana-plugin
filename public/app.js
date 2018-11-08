@@ -13,13 +13,13 @@ import {timefilter} from 'ui/timefilter';
 
 import 'ui/autoload/styles';
 import './less/main.less';
-import {Main} from './components/main';
+import Main from './components/main/main';
 import {combineReducers, createStore} from "redux";
 import {Provider}  from "react-redux";
 
 
 import firstReducer from "./reducers/counter";
-import timeSelector from "./reducers/timeSelector";
+import timeSelectorReducer from "./reducers/timeSelector";
 
 const app = uiModules.get('apps/thundra');
 
@@ -39,7 +39,7 @@ const MS_PER_MINUTE = 60000;
 
 const myapp = combineReducers({
     firstReducer,
-    timeSelector
+    timeSelectorReducer
 });
 
 const store = createStore(myapp);

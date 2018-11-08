@@ -1,6 +1,5 @@
 import React, { Component, Fragment } from 'react';
 
-
 import {
     EuiPage,
     EuiPageBody,
@@ -26,10 +25,11 @@ import {Overview} from "../overview/overview";
 import {Functions} from "../functions/functions";
 import {Invocations} from "../invocations";
 import Counter from "../counter/Counter";
+import {connect} from "react-redux";
 
 const MS_PER_MINUTE = 60000;
 
-export class Main extends Component {
+class Main extends Component {
     constructor(props) {
         super(props);
 
@@ -49,38 +49,35 @@ export class Main extends Component {
         ];
 
         this.state = {
-            startDate: this.oneHourAgo(),
+            startDate: this.xHourAgo(1),
             selectedOptions: [this.options[0]]
         };
     }
 
-    componentDidMount(){
-        this.setState({
-           startDate: this.oneHourAgo()
-        })
-    };
 
     onTabClick = (selectedTab) => {
         this.setState({ selectedTab });
     };
 
-    oneHourAgo = () => {
+    xHourAgo = (x) => {
         let d = new Date();
-        let date = new Date(d - 60*(MS_PER_MINUTE));
+        let date = new Date(d - x*(MS_PER_MINUTE));
         return date.getTime();
     };
 
     onChange = (selectedOptions) => {
         let d = new Date();
         let date = new Date(d - ((Number(selectedOptions[0].value)) * MS_PER_MINUTE));
+        this.props.changeTime((Number(selectedOptions[0].value)));
         this.setState({
-            selectedOptions: selectedOptions,
-            startDate: date.getTime()
+            selectedOptions: selectedOptions
         });
     };
 
     renderTab = () => {
         const {httpClient} = this.props;
+        const { startDate } = this.props;
+
         this.tabs = [{
             id: 'overview',
             name: 'Overview',
@@ -88,7 +85,7 @@ export class Main extends Component {
                 <Fragment>
                     <EuiSpacer />
                     <EuiTitle><h3>Overview</h3></EuiTitle>
-                    <Overview startDate={this.state.startDate} httpClient={httpClient}></Overview>
+                    <Overview startDate={startDate} httpClient={httpClient}></Overview>
                 </Fragment>
             ),
         }, {
@@ -99,7 +96,7 @@ export class Main extends Component {
                     <EuiSpacer />
                     <EuiTitle><h3>Functions</h3></EuiTitle>
                     <EuiText>
-                        <Functions startDate={this.state.startDate} httpClient={httpClient}></Functions>
+                        <Functions startDate={startDate} httpClient={httpClient}></Functions>
                     </EuiText>
                 </Fragment>
             ),
@@ -111,7 +108,7 @@ export class Main extends Component {
                     <EuiSpacer />
                     <EuiTitle><h3>Invocations</h3></EuiTitle>
                     <EuiText>
-                        <Invocations startDate={this.state.startDate} httpClient={httpClient}></Invocations>
+                        <Invocations startDate={startDate} httpClient={httpClient}></Invocations>
                     </EuiText>
                 </Fragment>
             ),
@@ -164,7 +161,7 @@ export class Main extends Component {
 
                     <EuiTabbedContent
                         tabs={tabs}
-                        initialSelectedTab={tabs[3]}
+                        initialSelectedTab={tabs[0]}
                         onTabClick={this.onTabClick}
                     />
                 </Fragment>
@@ -172,3 +169,26 @@ export class Main extends Component {
         );
     }
 }
+
+const mapStateToProps = state => {
+    return {startDate:  state.timeSelectorReducer.startDate}
+};
+
+const chMe = (dispatch, x) =>{
+    let d = new Date();
+    let date = new Date(d - x*(MS_PER_MINUTE));
+    return dispatch({type: 'CHANGE_TIME', val: date.getTime()});
+};
+
+const mapDispatchToProps = dispatch => {
+    return {
+        changeTime: (id) => {
+            chMe(dispatch, id )
+        }
+    }
+};
+
+export default connect(
+    mapStateToProps,
+    mapDispatchToProps,
+)(Main)
