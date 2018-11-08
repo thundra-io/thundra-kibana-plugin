@@ -21,9 +21,9 @@ import {
     EuiTextColor,
 } from '@elastic/eui';
 
-import {Overview} from "../overview/overview";
-import {Functions} from "../functions/functions";
-import {Invocations} from "../invocations";
+import Overview from "../overview/overview";
+import Functions from "../functions/functions";
+import Invocations from "../invocations/invocations";
 import Counter from "../counter/Counter";
 import {connect} from "react-redux";
 

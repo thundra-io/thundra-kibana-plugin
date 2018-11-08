@@ -24,7 +24,7 @@ import {
 const { SCALE, ORIENTATION } = EuiSeriesChartUtils;
 const { CURVE_MONOTONE_X } = EuiSeriesChartUtils.CURVE;
 
-export class Overview extends React.Component {
+class Overview extends React.Component {
 
     constructor(props) {
         super(props);
@@ -330,3 +330,4 @@ export class Overview extends React.Component {
         );
     }
 }
+export default Overview;

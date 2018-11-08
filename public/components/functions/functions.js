@@ -22,7 +22,7 @@ const {
 
 const { SCALE } = EuiSeriesChartUtils;
 
-export class Functions extends React.Component {
+class Functions extends React.Component {
 
     constructor(props) {
         super(props);
@@ -166,3 +166,5 @@ export class Functions extends React.Component {
         );
     }
 }
+
+export default Functions;

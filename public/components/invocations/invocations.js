@@ -28,7 +28,7 @@ const {
 
 const { SCALE } = EuiSeriesChartUtils;
 
-export class Invocations extends React.Component {
+class Invocations extends React.Component {
     constructor(props) {
         super(props);
         this.options = [];
@@ -237,3 +237,5 @@ export class Invocations extends React.Component {
         );
     }
 }
+
+export default Invocations;
