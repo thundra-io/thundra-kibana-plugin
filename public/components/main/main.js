@@ -174,16 +174,12 @@ const mapStateToProps = state => {
     return {startDate:  state.timeSelectorReducer.startDate}
 };
 
-const chMe = (dispatch, x) =>{
-    let d = new Date();
-    let date = new Date(d - x*(MS_PER_MINUTE));
-    return dispatch({type: 'CHANGE_TIME', val: date.getTime()});
-};
-
 const mapDispatchToProps = dispatch => {
     return {
-        changeTime: (id) => {
-            chMe(dispatch, id )
+        changeTime: (x) => {
+            let d = new Date();
+            let date = new Date(d - x*(MS_PER_MINUTE));
+            return dispatch({type: 'CHANGE_TIME', val: date.getTime()});
         }
     }
 };
