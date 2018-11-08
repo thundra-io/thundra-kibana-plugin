@@ -132,6 +132,13 @@ export default function (server) {
                     index: 'lab-invocation-*',
                     size : 1000,
                     body: {
+                        sort: [
+                            {
+                                collectedTimestamp: {
+                                    order: "asc"
+                                }
+                            }
+                        ],
                         query: {
                             bool: {
                                 must: [

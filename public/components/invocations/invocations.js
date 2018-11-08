@@ -34,6 +34,7 @@ class Invocations extends React.Component {
         this.options = [];
         this.state = {
             invocations : [],
+            memoryMetrics : [],
             pageIndex: 0,
             pageSize: 5,
             showPerPageOptions: true,
@@ -71,8 +72,20 @@ class Invocations extends React.Component {
             this.setState({
                 functions: resp.data.functions
             });
-            this.onChange([this.options[0]])
+            // this.onChange([this.options[0]])
         });
+
+        if ( this.state.functions ){
+            console.log(this.state.functions);
+            httpClient.get('../api/thundra/memory-metrics', {
+                params:{
+                    startTimeStamp: startDate,
+                    functionName: this.state.functions[0]
+                }
+            }).then((resp) => {
+                this.setState({memoryMetrics: resp.data.memoryMetrics});
+            });
+        }
     };
 
     onChange = (selectedOptions) => {
@@ -90,6 +103,16 @@ class Invocations extends React.Component {
         this.setState({
             selectedOptions: selectedOptions,
         });
+
+        httpClient.get('../api/thundra/memory-metrics', {
+            params:{
+                startTimeStamp: startDate,
+                functionName: selectedOptions[0].label
+            }
+        }).then((resp) => {
+            this.setState({memoryMetrics: resp.data.memoryMetrics});
+        });
+
         this.renderTable();
     };
 
@@ -200,6 +223,20 @@ class Invocations extends React.Component {
             name: "Duration"
         };
 
+        const yourData = [];
+        const DATA_B = [];
+        for (let key in this.state.memoryMetrics) {
+            let obj = this.state.memoryMetrics[key];
+            let m  = obj._source.metrics;
+            console.log( obj );
+            DATA_B.push( { x: obj._source.collectedTimestamp, y: m['app.usedMemory']} );
+        }
+
+        yourData[0] = {
+            data: DATA_B,
+            name: "Memory Usage"
+        };
+
         return (
             <div>
                 <EuiComboBox
@@ -220,6 +257,17 @@ class Invocations extends React.Component {
                 <EuiSpacer/>
                 <div>
                     <EuiFlexGrid columns={2}>
+                        <EuiFlexItem>
+                            <EuiText grow={false}>
+                                <p> Memory Usage <EuiTextColor color="subdued"> { this.state.selectedOptions == null ?  'all' : this.state.selectedFunctionName }</EuiTextColor>  function(s)</p>
+                            </EuiText>
+                            <EuiSeriesChart height={250} xType={SCALE.TIME}>
+                                {yourData.map((d, i) => (
+                                    <EuiLineSeries key={i} name={d.name} data={d.data} showLineMarks={false} curve={CURVE_MONOTONE_X} lineSize={Number("2")}/>
+                                ))}
+                            </EuiSeriesChart>
+                        </EuiFlexItem>
+
                         <EuiFlexItem>
                             <EuiText grow={false}>
                                 <p> Total invocation count for <EuiTextColor color="subdued"> { this.state.selectedFunctionName == null ?  'all' : this.state.selectedFunctionName }</EuiTextColor> function(s)</p>

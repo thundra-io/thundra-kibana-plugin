@@ -144,7 +144,7 @@ class Main extends Component {
 
                     <EuiTabbedContent
                         tabs={tabs}
-                        initialSelectedTab={tabs[0]}
+                        initialSelectedTab={tabs[2]}
                         onTabClick={this.onTabClick}
                     />
                 </Fragment>
