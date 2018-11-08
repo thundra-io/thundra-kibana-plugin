@@ -15,11 +15,7 @@ export default function (kibana) {
       },
       hacks: [
         'plugins/thundra/hack'
-      ],
-      navbarExtensions: [
-
-      ],
-      styleSheetPaths: require('path').resolve(__dirname, 'public/app.scss'),
+      ]
     },
 
     config(Joi) {

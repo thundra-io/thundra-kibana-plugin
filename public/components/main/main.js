@@ -1,6 +1,5 @@
 import React, { Component, Fragment } from 'react';
 
-import moment from 'moment';
 
 import {
     EuiPage,
@@ -26,9 +25,11 @@ import {
 import {Overview} from "../overview/overview";
 import {Functions} from "../functions/functions";
 import {Invocations} from "../invocations";
+import Counter from "../counter/Counter";
+
 const MS_PER_MINUTE = 60000;
 
-export class Main extends React.Component {
+export class Main extends Component {
     constructor(props) {
         super(props);
 
@@ -48,7 +49,7 @@ export class Main extends React.Component {
         ];
 
         this.state = {
-            startDate: 1541595720724,
+            startDate: this.oneHourAgo(),
             selectedOptions: [this.options[0]]
         };
     }
@@ -65,7 +66,7 @@ export class Main extends React.Component {
 
     oneHourAgo = () => {
         let d = new Date();
-        let date = new Date(d - (MS_PER_MINUTE));
+        let date = new Date(d - 60*(MS_PER_MINUTE));
         return date.getTime();
     };
 
@@ -114,6 +115,18 @@ export class Main extends React.Component {
                     </EuiText>
                 </Fragment>
             ),
+        }, {
+            id: 'test',
+            name: 'Test',
+            content: (
+                <Fragment>
+                    <EuiSpacer />
+                    <EuiTitle><h3>Invocations</h3></EuiTitle>
+                    <EuiText>
+                        <Counter/>
+                    </EuiText>
+                </Fragment>
+            ),
         }];
         return( this.tabs)
     };
@@ -123,6 +136,8 @@ export class Main extends React.Component {
         let tabs = this.renderTab();
         return (
             <div className="overview">
+
+
                 <Fragment>
                     <EuiSpacer size="m" />
                     <EuiFlexGrid columns={3}>
@@ -149,7 +164,7 @@ export class Main extends React.Component {
 
                     <EuiTabbedContent
                         tabs={tabs}
-                        initialSelectedTab={tabs[0]}
+                        initialSelectedTab={tabs[3]}
                         onTabClick={this.onTabClick}
                     />
                 </Fragment>

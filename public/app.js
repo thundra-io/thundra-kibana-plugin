@@ -14,6 +14,9 @@ import {timefilter} from 'ui/timefilter';
 import 'ui/autoload/styles';
 import './less/main.less';
 import {Main} from './components/main';
+import {combineReducers, createStore} from "redux";
+import firstReducer from "./reducers";
+import {Provider}  from "react-redux";
 
 const app = uiModules.get('apps/thundra');
 
@@ -29,10 +32,22 @@ app.config(stateManagementConfigProvider =>
     stateManagementConfigProvider.disable()
 );
 
+const MS_PER_MINUTE = 60000;
+
+const myapp = combineReducers({
+        firstReducer
+});
+
+const store = createStore(myapp);
+
 function RootController($scope, $element, $http) {
     const domNode = $element[0];
     // render react to DOM
-    render(<Main title="thundra" httpClient={$http}/>, domNode);
+    render(
+        <Provider store={store}>
+            <Main title="thundra" httpClient={$http}/>
+        </Provider>, domNode
+    );
 
     // unmount react on controller destroy
     $scope.$on('$destroy', () => {

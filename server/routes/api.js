@@ -24,6 +24,62 @@ export default function (server) {
             }
         }
     );
+    server.route(
+        {
+            path: '/api/thundra/invocation-counts-per-hour-with-function-name',
+            method: 'GET',
+            handler(req, reply) {
+                let query = {
+                    index: 'lab-invocation-*',
+                    body: {
+                        size: 0,
+                        query: {
+                            term: {
+                                applicationName: {
+                                    value: req.query.functionName
+                                }
+                            }
+                        },
+                        aggregations: {
+                            histogram: {
+                                date_histogram: {
+                                    field: "collectedTimestamp",
+                                    interval: "hour"
+                                }
+                            }
+                        }
+                    }
+                };
+                callWithInternalUser('search', query).then(response => {
+                    reply({ invocationCountPerDay: (response.aggregations.histogram.buckets)});
+                });
+            }
+        }
+    );
+
+    server.route(
+        {
+            path: '/api/thundra/invocations-with-function-name',
+            method: 'GET',
+            handler(req, reply) {
+                let query = {
+                    index: 'lab-invocation-*',
+                    body: {
+                        query: {
+                            term: {
+                                applicationName: {
+                                    value: req.query.functionName
+                                }
+                            }
+                        }
+                    }
+                };
+                callWithInternalUser('search', query).then(response => {
+                    reply({ invocations: (response.hits.hits)});
+                });
+            }
+        }
+    );
 
     server.route(
         {
@@ -306,38 +362,7 @@ export default function (server) {
             }
         }
     );
-    server.route(
-        {
-            path: '/api/thundra/invocation-counts-per-hour-with-function-name',
-            method: 'GET',
-            handler(req, reply) {
-                let query = {
-                    index: 'lab-invocation-*',
-                    body: {
-                        size: 0,
-                        query: {
-                            term: {
-                                applicationName: {
-                                    value: req.query.functionName
-                                }
-                            }
-                        },
-                        aggregations: {
-                            histogram: {
-                                date_histogram: {
-                                    field: "collectedTimestamp",
-                                    interval: "hour"
-                                }
-                            }
-                        }
-                    }
-                };
-                callWithInternalUser('search', query).then(response => {
-                    reply({ invocationCountPerDay: (response.aggregations.histogram.buckets)});
-                });
-            }
-        }
-    );
+
     server.route(
         {
             path: '/api/thundra/invocation-duration-per-hour',
@@ -439,27 +464,5 @@ export default function (server) {
             }
         }
     );
-    server.route(
-        {
-            path: '/api/thundra/invocations-with-function-name',
-            method: 'GET',
-            handler(req, reply) {
-                let query = {
-                    index: 'lab-invocation-*',
-                    body: {
-                        query: {
-                            term: {
-                                applicationName: {
-                                    value: req.query.functionName
-                                }
-                            }
-                        }
-                    }
-                };
-                callWithInternalUser('search', query).then(response => {
-                    reply({ invocations: (response.hits.hits)});
-                });
-            }
-        }
-    );
+
 }

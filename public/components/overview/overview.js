@@ -28,7 +28,6 @@ export class Overview extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            costCalculated : false,
             functions: [],
             erronousFunctions: [],
             coldStartFunctions: [],
@@ -38,11 +37,20 @@ export class Overview extends React.Component {
         };
     }
 
+    componentWillMount() {
+        const {httpClient} = this.props;
+        this.doRequest(httpClient, this.state.startDate)
+    }
+
     componentWillReceiveProps(nextProps) {
-        const {httpClient} = nextProps;
+        const {httpClient} = this.props;
+        this.doRequest(httpClient, nextProps.startDate)
+    }
+
+    doRequest = (httpClient, startTime) => {
         httpClient.get('../api/thundra/invocation-count', {
             params: {
-                startTimeStamp: nextProps.startDate
+                startTimeStamp: startTime
             }
         }).then((resp) => {
             this.setState({invocationCount: resp.data.invocationCount});
@@ -50,7 +58,7 @@ export class Overview extends React.Component {
 
         httpClient.get('../api/thundra/erronous-invocation-count', {
             params: {
-                startTimeStamp: nextProps.startDate
+                startTimeStamp: startTime
             }
         }).then((resp) => {
             this.setState({errorCount: resp.data.errorCount});
@@ -58,7 +66,7 @@ export class Overview extends React.Component {
 
         httpClient.get('../api/thundra/cold-start-count', {
             params: {
-                startTimeStamp: nextProps.startDate
+                startTimeStamp: startTime
             }
         }).then((resp) => {
             this.setState({coldStartCount: resp.data.coldStartCount});
@@ -66,18 +74,17 @@ export class Overview extends React.Component {
 
         httpClient.get('../api/thundra/estimated-billed-cost', {
             params: {
-                startTimeStamp: nextProps.startDate
+                startTimeStamp: startTime
             }
         }).then((resp) => {
             this.setState({
-                costCalculated: true,
                 estimatedBilledCost: resp.data.estimatedBilledCost
             });
         });
 
         httpClient.get('../api/thundra/functions', {
             params: {
-                startTimeStamp: nextProps.startDate
+                startTimeStamp: startTime
             }
         }).then((resp) => {
             this.setState({functions: resp.data.functions});
@@ -85,7 +92,7 @@ export class Overview extends React.Component {
 
         httpClient.get('../api/thundra/erronous-invocations', {
             params: {
-                startTimeStamp: nextProps.startDate
+                startTimeStamp: startTime
             }
         }).then((resp) => {
             this.setState({erronousFunctions: resp.data.erronousFunctions});
@@ -93,7 +100,7 @@ export class Overview extends React.Component {
 
         httpClient.get('../api/thundra/cold-start-invocations', {
             params: {
-                startTimeStamp: nextProps.startDate
+                startTimeStamp: startTime
             }
         }).then((resp) => {
             this.setState({coldStartFunctions: resp.data.coldStartFunctions});
@@ -101,7 +108,7 @@ export class Overview extends React.Component {
 
         httpClient.get('../api/thundra/invocation-counts-per-hour', {
             params: {
-                startTimeStamp: nextProps.startDate
+                startTimeStamp: startTime
             }
         }).then((resp) => {
             this.setState({invocationCountPerDay: resp.data.invocationCountPerDay});
@@ -109,12 +116,12 @@ export class Overview extends React.Component {
 
         httpClient.get('../api/thundra/invocation-duration-per-hour', {
             params: {
-                startTimeStamp: nextProps.startDate
+                startTimeStamp: startTime
             }
         }).then((resp) => {
             this.setState({durationPerDay: resp.data.durationPerDay});
         });
-    }
+    };
 
     onClick = (e) => {
         this.setState({selectedFunctionName: e.y});
@@ -215,50 +222,57 @@ export class Overview extends React.Component {
             CDATA.push( { x: obj.doc_count, y: obj.key} );
         }
 
-
-
         return (
             <div>
                 <EuiFlexGroup >
-                    <EuiFlexItem >
-                        <EuiStat
-                            title={this.state.invocationCount}
-                            description="New Invocations"
-                            titleColor="secondary"
-                            textAlign="left"
-                            titleSize="l"
-                        >
-                        </EuiStat>
-                    </EuiFlexItem>
-                    <EuiFlexItem>
-                        <EuiStat
-                            title={this.state.errorCount}
-                            description="New Errors"
-                            titleColor="danger"
-                            textAlign="left"
-                            titleSize="l"
-                        >
-                        </EuiStat>
-                    </EuiFlexItem>
-                    <EuiFlexItem>
-                        <EuiStat
-                            title={this.state.coldStartCount}
-                            description="New Cold Starts"
-                            textAlign="left"
-                            titleSize="l"
-                        >
-                        </EuiStat>
-                    </EuiFlexItem>
-                    <EuiFlexItem>
-                        <EuiStat
-                            title={(this.state.costCalculated === true ? "$": "" ) + this.state.estimatedBilledCost}
-                            description="Estimated Billed Cost"
-                            titleColor="accent"
-                            textAlign="left"
-                            titleSize="l"
-                        >
-                        </EuiStat>
-                    </EuiFlexItem>
+                    { this.state.invocationCount &&
+                        <EuiFlexItem >
+                            <EuiStat
+                                title={this.state.invocationCount}
+                                description="New Invocations"
+                                titleColor="secondary"
+                                textAlign="left"
+                                titleSize="l"
+                            />
+                        </EuiFlexItem>
+                    }
+
+                    {this.state.errorCount &&
+                        <EuiFlexItem>
+                            <EuiStat
+                                title={this.state.errorCount}
+                                description="New Errors"
+                                titleColor="danger"
+                                textAlign="left"
+                                titleSize="l"
+                            >
+                            </EuiStat>
+                        </EuiFlexItem>
+                    }
+                    {this.state.coldStartCount &&
+                        <EuiFlexItem>
+                            <EuiStat
+                                title={this.state.coldStartCount}
+                                description="New Cold Starts"
+                                textAlign="left"
+                                titleSize="l"
+                            >
+                            </EuiStat>
+                        </EuiFlexItem>
+                    }
+                    {
+                        this.state.estimatedBilledCost &&
+                        <EuiFlexItem>
+                            <EuiStat
+                                title={("$") + this.state.estimatedBilledCost}
+                                description="Estimated Billed Cost"
+                                titleColor="accent"
+                                textAlign="left"
+                                titleSize="l"
+                            >
+                            </EuiStat>
+                        </EuiFlexItem>
+                    }
                 </EuiFlexGroup>
                 <EuiSpacer />
                 <EuiSpacer />
