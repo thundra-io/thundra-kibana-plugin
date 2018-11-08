@@ -18,7 +18,7 @@ import {
     EuiFlexGroup,
     EuiFlexItem,
     EuiFlexGrid,
-    EuiTextColor
+    EuiTextColor,
 } from '@elastic/eui';
 
 import {Overview} from "../overview/overview";
