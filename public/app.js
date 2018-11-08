@@ -15,8 +15,11 @@ import 'ui/autoload/styles';
 import './less/main.less';
 import {Main} from './components/main';
 import {combineReducers, createStore} from "redux";
-import firstReducer from "./reducers";
 import {Provider}  from "react-redux";
+
+
+import firstReducer from "./reducers/counter";
+import timeSelector from "./reducers/timeSelector";
 
 const app = uiModules.get('apps/thundra');
 
@@ -35,7 +38,8 @@ app.config(stateManagementConfigProvider =>
 const MS_PER_MINUTE = 60000;
 
 const myapp = combineReducers({
-        firstReducer
+    firstReducer,
+    timeSelector
 });
 
 const store = createStore(myapp);
