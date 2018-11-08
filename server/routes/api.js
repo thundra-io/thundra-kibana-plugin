@@ -130,6 +130,7 @@ export default function (server) {
             handler(req, reply) {
                 let query = {
                     index: 'lab-invocation-*',
+                    size : 1000,
                     body: {
                         query: {
                             bool: {
@@ -353,7 +354,7 @@ export default function (server) {
                 let appNameQuery = {
                     index: 'lab-invocation-*',
                     body: {
-                        size: 10,
+                        size: 1000,
                         query: {
                             range: {
                                 collectedTimestamp: {
