@@ -10,7 +10,8 @@ import {
     EuiFlexGroup,
     EuiPanel,
     EuiIcon,
-    EuiFlexGrid
+    EuiFlexGrid,
+    EuiTextColor
 } from '@elastic/eui';
 
 import {
@@ -31,8 +32,8 @@ export class Overview extends React.Component {
             functions: [],
             erronousFunctions: [],
             coldStartFunctions: [],
-            invocationCountPerDay: [],
-            durationPerDay: [],
+            invocationCountPerHour: [],
+            durationPerHour: [],
             selectedFunctionName: null
         };
     }
@@ -113,7 +114,7 @@ export class Overview extends React.Component {
                 startTimeStamp: startTime
             }
         }).then((resp) => {
-            this.setState({invocationCountPerDay: resp.data.invocationCountPerDay});
+            this.setState({invocationCountPerHour: resp.data.invocationCountPerHour});
         });
 
         httpClient.get('../api/thundra/invocation-duration-per-hour', {
@@ -121,35 +122,39 @@ export class Overview extends React.Component {
                 startTimeStamp: startTime
             }
         }).then((resp) => {
-            this.setState({durationPerDay: resp.data.durationPerDay});
+            this.setState({durationPerHour: resp.data.durationPerHour});
         });
     };
+
 
     onClick = (e) => {
         this.setState({selectedFunctionName: e.y});
         const {httpClient} = this.props;
+        const {startDate} = this.props;
         httpClient.get('../api/thundra/invocation-counts-per-hour-with-function-name', {
             params: {
-                functionName: e.y
+                startTimeStamp: startDate,
+                functionName: e.y,
             }
         }).then((resp) => {
-            this.setState({invocationCountPerDay: resp.data.invocationCountPerDay});
+            this.setState({invocationCountPerHour: resp.data.invocationCountPerHour});
         });
 
         httpClient.get('../api/thundra/invocation-duration-per-hour-with-function-name', {
             params: {
-                functionName: e.y
+                startTimeStamp: startDate,
+                functionName: e.y,
             }
         }).then((resp) => {
-            this.setState({durationPerDay: resp.data.durationPerDay});
+            this.setState({durationPerHour: resp.data.durationPerHour});
         });
     };
 
     renderBelowGraphs = () => {
         const myData = [];
         const DATA_A = [];
-        for (let key in this.state.invocationCountPerDay) {
-            let obj = this.state.invocationCountPerDay[key];
+        for (let key in this.state.invocationCountPerHour) {
+            let obj = this.state.invocationCountPerHour[key];
             DATA_A.push( { x: obj.key, y: obj.doc_count } );
         }
 
@@ -160,8 +165,8 @@ export class Overview extends React.Component {
 
         const yourData = [];
         const DATA_B = [];
-        for (let key in this.state.durationPerDay) {
-            let obj = this.state.durationPerDay[key];
+        for (let key in this.state.durationPerHour) {
+            let obj = this.state.durationPerHour[key];
             DATA_B.push( { x: obj.key, y: obj.duration.value / 60000} );
         }
 
@@ -175,7 +180,7 @@ export class Overview extends React.Component {
                 <EuiFlexGrid columns={2}>
                     <EuiFlexItem>
                         <EuiText grow={false}>
-                            <p> Total invocation count for <b>{ this.state.selectedFunctionName == null ?  'all' : this.state.selectedFunctionName }</b> function(s)</p>
+                            <p> Total invocation count for <EuiTextColor color="subdued"> { this.state.selectedFunctionName == null ?  'all' : this.state.selectedFunctionName }</EuiTextColor> function(s)</p>
                         </EuiText>
                         <EuiSeriesChart height={250} xType={SCALE.TIME}>
                             {myData.map((d, i) => (
@@ -186,7 +191,7 @@ export class Overview extends React.Component {
 
                     <EuiFlexItem>
                         <EuiText grow={false}>
-                            <p>Total Invocation duration for <b>{ this.state.selectedFunctionName == null ?  'all' : this.state.selectedFunctionName }</b> function(s)</p>
+                            <p>Total  Invocation duration for <EuiTextColor color="subdued"> { this.state.selectedFunctionName == null ?  'all' : this.state.selectedFunctionName }</EuiTextColor> function(s)</p>
                         </EuiText>
                         <EuiSeriesChart height={250} xType={SCALE.TIME}>
                             {yourData.map((d, i) => (

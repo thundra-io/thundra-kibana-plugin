@@ -95,9 +95,7 @@ class Main extends Component {
                 <Fragment>
                     <EuiSpacer />
                     <EuiTitle><h3>Functions</h3></EuiTitle>
-                    <EuiText>
-                        <Functions startDate={startDate} httpClient={httpClient}></Functions>
-                    </EuiText>
+                    <Functions startDate={startDate} httpClient={httpClient}></Functions>
                 </Fragment>
             ),
         }, {
@@ -107,9 +105,7 @@ class Main extends Component {
                 <Fragment>
                     <EuiSpacer />
                     <EuiTitle><h3>Invocations</h3></EuiTitle>
-                    <EuiText>
-                        <Invocations startDate={startDate} httpClient={httpClient}></Invocations>
-                    </EuiText>
+                    <Invocations startDate={startDate} httpClient={httpClient}></Invocations>
                 </Fragment>
             ),
         }, {

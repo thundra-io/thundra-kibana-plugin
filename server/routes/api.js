@@ -34,10 +34,23 @@ export default function (server) {
                     body: {
                         size: 0,
                         query: {
-                            term: {
-                                applicationName: {
-                                    value: req.query.functionName
-                                }
+                            bool: {
+                                must: [
+                                    {
+                                        range: {
+                                            collectedTimestamp: {
+                                                gte: req.query.startTimeStamp
+                                            }
+                                        }
+                                    },
+                                    {
+                                        term: {
+                                            applicationName: {
+                                                value: req.query.functionName
+                                            }
+                                        }
+                                    }
+                                ]
                             }
                         },
                         aggregations: {
@@ -51,7 +64,60 @@ export default function (server) {
                     }
                 };
                 callWithInternalUser('search', query).then(response => {
-                    reply({ invocationCountPerDay: (response.aggregations.histogram.buckets)});
+                    reply({ invocationCountPerHour: (response.aggregations.histogram.buckets)});
+                });
+            }
+        }
+    );
+
+    server.route(
+        {
+            path: '/api/thundra/invocation-duration-per-hour-with-function-name',
+            method: 'GET',
+            handler(req, reply) {
+                let query = {
+                    index: 'lab-invocation-*',
+                    body: {
+                        size: 0,
+                        query: {
+                            bool: {
+                                must: [
+                                    {
+                                        range: {
+                                            collectedTimestamp: {
+                                                gte: req.query.startTimeStamp
+                                            }
+                                        }
+                                    },
+                                    {
+                                        term: {
+                                            applicationName: {
+                                                value: req.query.functionName
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        aggs: {
+                            sumOfDurations: {
+                                date_histogram: {
+                                    field: "collectedTimestamp",
+                                    interval: "hour"
+                                },
+                                aggs: {
+                                    duration: {
+                                        sum: {
+                                            field: "duration"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                };
+                callWithInternalUser('search', query).then(response => {
+                    reply({ durationPerHour: (response.aggregations.sumOfDurations.buckets)});
                 });
             }
         }
@@ -357,7 +423,7 @@ export default function (server) {
                     }
                 };
                 callWithInternalUser('search', query).then(response => {
-                    reply({ invocationCountPerDay: (response.aggregations.histogram.buckets)});
+                    reply({ invocationCountPerHour: (response.aggregations.histogram.buckets)});
                 });
             }
         }
@@ -397,50 +463,12 @@ export default function (server) {
                     }
                 };
                 callWithInternalUser('search', query).then(response => {
-                    reply({ durationPerDay: (response.aggregations.sumOfDurations.buckets)});
+                    reply({ durationPerHour: (response.aggregations.sumOfDurations.buckets)});
                 });
             }
         }
     );
-    server.route(
-        {
-            path: '/api/thundra/invocation-duration-per-hour-with-function-name',
-            method: 'GET',
-            handler(req, reply) {
-                let query = {
-                    index: 'lab-invocation-*',
-                    body: {
-                        size: 0,
-                        query: {
-                            term: {
-                                applicationName: {
-                                    value: req.query.functionName
-                                }
-                            }
-                        },
-                        aggs: {
-                            sumOfDurations: {
-                                date_histogram: {
-                                    field: "collectedTimestamp",
-                                    interval: "hour"
-                                },
-                                aggs: {
-                                    duration: {
-                                        sum: {
-                                            field: "duration"
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                };
-                callWithInternalUser('search', query).then(response => {
-                    reply({ durationPerDay: (response.aggregations.sumOfDurations.buckets)});
-                });
-            }
-        }
-    );
+
     server.route(
         {
             path: '/api/thundra/invocations',
