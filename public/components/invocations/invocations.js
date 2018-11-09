@@ -12,7 +12,8 @@ import {
     EuiFlexGrid,
     EuiFlexItem,
     EuiText,
-    EuiTextColor
+    EuiTextColor,
+    EuiTitle
 } from '@elastic/eui';
 
 import {
@@ -36,9 +37,10 @@ class Invocations extends React.Component {
             invocations : [],
             memoryMetrics : [],
             pageIndex: 0,
-            pageSize: 5,
+            pageSize: 10,
             showPerPageOptions: true,
             selectedOptions: [],
+            selectedFunctionName: null
         };
     }
 
@@ -70,8 +72,11 @@ class Invocations extends React.Component {
             this.options = [];
             this.options = options;
             this.setState({
-                functions: resp.data.functions
+                functions: resp.data.functions,
+                selectedOptions: [this.options[0]],
+                selectedFunctionName : this.options[0].label
             });
+
             this.onChange([this.options[0]])
         });
 
@@ -101,6 +106,7 @@ class Invocations extends React.Component {
 
         this.setState({
             selectedOptions: selectedOptions,
+            selectedFunctionName : selectedOptions[0].label
         });
 
         httpClient.get('../api/thundra/memory-metrics', {
@@ -184,15 +190,11 @@ class Invocations extends React.Component {
            pageIndex,
            pageSize,
            totalItemCount,
-           pageSizeOptions: [3, 5, 8],
+           pageSizeOptions: [10, 20, 50],
            hidePerPageOptions: !showPerPageOptions
        };
         return (
             <div>
-                <EuiSwitch
-                    label={<span>Hide per page options with <EuiCode>pagination.hidePerPageOptions = true</EuiCode></span>}
-                    onChange={this.togglePerPageOptions}
-                />
                 <EuiSpacer size="xl" />
                 <EuiBasicTable
                     items={pageOfItems}
@@ -225,7 +227,6 @@ class Invocations extends React.Component {
         for (let key in this.state.memoryMetrics) {
             let obj = this.state.memoryMetrics[key];
             let m  = obj._source.metrics;
-            console.log( obj );
             DATA_B.push( { x: obj._source.collectedTimestamp, y: m['app.usedMemory']} );
         }
 
@@ -236,27 +237,34 @@ class Invocations extends React.Component {
 
         return (
             <div>
-                <EuiComboBox
-                    placeholder="Select a single option"
-                    singleSelection={{ asPlainText: true }}
-                    options={this.options}
-                    selectedOptions={this.state.selectedOptions}
-                    onChange={this.onChange}
-                    isClearable={false}
-                />
-
-                <br/>
+                <EuiSpacer size={"s"}/>
+                <EuiFlexGrid>
+                    <EuiFlexItem grow={10}>
+                        <EuiTitle size={"s"}>
+                            <h5>
+                                <EuiTextColor color="secondary">{this.state.selectedFunctionName}</EuiTextColor>
+                            </h5>
+                        </EuiTitle>
+                    </EuiFlexItem>
+                    <EuiFlexItem grow={2}>
+                        <EuiComboBox
+                            placeholder="Select a single option"
+                            singleSelection={{ asPlainText: true }}
+                            options={this.options}
+                            selectedOptions={this.state.selectedOptions}
+                            onChange={this.onChange}
+                            isClearable={false}
+                        />
+                    </EuiFlexItem>
+                </EuiFlexGrid>
+                <EuiSpacer size={"s"}/>
                 {this.renderTable()}
-                <br/>
-                <hr/>
-
-                <EuiSpacer/>
-                <EuiSpacer/>
+                <EuiSpacer size={"l"}/>
                 <div>
                     <EuiFlexGrid columns={2}>
                         <EuiFlexItem>
                             <EuiText grow={false}>
-                                <p> Memory Usage <EuiTextColor color="subdued"> { this.state.selectedOptions == null ?  'all' : this.state.selectedFunctionName }</EuiTextColor>  function(s)</p>
+                                <p> Memory Usage</p>
                             </EuiText>
                             <EuiSeriesChart height={250} xType={SCALE.TIME}>
                                 {yourData.map((d, i) => (
