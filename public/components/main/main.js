@@ -120,17 +120,16 @@ class Main extends Component {
 
                 <Fragment>
                     <EuiSpacer size="m" />
-                    <EuiFlexGrid columns={3}>
-                        <EuiFlexItem>
+                    <EuiFlexGrid>
+                        <EuiFlexItem grow={10}>
                             <EuiTitle>
-                                <h2>
+                                <h5>
                                     <EuiTextColor color="secondary">Thundra Serverless Observability</EuiTextColor>
-                                </h2>
+                                </h5>
                             </EuiTitle>
                         </EuiFlexItem>
                         <EuiSpacer size="s"/>
-                        <EuiFlexItem><div></div></EuiFlexItem>
-                        <EuiFlexItem grow={true}>
+                        <EuiFlexItem grow={2}>
                             <EuiComboBox
                                 placeholder="Select a date"
                                 singleSelection={{ asPlainText: true }}

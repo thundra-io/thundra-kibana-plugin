@@ -105,10 +105,10 @@
   version "0.0.0"
   uid ""
 
-"@elastic/eui@4.4.1":
-  version "4.4.1"
-  resolved "https://registry.yarnpkg.com/@elastic/eui/-/eui-4.4.1.tgz#a1a4ab5bb209da8ea6d48c065476e74b1f48249b"
-  integrity sha512-SLgJQEDEuH16GFGmRmMvPUingisoNMjpdHnNqns9lug5Zk0PS96306xpbaXb3R+mz0RVQQjWsjnFJMN91QD26A==
+"@elastic/eui@5.0.1":
+  version "5.0.1"
+  resolved "https://registry.yarnpkg.com/@elastic/eui/-/eui-5.0.1.tgz#7bfcc86a17d095f383f07d06e2d5544e2971a0de"
+  integrity sha512-VduUEfnngJd1LhdGQN3HNrTf4GyTHTNTMZN3g8t68PsVYMYOOXUvQXtAYAH9UZpzM0Upl3ht5D3EtwJ043RjTA==
   dependencies:
     classnames "^2.2.5"
     core-js "^2.5.1"
@@ -3973,7 +3973,7 @@ react-popper@^0.9.1:
     popper.js "^1.14.1"
     prop-types "^15.6.1"
 
-react-redux@^5.0.5:
+react-redux@^5.0.7:
   version "5.1.0"
   resolved "https://registry.yarnpkg.com/react-redux/-/react-redux-5.1.0.tgz#948b1e2686473d1999092bcfb32d0dc43d33f667"
   integrity sha512-CRMpEx8+ccpoVxQrQDkG1obExNYpj6dZ1Ni7lUNFB9wcxOhy02tIqpFo4IUXc0kYvCGMu6ABj9A4imEX2VGZJQ==

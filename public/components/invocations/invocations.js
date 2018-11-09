@@ -16,9 +16,9 @@ import {
 } from '@elastic/eui';
 
 import {
-    EuiSeriesChart,
+    EuiAreaSeries,
     EuiLineSeries,
-    EuiBarSeries,
+    EuiSeriesChart,
     EuiSeriesChartUtils
 } from '@elastic/eui/lib/experimental';
 
@@ -72,11 +72,10 @@ class Invocations extends React.Component {
             this.setState({
                 functions: resp.data.functions
             });
-            // this.onChange([this.options[0]])
+            this.onChange([this.options[0]])
         });
 
         if ( this.state.functions ){
-            console.log(this.state.functions);
             httpClient.get('../api/thundra/memory-metrics', {
                 params:{
                     startTimeStamp: startDate,
@@ -131,8 +130,6 @@ class Invocations extends React.Component {
     togglePerPageOptions = () => {
         this.setState({showPerPageOptions: !this.state.showPerPageOptions});
     };
-
-
 
     columns = [
         {
@@ -263,17 +260,6 @@ class Invocations extends React.Component {
                             </EuiText>
                             <EuiSeriesChart height={250} xType={SCALE.TIME}>
                                 {yourData.map((d, i) => (
-                                    <EuiLineSeries key={i} name={d.name} data={d.data} showLineMarks={false} curve={CURVE_MONOTONE_X} lineSize={Number("2")}/>
-                                ))}
-                            </EuiSeriesChart>
-                        </EuiFlexItem>
-
-                        <EuiFlexItem>
-                            <EuiText grow={false}>
-                                <p> Total invocation count for <EuiTextColor color="subdued"> { this.state.selectedFunctionName == null ?  'all' : this.state.selectedFunctionName }</EuiTextColor> function(s)</p>
-                            </EuiText>
-                            <EuiSeriesChart height={250} xType={SCALE.TIME}>
-                                {myData.map((d, i) => (
                                     <EuiLineSeries key={i} name={d.name} data={d.data} showLineMarks={false} curve={CURVE_MONOTONE_X} lineSize={Number("2")}/>
                                 ))}
                             </EuiSeriesChart>
