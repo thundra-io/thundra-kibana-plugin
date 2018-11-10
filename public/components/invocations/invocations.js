@@ -27,6 +27,7 @@ const {
     CURVE_MONOTONE_X,
 } = EuiSeriesChartUtils.CURVE;
 
+const curve = CURVE_MONOTONE_X;
 const { SCALE } = EuiSeriesChartUtils;
 
 class Invocations extends React.Component {
@@ -35,7 +36,10 @@ class Invocations extends React.Component {
         this.options = [];
         this.state = {
             invocations : [],
+            invocationsTypes: [],
+            invocationsDurations: [],
             memoryMetrics : [],
+            cpuMetrics : [],
             pageIndex: 0,
             pageSize: 10,
             showPerPageOptions: true,
@@ -79,17 +83,6 @@ class Invocations extends React.Component {
 
             this.onChange([this.options[0]])
         });
-
-        if ( this.state.functions ){
-            httpClient.get('../api/thundra/memory-metrics', {
-                params:{
-                    startTimeStamp: startDate,
-                    functionName: this.state.functions[0]
-                }
-            }).then((resp) => {
-                this.setState({memoryMetrics: resp.data.memoryMetrics});
-            });
-        }
     };
 
     onChange = (selectedOptions) => {
@@ -104,6 +97,24 @@ class Invocations extends React.Component {
             this.setState({invocations: resp.data.invocations});
         });
 
+        httpClient.get('../api/thundra/invocations-by-function-name', {
+            params:{
+                functionName: selectedOptions[0].label,
+                startTimeStamp: startDate
+            }
+        }).then((resp) => {
+            this.setState({invocationsTypes: resp.data.invocations});
+        });
+
+        httpClient.get('../api/thundra/invocation-durations-by-function-name', {
+            params:{
+                functionName: selectedOptions[0].label,
+                startTimeStamp: startDate
+            }
+        }).then((resp) => {
+            this.setState({invocationsDurations: resp.data.invocations});
+        });
+
         this.setState({
             selectedOptions: selectedOptions,
             selectedFunctionName : selectedOptions[0].label
@@ -116,6 +127,15 @@ class Invocations extends React.Component {
             }
         }).then((resp) => {
             this.setState({memoryMetrics: resp.data.memoryMetrics});
+        });
+
+        httpClient.get('../api/thundra/cpu-metrics', {
+            params:{
+                startTimeStamp: startDate,
+                functionName: selectedOptions[0].label
+            }
+        }).then((resp) => {
+            this.setState({cpuMetrics: resp.data.cpuMetrics});
         });
 
         this.renderTable();
@@ -154,8 +174,8 @@ class Invocations extends React.Component {
             sortable: true
         },
         {
-            field: '_source.erroneous',
-            name: 'Erroneous',
+            field: '_source.errorType',
+            name: 'Error Type',
             sortable: true
         },
         {
@@ -208,32 +228,98 @@ class Invocations extends React.Component {
 
     render() {
         const {title} = this.props;
-
-
-        const myData = [];
-        const DATA_A = [];
-        for (let key in this.state.invocations) {
-            let obj = this.state.invocations[key];
-            DATA_A.push( { x: obj._source.startTimestamp, y: obj._source.duration} );
+        const invocationData = [];
+        let coldStartCount = [];
+        let totalCount = [];
+        let errorCount = [];
+        for (let key in this.state.invocationsTypes) {
+            let obj = this.state.invocationsTypes[key];
+            totalCount.push( { x: obj.key, y: obj.doc_count } );
+            coldStartCount.push( { x: obj.key, y: obj.coldStartCount.doc_count } );
+            errorCount.push( { x: obj.key, y: obj.errorCount.doc_count } );
         }
 
-        myData[0] = {
-            data: DATA_A,
-            name: "Duration"
+        invocationData[0] = {
+            data: totalCount,
+            name: "Total"
+        };
+        invocationData[1] = {
+            data: coldStartCount,
+            name: "Cold Start"
+        };
+        invocationData[2] = {
+            data: errorCount,
+            name: "Error"
         };
 
-        const yourData = [];
-        const DATA_B = [];
+
+        const invocationDurationData = [];
+        let coldStartDuration = [];
+        let totalDuration = [];
+        let errorDuration = [];
+        for (let key in this.state.invocationsDurations) {
+            let obj = this.state.invocationsDurations[key];
+
+            let totalAvg = obj.avgDuration['value'];
+
+            let cold = obj.coldStartDuration;
+            let coldAvg = cold['avgOfDuration']['value'];
+
+            let error = obj.errorDuration;
+            let errAvg  = error['avgOfDuration']['value'];
+
+
+            if( totalDuration ){
+                totalDuration.push( { x: obj.key, y: totalAvg.toFixed(2) } );
+            }
+            if ( coldAvg ){
+                coldStartDuration.push( { x: obj.key, y: coldAvg.toFixed(2) } );
+            }
+
+            if ( errAvg ){
+                errorDuration.push( { x: obj.key, y: errAvg.toFixed(2) } );
+            }
+        }
+
+        invocationDurationData[0] = {
+            data: totalDuration,
+            name: "Avg Total"
+        };
+        invocationDurationData[1] = {
+            data: coldStartDuration,
+            name: "Avg Cold Start"
+        };
+        invocationDurationData[2] = {
+            data: errorDuration,
+            name: "Avg Error"
+        };
+
+        const data = [];
+        const appUsedMemory = [];
+        const appMaxMemory = [];
         for (let key in this.state.memoryMetrics) {
             let obj = this.state.memoryMetrics[key];
             let m  = obj._source.metrics;
-            DATA_B.push( { x: obj._source.collectedTimestamp, y: m['app.usedMemory']} );
+            appUsedMemory.push( { x: obj._source.collectedTimestamp, y: 10*(m['app.usedMemory']/1024/1024).toFixed(2)} );
+            appMaxMemory.push( { x: obj._source.collectedTimestamp, y: m['app.maxMemory']/1024/1024} );
         }
 
-        yourData[0] = {
-            data: DATA_B,
-            name: "Memory Usage"
+
+        data[0] = {
+            data: appUsedMemory,
+            name: "App Used Memory"
         };
+        data[1] = {
+            data: appMaxMemory,
+            name: "App Max Memory"
+        };
+
+        const appCpuLoad = [];
+        for (let key in this.state.cpuMetrics) {
+            let obj = this.state.cpuMetrics[key];
+            let m  = obj._source.metrics;
+            appCpuLoad.push( { x: obj._source.collectedTimestamp, y: 100*(m['app.cpuLoad']).toFixed(2)} );
+        }
 
         return (
             <div>
@@ -257,24 +343,61 @@ class Invocations extends React.Component {
                         />
                     </EuiFlexItem>
                 </EuiFlexGrid>
-                <EuiSpacer size={"s"}/>
-                {this.renderTable()}
-                <EuiSpacer size={"l"}/>
+
                 <div>
                     <EuiFlexGrid columns={2}>
                         <EuiFlexItem>
                             <EuiText grow={false}>
-                                <p> Memory Usage</p>
+                                <p>Invocations</p>
                             </EuiText>
-                            <EuiSeriesChart height={250} xType={SCALE.TIME}>
-                                {yourData.map((d, i) => (
-                                    <EuiLineSeries key={i} name={d.name} data={d.data} showLineMarks={false} curve={CURVE_MONOTONE_X} lineSize={Number("2")}/>
+                            <EuiSeriesChart height={250} xType={SCALE.TIME_UTC}>
+                                {invocationData.map((d, i) => (
+                                    <EuiLineSeries key={i} name={d.name} data={d.data} showLineMarks={true} curve={curve}/>
+                                ))}
+                            </EuiSeriesChart>
+                        </EuiFlexItem>
+
+
+                        <EuiFlexItem>
+                            <EuiText grow={false}>
+                                <p> Invocations Duration (ms)</p>
+                            </EuiText>
+                            <EuiSeriesChart height={250} xType={SCALE.TIME_UTC}>
+                                {invocationDurationData.map((d, i) => (
+                                    <EuiLineSeries key={i} name={d.name} data={d.data} showLineMarks={true} curve={curve}/>
                                 ))}
                             </EuiSeriesChart>
                         </EuiFlexItem>
                     </EuiFlexGrid>
+
                     <EuiSpacer />
+
+                    <EuiFlexGrid columns={2}>
+                        <EuiFlexItem>
+                            <EuiText grow={false}>
+                                <p> Memory Usage (MB)</p>
+                            </EuiText>
+                            <EuiSeriesChart height={250} xType={SCALE.TIME_UTC}>
+                                <EuiAreaSeries name="Used Memory" data={appMaxMemory} curve={curve}/>
+                                <EuiAreaSeries name="Total Memory" data={appUsedMemory} curve={curve}/>
+                            </EuiSeriesChart>
+                        </EuiFlexItem>
+
+
+                        <EuiFlexItem>
+                            <EuiText grow={false}>
+                                <p> Cpu Load (%)</p>
+                            </EuiText>
+                            <EuiSeriesChart height={250} xType={SCALE.TIME_UTC}>
+                                <EuiAreaSeries name="CPU Load" data={appCpuLoad} curve={curve}/>
+                            </EuiSeriesChart>
+                        </EuiFlexItem>
+
+                    </EuiFlexGrid>
+
                 </div>
+                <EuiSpacer size={"l"}/>
+                {this.renderTable()}
             </div>
         );
     }
