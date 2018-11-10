@@ -13,7 +13,10 @@ import {
     EuiFlexItem,
     EuiText,
     EuiTextColor,
-    EuiTitle
+    EuiTitle,
+    EuiForm,
+    EuiFormRow,
+    EuiSelect,
 } from '@elastic/eui';
 
 import {
@@ -27,13 +30,26 @@ const {
     CURVE_MONOTONE_X,
 } = EuiSeriesChartUtils.CURVE;
 
-const curve = CURVE_MONOTONE_X;
 const { SCALE } = EuiSeriesChartUtils;
 
 class Invocations extends React.Component {
     constructor(props) {
         super(props);
         this.options = [];
+        this.curves = [
+            { value: 'linear', text: 'Linear' },
+            { value: 'curveCardinal', text: 'Curve Cardinal' },
+            { value: 'curveNatural', text: 'Curve Natural' },
+            { value: 'curveMonotoneX', text: 'Curve Monotone X' },
+            { value: 'curveMonotoneY', text: 'Curve Monotone Y' },
+            { value: 'curveBasis', text: 'Curve Basis' },
+            { value: 'curveCatmullRom', text: 'Curve Catmull Rom' },
+            { value: 'curveStep', text: 'Curve Step' },
+            { value: 'curveStepAfter', text: 'Curve Step After' },
+            { value: 'curveStepBefore', text: 'Curve Step Before' },
+        ];
+
+
         this.state = {
             invocations : [],
             invocationsTypes: [],
@@ -44,7 +60,8 @@ class Invocations extends React.Component {
             pageSize: 10,
             showPerPageOptions: true,
             selectedOptions: [],
-            selectedFunctionName: null
+            selectedFunctionName: null,
+            curve: this.curves[0].value
         };
     }
 
@@ -82,6 +99,12 @@ class Invocations extends React.Component {
             });
 
             this.onChange([this.options[0]])
+        });
+    };
+
+    onCurveChange = e => {
+        this.setState({
+            curve: e.target.value,
         });
     };
 
@@ -323,6 +346,12 @@ class Invocations extends React.Component {
 
         return (
             <div>
+                <EuiForm>
+                    <EuiFormRow label="Line Mode">
+                        <EuiSelect options={this.curves} value={this.state.curve} onChange={this.onCurveChange} />
+                    </EuiFormRow>
+                </EuiForm>
+
                 <EuiSpacer size={"s"}/>
                 <EuiFlexGrid>
                     <EuiFlexItem grow={10}>
@@ -352,7 +381,7 @@ class Invocations extends React.Component {
                             </EuiText>
                             <EuiSeriesChart height={250} xType={SCALE.TIME_UTC}>
                                 {invocationData.map((d, i) => (
-                                    <EuiLineSeries key={i} name={d.name} data={d.data} showLineMarks={true} curve={curve}/>
+                                    <EuiLineSeries key={i} name={d.name} data={d.data} showLineMarks={true} curve={this.state.curve}/>
                                 ))}
                             </EuiSeriesChart>
                         </EuiFlexItem>
@@ -364,7 +393,7 @@ class Invocations extends React.Component {
                             </EuiText>
                             <EuiSeriesChart height={250} xType={SCALE.TIME_UTC}>
                                 {invocationDurationData.map((d, i) => (
-                                    <EuiLineSeries key={i} name={d.name} data={d.data} showLineMarks={true} curve={curve}/>
+                                    <EuiLineSeries key={i} name={d.name} data={d.data} showLineMarks={true} curve={this.state.curve}/>
                                 ))}
                             </EuiSeriesChart>
                         </EuiFlexItem>
@@ -378,8 +407,8 @@ class Invocations extends React.Component {
                                 <p> Memory Usage (MB)</p>
                             </EuiText>
                             <EuiSeriesChart height={250} xType={SCALE.TIME_UTC}>
-                                <EuiAreaSeries name="Used Memory" data={appMaxMemory} curve={curve}/>
-                                <EuiAreaSeries name="Total Memory" data={appUsedMemory} curve={curve}/>
+                                <EuiAreaSeries name="Total Memory" data={appMaxMemory} curve={this.state.curve}/>
+                                <EuiAreaSeries name="Used Memory" data={appUsedMemory} curve={this.state.curve}/>
                             </EuiSeriesChart>
                         </EuiFlexItem>
 
@@ -389,7 +418,7 @@ class Invocations extends React.Component {
                                 <p> Cpu Load (%)</p>
                             </EuiText>
                             <EuiSeriesChart height={250} xType={SCALE.TIME_UTC}>
-                                <EuiAreaSeries name="CPU Load" data={appCpuLoad} curve={curve}/>
+                                <EuiAreaSeries name="CPU Load" data={appCpuLoad} curve={this.state.curve}/>
                             </EuiSeriesChart>
                         </EuiFlexItem>
 
