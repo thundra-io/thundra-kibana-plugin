@@ -49,13 +49,38 @@ class Functions extends React.Component {
     }
 
     doRequest = (httpClient, startDate, interval) => {
-        httpClient.get('../api/thundra/functions', {
+        httpClient.get('../api/thundra/invocations-v2', {
             params:{
-                startTimeStamp: startDate,
-                interval: interval
+                startTimeStamp: startDate
             }
         }).then((resp) => {
-            this.setState({functions: resp.data.functions});
+            let funcs = [];
+            for (let key in resp.data.invocations) {
+                let invocation={};
+                let obj = resp.data.invocations[key];
+
+                invocation.applicationName = obj.key;
+                let groupByApplicationRuntime = obj['groupByApplicationRuntime'];
+                let buckets = groupByApplicationRuntime['buckets'];
+
+                for (let i in buckets ){
+                    let bucket = buckets[i];
+                    invocation.applicationRuntime = bucket.key;
+                    invocation.totalDuration = bucket.totalDuration['value'];
+                    invocation.minDuration = bucket.minDuration['value'];
+                    invocation.maxDuration = bucket.maxDuration['value'];
+                    invocation.averageDuration = bucket.averageDuration['value'].toFixed(2);
+
+                    invocation.invocationsWithColdStart = bucket.invocationsWithColdStart['doc_count'];
+                    invocation.invocationsWithError = bucket.invocationsWithError['doc_count'];
+
+                    invocation.newestInvocationTime = new Date(bucket.newestInvocationTime['value']);
+                    invocation.oldestInvocationTime = new Date(bucket.oldestInvocationTime['value']);
+
+                }
+                funcs.push(invocation);
+            }
+            this.setState({functions: funcs});
         });
 
         httpClient.get('../api/thundra/invocation-count-of-function', {
@@ -70,13 +95,58 @@ class Functions extends React.Component {
 
     columns = [
         {
-            field: 'key',
+            field: 'applicationName',
             name: 'Application Name',
+            sortable: true,
+            render: (functionName) => (
+                <EuiLink href={`https://github.com/${functionName}`} target="_blank">
+                    {functionName}
+                </EuiLink>
+            )
+        },
+        {
+            field: 'applicationRuntime',
+            name: 'Application Runtime',
             sortable: true
         },
         {
-            field: 'doc_count',
-            name: 'Count',
+            field: 'totalDuration',
+            name: 'Total Duration (ms)',
+            sortable: true
+        },
+        {
+            field: 'averageDuration',
+            name: 'Avg Duration (ms)',
+            sortable: true
+        },
+        {
+            field: 'minDuration',
+            name: 'Min Duration (ms)',
+            sortable: true
+        },
+        {
+            field: 'maxDuration',
+            name: 'Max Duration (ms)',
+            sortable: true
+        },
+        {
+            field: 'invocationsWithColdStart',
+            name: 'Cold Start',
+            sortable: true
+        },
+        {
+            field: 'invocationsWithError',
+            name: 'Error',
+            sortable: true
+        },
+        {
+            field: 'newestInvocationTime',
+            name: 'Newest Invocation',
+            sortable: true
+        },
+        {
+            field: 'oldestInvocationTime',
+            name: 'Oldest Invocation',
             sortable: true
         }
     ];

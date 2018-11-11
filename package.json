@@ -35,14 +35,13 @@
     "@elastic/eui": "5.0.1",
     "lodash": "^4.17.4",
     "moment": "^2.22.2",
+    "prop-types": "^15.6.1",
     "react": "^16.6.0",
     "react-dom": "^16.6.0",
     "react-native-md5": "^1.0.0",
+    "react-redux": "^5.0.7",
     "reactstrap": "^6.5.0",
     "recharts": "^1.0.0-beta.0",
-    "prop-types": "^15.6.1",
-    "react-redux": "^5.0.7",
     "redux": "^3.5.2"
-
   }
 }

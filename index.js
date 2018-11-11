@@ -1,6 +1,7 @@
 import exampleRoute from './server/routes/example';
 import api from './server/routes/api';
 import metrics from './server/routes/metrics';
+import invocations from './server/routes/invocations';
 
 
 export default function (kibana) {
@@ -30,6 +31,7 @@ export default function (kibana) {
       exampleRoute(server);
       api(server);
       metrics(server);
+      invocations(server);
     }
   });
 }
