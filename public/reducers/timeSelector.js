@@ -1,7 +1,8 @@
 let d = new Date();
 let date = new Date(d - 3600000);
 const initialState = {
-    startDate: date.getTime()
+    startDate: date.getTime(),
+    interval: 10
 };
 
 export default (state = initialState, action) => {
@@ -9,7 +10,8 @@ export default (state = initialState, action) => {
         case 'CHANGE_TIME':
             return{
                 ...state,
-                startDate : action.val
+                startDate : action.val,
+                interval: action.interval
             };
         default:
             return state

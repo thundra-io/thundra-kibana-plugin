@@ -1,6 +1,7 @@
 export default function (server) {
     const { callWithRequest } = server.plugins.elasticsearch.getCluster('data');
     const { callWithInternalUser } = server.plugins.elasticsearch.getCluster('data');
+    const ONE_HOUR_IN_MILIS = 60000;
     server.route(
         {
             path: '/api/thundra/memory-metrics',
@@ -35,11 +36,37 @@ export default function (server) {
                                     }
                                 ]
                             }
+                        },
+                        aggregations: {
+                            timeSeriesByMetricTime: {
+                                date_histogram: {
+                                    field: "metricTime",
+                                    interval: req.query.interval * ONE_HOUR_IN_MILIS,
+                                    offset: 0,
+                                    order: {
+                                        _key: "asc"
+                                    },
+                                    keyed: false,
+                                    min_doc_count: 0
+                                },
+                                aggregations: {
+                                    metrics_l_app_usedMemory: {
+                                        avg: {
+                                            field: "metrics_l_app_usedMemory"
+                                        }
+                                    },
+                                    metrics_l_app_maxMemory: {
+                                        avg: {
+                                            field: "metrics_l_app_maxMemory"
+                                        }
+                                    }
+                                }
+                            }
                         }
                     }
                 };
                 callWithInternalUser('search', query).then(response => {
-                    reply({ memoryMetrics: response.hits.hits });
+                    reply({ memoryMetrics: response.aggregations.timeSeriesByMetricTime.buckets });
                 });
             }
         }
@@ -82,23 +109,30 @@ export default function (server) {
                             }
                         },
                         aggregations: {
-                            timeSeriesByStartTime: {
+                            timeSeriesByMetricTime: {
                                 date_histogram: {
-                                    field: "collectedTimestamp",
-                                    interval: 180000,
+                                    field: "metricTime",
+                                    interval: req.query.interval * ONE_HOUR_IN_MILIS,
                                     offset: 0,
                                     order: {
                                         _key: "asc"
                                     },
                                     keyed: false,
                                     min_doc_count: 0
+                                },
+                                aggregations: {
+                                    metrics_d_app_cpuLoad: {
+                                        avg: {
+                                            field: "metrics_d_app_cpuLoad"
+                                        }
+                                    }
                                 }
                             }
                         }
                     }
                 };
                 callWithInternalUser('search', query).then(response => {
-                    reply({ cpuMetrics: response.hits.hits });
+                    reply({ cpuMetrics: response.aggregations.timeSeriesByMetricTime.buckets });
                 });
             }
         }
@@ -137,7 +171,7 @@ export default function (server) {
                             timeSeriesByStartTime: {
                                 date_histogram: {
                                     field: "startTime",
-                                    interval: 1800000,
+                                    interval: req.query.interval * ONE_HOUR_IN_MILIS,
                                     offset: 0,
                                     order: {
                                         _key: "asc"
@@ -210,7 +244,7 @@ export default function (server) {
                             timeSeriesByStartTime: {
                                 date_histogram: {
                                     field: "startTime",
-                                    interval: 1800000,
+                                    interval: req.query.interval * ONE_HOUR_IN_MILIS,
                                     offset: 0,
                                     order: {
                                         _key: "asc"

@@ -37,19 +37,22 @@ class Functions extends React.Component {
     componentWillMount() {
         const {httpClient} = this.props;
         const {startDate} = this.props;
-        this.doRequest(httpClient, startDate)
+        const {inteval} = this.props;
+        this.doRequest(httpClient, startDate, inteval)
     }
 
     componentWillReceiveProps(nextProps) {
         const {httpClient} = nextProps;
         const {startDate} = nextProps;
-        this.doRequest(httpClient, startDate)
+        const {interval} = nextProps;
+        this.doRequest(httpClient, startDate, interval)
     }
 
-    doRequest = (httpClient, startDate) => {
+    doRequest = (httpClient, startDate, interval) => {
         httpClient.get('../api/thundra/functions', {
             params:{
-                startTimeStamp: startDate
+                startTimeStamp: startDate,
+                interval: interval
             }
         }).then((resp) => {
             this.setState({functions: resp.data.functions});
@@ -57,7 +60,8 @@ class Functions extends React.Component {
 
         httpClient.get('../api/thundra/invocation-count-of-function', {
             params:{
-                startTimeStamp: startDate
+                startTimeStamp: startDate,
+                interval: interval
             }
         }).then((resp) => {
             this.setState({invocationCountOfFunction: resp.data.invocationCountOfFunction});

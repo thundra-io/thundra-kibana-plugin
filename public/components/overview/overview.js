@@ -41,19 +41,22 @@ class Overview extends React.Component {
     componentWillMount() {
         const {httpClient} = this.props;
         const {startDate} = this.props;
-        this.doRequest(httpClient, startDate)
+        const {interval} = this.props;
+        this.doRequest(httpClient, startDate, interval)
     }
 
     componentWillReceiveProps(nextProps) {
         const {httpClient} = nextProps;
         const {startDate} = nextProps;
-        this.doRequest(httpClient, startDate)
+        const {interval} = nextProps;
+        this.doRequest(httpClient, startDate, interval)
     }
 
-    doRequest = (httpClient, startTime) => {
+    doRequest = (httpClient, startTime, interval) => {
         httpClient.get('../api/thundra/invocation-count', {
             params: {
-                startTimeStamp: startTime
+                startTimeStamp: startTime,
+                interval: interval
             }
         }).then((resp) => {
             this.setState({invocationCount: resp.data.invocationCount});
@@ -61,7 +64,8 @@ class Overview extends React.Component {
 
         httpClient.get('../api/thundra/erronous-invocation-count', {
             params: {
-                startTimeStamp: startTime
+                startTimeStamp: startTime,
+                interval: interval
             }
         }).then((resp) => {
             this.setState({errorCount: resp.data.errorCount});
@@ -69,7 +73,8 @@ class Overview extends React.Component {
 
         httpClient.get('../api/thundra/cold-start-count', {
             params: {
-                startTimeStamp: startTime
+                startTimeStamp: startTime,
+                interval: interval
             }
         }).then((resp) => {
             this.setState({coldStartCount: resp.data.coldStartCount});
@@ -77,7 +82,8 @@ class Overview extends React.Component {
 
         httpClient.get('../api/thundra/estimated-billed-cost', {
             params: {
-                startTimeStamp: startTime
+                startTimeStamp: startTime,
+                interval: interval
             }
         }).then((resp) => {
             this.setState({
@@ -87,7 +93,8 @@ class Overview extends React.Component {
 
         httpClient.get('../api/thundra/functions', {
             params: {
-                startTimeStamp: startTime
+                startTimeStamp: startTime,
+                interval: interval
             }
         }).then((resp) => {
             this.setState({functions: resp.data.functions});
@@ -95,7 +102,8 @@ class Overview extends React.Component {
 
         httpClient.get('../api/thundra/erronous-invocations', {
             params: {
-                startTimeStamp: startTime
+                startTimeStamp: startTime,
+                interval: interval
             }
         }).then((resp) => {
             this.setState({erronousFunctions: resp.data.erronousFunctions});
@@ -103,7 +111,8 @@ class Overview extends React.Component {
 
         httpClient.get('../api/thundra/cold-start-invocations', {
             params: {
-                startTimeStamp: startTime
+                startTimeStamp: startTime,
+                interval: interval
             }
         }).then((resp) => {
             this.setState({coldStartFunctions: resp.data.coldStartFunctions});
@@ -111,7 +120,8 @@ class Overview extends React.Component {
 
         httpClient.get('../api/thundra/invocation-counts-per-hour', {
             params: {
-                startTimeStamp: startTime
+                startTimeStamp: startTime,
+                interval: interval
             }
         }).then((resp) => {
             this.setState({invocationCountPerHour: resp.data.invocationCountPerHour});
@@ -119,7 +129,8 @@ class Overview extends React.Component {
 
         httpClient.get('../api/thundra/invocation-duration-per-hour', {
             params: {
-                startTimeStamp: startTime
+                startTimeStamp: startTime,
+                interval: interval
             }
         }).then((resp) => {
             this.setState({durationPerHour: resp.data.durationPerHour});
@@ -135,6 +146,7 @@ class Overview extends React.Component {
             params: {
                 startTimeStamp: startDate,
                 functionName: e.y,
+                inteval: inteval
             }
         }).then((resp) => {
             this.setState({invocationCountPerHour: resp.data.invocationCountPerHour});
@@ -144,6 +156,7 @@ class Overview extends React.Component {
             params: {
                 startTimeStamp: startDate,
                 functionName: e.y,
+                inteval: inteval
             }
         }).then((resp) => {
             this.setState({durationPerHour: resp.data.durationPerHour});

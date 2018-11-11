@@ -68,19 +68,22 @@ class Invocations extends React.Component {
     componentWillMount() {
         const {httpClient} = this.props;
         const {startDate} = this.props;
-        this.doRequest(httpClient, startDate)
+        const {interval} = this.props;
+        this.doRequest(httpClient, startDate, interval)
     }
 
     componentWillReceiveProps(nextProps) {
         const {httpClient} = nextProps;
         const {startDate} = nextProps;
-        this.doRequest(httpClient, startDate)
+        const {interval} = nextProps;
+        this.doRequest(httpClient, startDate, interval)
     }
 
-    doRequest = (httpClient, startDate) => {
+    doRequest = (httpClient, startDate, interval) => {
         httpClient.get('../api/thundra/functions', {
             params:{
-                startTimeStamp: startDate
+                startTimeStamp: startDate,
+                interval: interval
             }
         }).then((resp) => {
             let options = [];
@@ -109,12 +112,20 @@ class Invocations extends React.Component {
     };
 
     onChange = (selectedOptions) => {
+
+        this.setState({
+            selectedOptions: selectedOptions,
+            selectedFunctionName : selectedOptions[0].label
+        });
+
         const {httpClient} = this.props;
         const {startDate} = this.props;
+        const {interval} = this.props;
         httpClient.get('../api/thundra/invocations-with-function-name', {
             params:{
                 functionName: selectedOptions[0].label,
-                startTimeStamp: startDate
+                startTimeStamp: startDate,
+                interval: interval
             }
         }).then((resp) => {
             this.setState({invocations: resp.data.invocations});
@@ -123,7 +134,8 @@ class Invocations extends React.Component {
         httpClient.get('../api/thundra/invocations-by-function-name', {
             params:{
                 functionName: selectedOptions[0].label,
-                startTimeStamp: startDate
+                startTimeStamp: startDate,
+                interval: interval
             }
         }).then((resp) => {
             this.setState({invocationsTypes: resp.data.invocations});
@@ -132,21 +144,18 @@ class Invocations extends React.Component {
         httpClient.get('../api/thundra/invocation-durations-by-function-name', {
             params:{
                 functionName: selectedOptions[0].label,
-                startTimeStamp: startDate
+                startTimeStamp: startDate,
+                interval: interval
             }
         }).then((resp) => {
             this.setState({invocationsDurations: resp.data.invocations});
         });
 
-        this.setState({
-            selectedOptions: selectedOptions,
-            selectedFunctionName : selectedOptions[0].label
-        });
-
         httpClient.get('../api/thundra/memory-metrics', {
             params:{
                 startTimeStamp: startDate,
-                functionName: selectedOptions[0].label
+                functionName: selectedOptions[0].label,
+                interval: interval
             }
         }).then((resp) => {
             this.setState({memoryMetrics: resp.data.memoryMetrics});
@@ -155,7 +164,8 @@ class Invocations extends React.Component {
         httpClient.get('../api/thundra/cpu-metrics', {
             params:{
                 startTimeStamp: startDate,
-                functionName: selectedOptions[0].label
+                functionName: selectedOptions[0].label,
+                interval: interval
             }
         }).then((resp) => {
             this.setState({cpuMetrics: resp.data.cpuMetrics});
@@ -317,14 +327,17 @@ class Invocations extends React.Component {
             name: "Avg Error"
         };
 
+
+
         const data = [];
         const appUsedMemory = [];
         const appMaxMemory = [];
         for (let key in this.state.memoryMetrics) {
             let obj = this.state.memoryMetrics[key];
-            let m  = obj._source.metrics;
-            appUsedMemory.push( { x: obj._source.collectedTimestamp, y: 10*(m['app.usedMemory']/1024/1024).toFixed(2)} );
-            appMaxMemory.push( { x: obj._source.collectedTimestamp, y: m['app.maxMemory']/1024/1024} );
+            let used = obj['metrics_l_app_usedMemory']['value'];
+            let max  = obj['metrics_l_app_maxMemory']['value'];
+            appUsedMemory.push( { x: obj.key, y: (used/1024/1024).toFixed(2)} );
+            appMaxMemory.push( { x: obj.key, y: max/1024/1024} );
         }
 
 
@@ -340,8 +353,8 @@ class Invocations extends React.Component {
         const appCpuLoad = [];
         for (let key in this.state.cpuMetrics) {
             let obj = this.state.cpuMetrics[key];
-            let m  = obj._source.metrics;
-            appCpuLoad.push( { x: obj._source.collectedTimestamp, y: 100*(m['app.cpuLoad']).toFixed(2)} );
+            let cpuLoad = obj['metrics_d_app_cpuLoad']['value'];
+            appCpuLoad.push( { x: obj.key, y: (cpuLoad*100).toFixed(2)} );
         }
 
         return (

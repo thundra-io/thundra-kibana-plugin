@@ -28,20 +28,31 @@ import Counter from "../counter/Counter";
 import {connect} from "react-redux";
 
 class Main extends Component {
+
+    // HOUR("hour", 60, 1), // time interval for 1 hour is 1 minute
+    // DAY("day", 1440, 30), // time interval for 1 day is 30 minutes
+    // WEEK("week", 10080, 180), // time interval for 1 week is 180 minutes
+    // MONTH("month", 43800, 720), // time interval for one month 720 minutes
+    // TWO_MONTHS("two months", 87600, 1440); // time interval for 1 week is 1440 minutes
+    //
     constructor(props) {
         super(props);
         this.options = [{
                 label: 'Last 1 hour',
-                value: 60
+                value: 60,
+                interval: 10,
             }, {
                 label: 'Last 2 hours',
-                value: 120
+                value: 120,
+                interval: 30,
             }, {
                 label: 'Last 4 hours',
-                value: 240
+                value: 240,
+                interval: 30,
             }, {
                 label: 'Last 1 day',
-                value: 1440
+                value: 1440,
+                interval: 60,
             }
         ];
 
@@ -56,7 +67,7 @@ class Main extends Component {
 
 
     onChange = (selectedOptions) => {
-        this.props.changeTime((Number(selectedOptions[0].value)));
+        this.props.changeTime((selectedOptions[0]));
         this.setState({
             selectedOptions: selectedOptions
         });
@@ -65,6 +76,7 @@ class Main extends Component {
     renderTab = () => {
         const {httpClient} = this.props;
         const {startDate} = this.props;
+        const {interval} = this.props;
 
         this.tabs = [{
             id: 'overview',
@@ -73,7 +85,7 @@ class Main extends Component {
                 <Fragment>
                     <EuiSpacer />
                     <EuiTitle><h3>Overview</h3></EuiTitle>
-                    <Overview startDate={startDate} httpClient={httpClient}></Overview>
+                    <Overview startDate={startDate} interval={interval} httpClient={httpClient}></Overview>
                 </Fragment>
             ),
         }, {
@@ -83,7 +95,7 @@ class Main extends Component {
                 <Fragment>
                     <EuiSpacer />
                     <EuiTitle><h3>Functions</h3></EuiTitle>
-                    <Functions startDate={startDate} httpClient={httpClient}></Functions>
+                    <Functions startDate={startDate} interval={interval} httpClient={httpClient}></Functions>
                 </Fragment>
             ),
         }, {
@@ -93,7 +105,7 @@ class Main extends Component {
                 <Fragment>
                     <EuiSpacer />
                     <EuiTitle><h3>Invocations</h3></EuiTitle>
-                    <Invocations startDate={startDate} httpClient={httpClient}></Invocations>
+                    <Invocations startDate={startDate} interval={interval} httpClient={httpClient}></Invocations>
                 </Fragment>
             ),
         }, {
@@ -153,16 +165,20 @@ class Main extends Component {
 }
 
 const mapStateToProps = state => {
-    return {startDate:  state.timeSelectorReducer.startDate}
+    return {
+        startDate:  state.timeSelectorReducer.startDate,
+        interval: state.timeSelectorReducer.interval,
+    }
 };
 
 const mapDispatchToProps = dispatch => {
     return {
         changeTime: (x) => {
+            console.log( x );
             const MS_PER_MINUTE = 60000;
             let d = new Date();
-            let date = new Date(d - x*(MS_PER_MINUTE));
-            return dispatch({type: 'CHANGE_TIME', val: date.getTime()});
+            let date = new Date(d - x.value*(MS_PER_MINUTE));
+            return dispatch({type: 'CHANGE_TIME', val: date.getTime() , interval: x.interval });
         }
     }
 };
