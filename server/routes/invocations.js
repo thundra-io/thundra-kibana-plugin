@@ -1,7 +1,6 @@
 export default function (server) {
     const { callWithRequest } = server.plugins.elasticsearch.getCluster('data');
     const { callWithInternalUser } = server.plugins.elasticsearch.getCluster('data');
-    const ONE_HOUR_IN_MILIS = 60000;
     server.route(
         {
             path: '/api/thundra/invocations-v2',

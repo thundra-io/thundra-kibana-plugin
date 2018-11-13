@@ -142,11 +142,12 @@ class Overview extends React.Component {
         this.setState({selectedFunctionName: e.y});
         const {httpClient} = this.props;
         const {startDate} = this.props;
+        const {interval} = this.props;
         httpClient.get('../api/thundra/invocation-counts-per-hour-with-function-name', {
             params: {
                 startTimeStamp: startDate,
                 functionName: e.y,
-                inteval: inteval
+                interval: interval
             }
         }).then((resp) => {
             this.setState({invocationCountPerHour: resp.data.invocationCountPerHour});
@@ -156,7 +157,7 @@ class Overview extends React.Component {
             params: {
                 startTimeStamp: startDate,
                 functionName: e.y,
-                inteval: inteval
+                interval: interval
             }
         }).then((resp) => {
             this.setState({durationPerHour: resp.data.durationPerHour});
@@ -180,7 +181,7 @@ class Overview extends React.Component {
         const DATA_B = [];
         for (let key in this.state.durationPerHour) {
             let obj = this.state.durationPerHour[key];
-            DATA_B.push( { x: obj.key, y: obj.duration.value / 60000} );
+            DATA_B.push( { x: obj.key, y: (obj.duration.value / 60000).toFixed(2)} );
         }
 
         yourData[0] = {

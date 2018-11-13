@@ -1,7 +1,7 @@
 export default function (server) {
     const { callWithRequest } = server.plugins.elasticsearch.getCluster('data');
     const { callWithInternalUser } = server.plugins.elasticsearch.getCluster('data');
-    const ONE_HOUR_IN_MILIS = 60000;
+    const ONE_MINUTE_IN_MILIS = 60000;
     server.route(
         {
             path: '/api/thundra/memory-metrics',
@@ -41,7 +41,7 @@ export default function (server) {
                             timeSeriesByMetricTime: {
                                 date_histogram: {
                                     field: "metricTime",
-                                    interval: req.query.interval * ONE_HOUR_IN_MILIS,
+                                    interval: req.query.interval * ONE_MINUTE_IN_MILIS,
                                     offset: 0,
                                     order: {
                                         _key: "asc"
@@ -112,7 +112,7 @@ export default function (server) {
                             timeSeriesByMetricTime: {
                                 date_histogram: {
                                     field: "metricTime",
-                                    interval: req.query.interval * ONE_HOUR_IN_MILIS,
+                                    interval: req.query.interval * ONE_MINUTE_IN_MILIS,
                                     offset: 0,
                                     order: {
                                         _key: "asc"
@@ -171,7 +171,7 @@ export default function (server) {
                             timeSeriesByStartTime: {
                                 date_histogram: {
                                     field: "startTime",
-                                    interval: req.query.interval * ONE_HOUR_IN_MILIS,
+                                    interval: "hour",
                                     offset: 0,
                                     order: {
                                         _key: "asc"
@@ -244,7 +244,7 @@ export default function (server) {
                             timeSeriesByStartTime: {
                                 date_histogram: {
                                     field: "startTime",
-                                    interval: req.query.interval * ONE_HOUR_IN_MILIS,
+                                    interval: req.query.interval * ONE_MINUTE_IN_MILIS,
                                     offset: 0,
                                     order: {
                                         _key: "asc"

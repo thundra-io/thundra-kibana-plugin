@@ -29,12 +29,6 @@ import {connect} from "react-redux";
 
 class Main extends Component {
 
-    // HOUR("hour", 60, 1), // time interval for 1 hour is 1 minute
-    // DAY("day", 1440, 30), // time interval for 1 day is 30 minutes
-    // WEEK("week", 10080, 180), // time interval for 1 week is 180 minutes
-    // MONTH("month", 43800, 720), // time interval for one month 720 minutes
-    // TWO_MONTHS("two months", 87600, 1440); // time interval for 1 week is 1440 minutes
-    //
     constructor(props) {
         super(props);
         this.options = [{
@@ -174,7 +168,6 @@ const mapStateToProps = state => {
 const mapDispatchToProps = dispatch => {
     return {
         changeTime: (x) => {
-            console.log( x );
             const MS_PER_MINUTE = 60000;
             let d = new Date();
             let date = new Date(d - x.value*(MS_PER_MINUTE));

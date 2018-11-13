@@ -29,7 +29,6 @@ class Functions extends React.Component {
         super(props);
         this.state = {
             functions : [],
-            invocationCountOfFunction : [],
             isLoading: false
         };
     }
@@ -37,8 +36,8 @@ class Functions extends React.Component {
     componentWillMount() {
         const {httpClient} = this.props;
         const {startDate} = this.props;
-        const {inteval} = this.props;
-        this.doRequest(httpClient, startDate, inteval)
+        const {interval} = this.props;
+        this.doRequest(httpClient, startDate, interval)
     }
 
     componentWillReceiveProps(nextProps) {
@@ -81,15 +80,6 @@ class Functions extends React.Component {
                 funcs.push(invocation);
             }
             this.setState({functions: funcs});
-        });
-
-        httpClient.get('../api/thundra/invocation-count-of-function', {
-            params:{
-                startTimeStamp: startDate,
-                interval: interval
-            }
-        }).then((resp) => {
-            this.setState({invocationCountOfFunction: resp.data.invocationCountOfFunction});
         });
     };
 
@@ -152,19 +142,6 @@ class Functions extends React.Component {
     ];
 
     render() {
-
-        const myData = [];
-        const DATA_A = [];
-        for (let key in this.state.invocationCountOfFunction) {
-            let obj = this.state.invocationCountOfFunction[key];
-            DATA_A.push( { x: obj.key, y: obj.doc_count } );
-        }
-
-        myData[0] = {
-            data: DATA_A,
-            name: "InvocationCount"
-        };
-
         let debounceTimeoutId;
         let requestTimeoutId;
 
@@ -209,27 +186,7 @@ class Functions extends React.Component {
                     columns={this.columns}
                     search={search}
                 />
-
-                <br/>
-                <hr/>
-
                 <EuiSpacer/>
-                <EuiSpacer/>
-                <div>
-                    <EuiFlexGrid columns={2}>
-                        <EuiFlexItem>
-                            <EuiText grow={false}>
-                                <p> Total invocation count for <EuiTextColor color="subdued"> { this.state.selectedFunctionName == null ?  'all' : this.state.selectedFunctionName }</EuiTextColor> function(s)</p>
-                            </EuiText>
-                            <EuiSeriesChart height={250} xType={SCALE.TIME}>
-                                {myData.map((d, i) => (
-                                    <EuiLineSeries key={i} name={d.name} data={d.data} showLineMarks={false} curve={CURVE_MONOTONE_X} lineSize={Number("2")}/>
-                                ))}
-                            </EuiSeriesChart>
-                        </EuiFlexItem>
-                    </EuiFlexGrid>
-                    <EuiSpacer />
-                </div>
             </div>
         );
     }

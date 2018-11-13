@@ -1,6 +1,7 @@
 export default function (server) {
     const { callWithRequest } = server.plugins.elasticsearch.getCluster('data');
     const { callWithInternalUser } = server.plugins.elasticsearch.getCluster('data');
+    const ONE_MINUTE_IN_MILIS = 60000;
     server.route(
         {
             path: '/api/thundra/invocation-count',
@@ -57,7 +58,7 @@ export default function (server) {
                             histogram: {
                                 date_histogram: {
                                     field: "collectedTimestamp",
-                                    interval: "hour"
+                                    interval: req.query.interval * ONE_MINUTE_IN_MILIS,
                                 }
                             }
                         }
@@ -103,7 +104,7 @@ export default function (server) {
                             sumOfDurations: {
                                 date_histogram: {
                                     field: "collectedTimestamp",
-                                    interval: "hour"
+                                    interval: req.query.interval * ONE_MINUTE_IN_MILIS,
                                 },
                                 aggs: {
                                     duration: {
@@ -130,15 +131,7 @@ export default function (server) {
             handler(req, reply) {
                 let query = {
                     index: 'lab-invocation-*',
-                    size : 1000,
                     body: {
-                        sort: [
-                            {
-                                collectedTimestamp: {
-                                    order: "asc"
-                                }
-                            }
-                        ],
                         query: {
                             bool: {
                                 must: [
@@ -157,6 +150,20 @@ export default function (server) {
                                         }
                                     }
                                 ]
+                            }
+                        },
+                        aggregations: {
+                            timeSeriesByStartTime: {
+                                date_histogram: {
+                                    field: "startTime",
+                                    interval: req.query.interval * ONE_MINUTE_IN_MILIS,
+                                    offset: 0,
+                                    order: {
+                                        _key: "asc"
+                                    },
+                                    keyed: false,
+                                    min_doc_count: 0
+                                }
                             }
                         }
                     }
@@ -387,38 +394,6 @@ export default function (server) {
 
     server.route(
         {
-            path: '/api/thundra/invocation-count-of-function',
-            method: 'GET',
-            handler(req, reply) {
-                let query = {
-                    index: 'lab-invocation-*',
-                    body: {
-                        size: 0,
-                        query: {
-                            term: {
-                                applicationName: {
-                                    value: "team-get-lambda-java-lab"
-                                }
-                            }
-                        },
-                        aggregations: {
-                            histogram: {
-                                date_histogram: {
-                                    field: "collectedTimestamp",
-                                    interval: "day"
-                                }
-                            }
-                        }
-                    }
-                };
-                callWithInternalUser('search', query).then(response => {
-                    reply({ invocationCountOfFunction: (response.aggregations.histogram.buckets)});
-                });
-            }
-        }
-    );
-    server.route(
-        {
             path: '/api/thundra/invocation-counts-per-hour',
             method: 'GET',
             handler(req, reply) {
@@ -437,7 +412,7 @@ export default function (server) {
                             histogram: {
                                 date_histogram: {
                                     field: "collectedTimestamp",
-                                    interval: "hour"
+                                    interval: req.query.interval * ONE_MINUTE_IN_MILIS,
                                 }
                             }
                         }
@@ -470,7 +445,7 @@ export default function (server) {
                             sumOfDurations: {
                                 date_histogram: {
                                     field: "collectedTimestamp",
-                                    interval: "hour"
+                                    interval: req.query.interval * ONE_MINUTE_IN_MILIS,
                                 },
                                 aggs: {
                                     duration: {
@@ -485,30 +460,6 @@ export default function (server) {
                 };
                 callWithInternalUser('search', query).then(response => {
                     reply({ durationPerHour: (response.aggregations.sumOfDurations.buckets)});
-                });
-            }
-        }
-    );
-
-    server.route(
-        {
-            path: '/api/thundra/invocations',
-            method: 'GET',
-            handler(req, reply) {
-                let query = {
-                    index: 'lab-invocation-*',
-                    body: {
-                        query: {
-                            term: {
-                                applicationName: {
-                                    value: "team-get-lambda-java-lab"
-                                }
-                            }
-                        }
-                    }
-                };
-                callWithInternalUser('search', query).then(response => {
-                    reply({ invocations: (response.hits.hits)});
                 });
             }
         }
