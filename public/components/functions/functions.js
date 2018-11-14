@@ -89,7 +89,7 @@ class Functions extends React.Component {
             name: 'Application Name',
             sortable: true,
             render: (functionName) => (
-                <EuiLink href={`https://github.com/${functionName}`} target="_blank">
+                <EuiLink href={`/nwz/app/thundra#/invocations/${functionName}`} target="_blank">
                     {functionName}
                 </EuiLink>
             )

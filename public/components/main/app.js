@@ -76,45 +76,43 @@ class App extends Component {
 
     render() {
         return (
-            <div className="overview">
-                <div>
-                    <EuiSpacer size="m"/>
-                    <Nav tabs>
-                        <NavItem>
-                            <Link to="/overview">Overview</Link>
-                        </NavItem>
-                        <NavItem>
-                            <Link to="/functions">Functions</Link>
-                        </NavItem>
-                        <NavItem>
-                            <Link to="/invocations">Invocations</Link>
-                        </NavItem>
-                        <NavItem>
-                            <Link to="/test">Test</Link>
-                        </NavItem>
-                    </Nav>
+            <div>
+                <EuiSpacer size="m"/>
+                <Nav tabs>
+                    <NavItem>
+                        <Link to="/overview">Overview</Link>
+                    </NavItem>
+                    <NavItem>
+                        <Link to="/functions">Functions</Link>
+                    </NavItem>
+                    <NavItem>
+                        <Link to="/invocations">Invocations</Link>
+                    </NavItem>
+                    <NavItem>
+                        <Link to="/test">Test</Link>
+                    </NavItem>
+                </Nav>
 
-                    <EuiFlexGrid>
-                        <EuiFlexItem grow={10}>
-                            <EuiTitle>
-                                <h5>
-                                    <EuiTextColor color="secondary">Thundra Serverless Observability</EuiTextColor>
-                                </h5>
-                            </EuiTitle>
-                        </EuiFlexItem>
-                        <EuiSpacer size="s"/>
-                        <EuiFlexItem grow={2}>
-                            <EuiComboBox
-                                placeholder="Select a date"
-                                singleSelection={{ asPlainText: true }}
-                                options={this.options}
-                                selectedOptions={this.state.selectedOptions}
-                                onChange={this.onChange}
-                                isClearable={false}
-                            />
-                        </EuiFlexItem>
-                    </EuiFlexGrid>
-                </div>
+                <EuiFlexGrid>
+                    <EuiFlexItem grow={10}>
+                        <EuiTitle>
+                            <h5>
+                                <EuiTextColor color="secondary">Thundra Serverless Observability</EuiTextColor>
+                            </h5>
+                        </EuiTitle>
+                    </EuiFlexItem>
+                    <EuiSpacer size="s"/>
+                    <EuiFlexItem grow={2}>
+                        <EuiComboBox
+                            placeholder="Select a date"
+                            singleSelection={{ asPlainText: true }}
+                            options={this.options}
+                            selectedOptions={this.state.selectedOptions}
+                            onChange={this.onChange}
+                            isClearable={false}
+                        />
+                    </EuiFlexItem>
+                </EuiFlexGrid>
             </div>
         );
     }
