@@ -110,6 +110,7 @@ class InvocationDetails extends React.Component {
     };
 
     render() {
+        let NA = "N/A";
         let duration;
         let errorType;
         for (let key in this.state.invocation) {
@@ -122,17 +123,23 @@ class InvocationDetails extends React.Component {
             }
         }
 
-        let appUsedMemory;
-        let  appMaxMemory;
+        let appUsedMemory = NA;
+        let appMaxMemory = NA;
         for (let key in this.state.memoryMetrics) {
             let obj = this.state.memoryMetrics[key];
             let source = obj['_source'];
             let metrics = source['metrics'];
             appUsedMemory = (metrics['app.usedMemory']/1024/1024).toFixed(2);
             appMaxMemory = metrics['app.maxMemory']/1024/1024;
+
+            if ( ! appUsedMemory )
+                appUsedMemory = NA;
+
+            if ( ! appMaxMemory )
+                appMaxMemory = NA;
         }
 
-        let appCpuLoad;
+        let appCpuLoad = NA;
         for (let key in this.state.cpuMetrics) {
             let obj = this.state.cpuMetrics[key];
             let source = obj['_source'];
@@ -161,7 +168,7 @@ class InvocationDetails extends React.Component {
                         <EuiFlexItem>
                             <EuiPanel>
                                 <EuiStat
-                                    title={appUsedMemory +"mb" + "/" + appMaxMemory + "mb" }
+                                    title= {appUsedMemory === NA ? NA : (appUsedMemory +"mb" + "/" + appMaxMemory + "mb")}
                                     description="Memory"
                                     titleColor="secondary"
                                     textAlign="right"
@@ -176,7 +183,7 @@ class InvocationDetails extends React.Component {
                         <EuiFlexItem>
                             <EuiPanel>
                                 <EuiStat
-                                    title= {"%" + appCpuLoad}
+                                    title= {appCpuLoad === NA ? NA  : "%" + appCpuLoad}
                                     description="Cpu Load"
                                     titleColor="accent"
                                     textAlign="right"

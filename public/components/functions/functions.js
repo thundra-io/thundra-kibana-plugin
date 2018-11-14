@@ -15,6 +15,7 @@ import {EuiBasicTable,
 } from '@elastic/eui';
 
 import {EuiLineSeries, EuiSeriesChart, EuiSeriesChartUtils} from '@elastic/eui/lib/experimental';
+import {getRealPath} from "../../utils";
 
 const {
     CURVE_MONOTONE_X,

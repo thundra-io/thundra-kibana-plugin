@@ -19,6 +19,8 @@ import {
     EuiSelect,
 } from '@elastic/eui';
 
+import {getRealPath} from '../../utils'
+
 import {
     EuiAreaSeries,
     EuiLineSeries,
@@ -217,17 +219,6 @@ class Invocations extends React.Component {
                     {transactionId}
                 </EuiLink>
             )
-        },
-        {
-            field: '_source.applicationRuntime',
-            name: 'Runtime',
-            sortable: true,
-
-        },
-        {
-            field: '_source.applicationName',
-            name: 'Application Name',
-            sortable: true
         },
         {
             field: '_source.functionRegion',
