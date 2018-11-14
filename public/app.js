@@ -1,9 +1,25 @@
-import React, { Component }from 'react';
+import React, { Component, Fragment }from 'react';
 import {uiModules} from 'ui/modules';
 import chrome from 'ui/chrome';
 import {render} from 'react-dom';
 import {BrowserRouter as Router, Route, Link} from 'react-router-dom';
 
+import {
+    EuiPage,
+    EuiPageBody,
+    EuiPageContent,
+    EuiPageContentBody,
+    EuiPageContentHeader,
+    EuiPageHeader,
+    EuiButton,
+    EuiDatePicker,
+    EuiFormRow,
+    EuiComboBox,
+    EuiFlexGroup,
+    EuiFlexItem,
+    EuiFlexGrid,
+    EuiTextColor,
+} from '@elastic/eui';
 
 
 import {DocTitleProvider} from 'ui/doc_title';
@@ -15,7 +31,13 @@ import {timefilter} from 'ui/timefilter';
 
 import 'ui/autoload/styles';
 import './less/main.less';
+import './reactstrap.min'
 import Main from './components/main/main';
+import App from './components/main/app';
+import Overview from './components/overview/overview';
+import Functions from './components/functions/functions';
+import Invocations from './components/invocations/invocations';
+
 import Counter from './components/counter/Counter';
 
 import {combineReducers, createStore} from "redux";
@@ -24,7 +46,7 @@ import {Provider}  from "react-redux";
 
 import firstReducer from "./reducers/counter";
 import timeSelectorReducer from "./reducers/timeSelector";
-import Functions from "./components/counter/Functions";
+// import Functions from "./components/counter/Functions";
 import Home from "./components/counter/Home";
 
 const app = uiModules.get('apps/thundra');
@@ -50,65 +72,23 @@ const store = createStore(myapp);
 
 function RootController($scope, $element, $http) {
     const domNode = $element[0];
-    // render react to DOM
 
-    const renderHome = () =>{
-        return (<Functions/>);
-    };
-
-
-    const renderTest = () =>{
-        return (<Home/>);
-    };
-
-    class App extends Component {
-
-        constructor(...args) {
-            super(...args);
-        }
-
-        render(){
-
-            return(
-                <div>
-                    <ul>
-                        <li>
-                            <Link to="/test">Home</Link>
-                        </li>
-                        <li>
-                            <Link to="/main">Main</Link>
-                        </li>
-                    </ul>
-                    <Route path="/main" component={() => <Main httpClient={$http} />}/>
-                    <Route path="/test" component={() => <Counter/>} />
-                </div>
-            )
-        }
-    }
-
-    function Child({ match }) {
-        return (
-            <div>
-                <h3>ID: {match.params.id}</h3>
-            </div>
-        );
-    }
-
-    function ComponentWithRegex({ match }) {
-        return (
-            <div>
-                <h3>Only asc/desc are allowed: {match.params.direction}</h3>
-            </div>
-        );
-    }
+    const interval = 10;
+    const d = new Date();
+    const startDate = new Date(d - 3600000).getTime();
 
 
     render(
         <Provider store={store}>
-            <Router basename="/aey/app/thundra">
-                <App/>
+            <Router basename="/nwz/app/thundra#/">
+                <div className="overview">
+                    <App/>
+                    <Route path="/overview" component={() => <Overview httpClient={$http} startDate={startDate} interval={interval}/>}/>
+                    <Route path="/functions" component={() => <Functions httpClient={$http} startDate={startDate} interval={interval}/>}/>
+                    <Route path="/invocations" component={() => <Invocations httpClient={$http} startDate={startDate} interval={interval}/>}/>
+                    <Route path="/test" component={() => <Counter httpClient={$http} startDate={startDate} interval={interval}/>} />
+                </div>
             </Router>
-
         </Provider>, domNode
     );
 

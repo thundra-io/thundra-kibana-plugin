@@ -21,6 +21,8 @@ import {
     EuiLineSeries
 } from '@elastic/eui/lib/experimental';
 
+import axios from 'axios';
+
 const { SCALE, ORIENTATION } = EuiSeriesChartUtils;
 const { CURVE_MONOTONE_X } = EuiSeriesChartUtils.CURVE;
 
