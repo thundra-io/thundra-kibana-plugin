@@ -69,6 +69,13 @@ class Invocations extends React.Component {
         const {httpClient} = this.props;
         const {startDate} = this.props;
         const {interval} = this.props;
+
+        const url = window.location.href;
+        const startChar = url.indexOf('/', 8);
+        const path = url.substr(startChar, url.length);
+        this.setState({
+            selectedFunctionName: path.substr(path.lastIndexOf('/') + 1),
+        });
         this.doRequest(httpClient, startDate, interval)
     }
 
@@ -95,13 +102,21 @@ class Invocations extends React.Component {
             }
             this.options = [];
             this.options = options;
-            this.setState({
-                functions: resp.data.functions,
-                selectedOptions: [this.options[0]],
-                selectedFunctionName : this.options[0].label
-            });
 
-            this.onChange([this.options[0]])
+            if ( this.state.selectedFunctionName ){
+                let cur = {
+                    label: this.state.selectedFunctionName
+                };
+                this.onChange([cur])
+            } else{
+                window.alert("erhere");
+                this.setState({
+                    functions: resp.data.functions,
+                    selectedOptions: [this.options[0]],
+                    selectedFunctionName : this.options[0].label
+                });
+                this.onChange([this.options[0]])
+            }
         });
     };
 
