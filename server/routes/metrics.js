@@ -301,5 +301,72 @@ export default function (server) {
             }
         }
     );
+    server.route(
+        {
+            path: '/api/thundra/invocation-details-by-id',
+            method: 'GET',
+            handler(req, reply) {
+                let query = {
+                    index: 'lab-metric-*',
+                    body: {
+                        query: {
+                            bool: {
+                                must: [
+                                    {
+                                        term: {
+                                            transactionId: {
+                                                value: req.query.transactionId
+                                            }
+                                        }
+                                    },
+                                    {
+                                        term: {
+                                            metricName: {
+                                                value: req.query.metricName
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                };
+                callWithInternalUser('search', query).then(response => {
+                    reply({ metrics: (response.hits.hits)});
+                });
+            }
+        }
+    );
+
+    server.route(
+        {
+            path: '/api/thundra/invocation-by-id',
+            method: 'GET',
+            handler(req, reply) {
+                let query = {
+                    index: 'lab-invocation-*',
+                    body: {
+                        query: {
+                            bool: {
+                                must: [
+                                    {
+                                        term: {
+                                            transactionId: {
+                                                value: req.query.transactionId
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                };
+                callWithInternalUser('search', query).then(response => {
+                    reply({ invocation: (response.hits.hits)});
+                });
+            }
+        }
+    );
+
 
 }

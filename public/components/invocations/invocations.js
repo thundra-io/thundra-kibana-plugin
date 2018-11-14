@@ -73,9 +73,12 @@ class Invocations extends React.Component {
         const url = window.location.href;
         const startChar = url.indexOf('/', 8);
         const path = url.substr(startChar, url.length);
-        this.setState({
-            selectedFunctionName: path.substr(path.lastIndexOf('/') + 1),
-        });
+        const lastPart = path.substr(path.lastIndexOf('/') + 1);
+        if ('invocations' !== lastPart) {
+            this.setState({
+                selectedFunctionName: lastPart,
+            });
+        }
         this.doRequest(httpClient, startDate, interval)
     }
 
@@ -109,7 +112,6 @@ class Invocations extends React.Component {
                 };
                 this.onChange([cur])
             } else{
-                window.alert("erhere");
                 this.setState({
                     functions: resp.data.functions,
                     selectedOptions: [this.options[0]],
@@ -207,9 +209,20 @@ class Invocations extends React.Component {
 
     columns = [
         {
+            field: '_source.transactionId',
+            name: 'Transaction Id',
+            sortable: true,
+            render: (transactionId) => (
+                <EuiLink href={`/nwz/app/thundra#/invocationDetails/${transactionId}`} target="_blank">
+                    {transactionId}
+                </EuiLink>
+            )
+        },
+        {
             field: '_source.applicationRuntime',
             name: 'Runtime',
-            sortable: true
+            sortable: true,
+
         },
         {
             field: '_source.applicationName',

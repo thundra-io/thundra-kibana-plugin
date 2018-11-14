@@ -32,11 +32,11 @@ import {timefilter} from 'ui/timefilter';
 import 'ui/autoload/styles';
 import './less/main.less';
 import './reactstrap.min'
-import Main from './components/main/main';
 import App from './components/main/app';
 import Overview from './components/overview/overview';
 import Functions from './components/functions/functions';
 import Invocations from './components/invocations/invocations';
+import InvocationDetails from './components/invocations/invocationDetails';
 
 import Counter from './components/counter/Counter';
 
@@ -86,6 +86,7 @@ function RootController($scope, $element, $http) {
                     <Route path="/overview" component={() => <Overview httpClient={$http} startDate={startDate} interval={interval}/>}/>
                     <Route path="/functions" component={() => <Functions httpClient={$http} startDate={startDate} interval={interval}/>}/>
                     <Route path="/invocations" component={() => <Invocations httpClient={$http} startDate={startDate} interval={interval}/>}/>
+                    <Route path="/invocationDetails" component={() => <InvocationDetails httpClient={$http} startDate={startDate} interval={interval}/>}/>
                     <Route path="/test" component={() => <Counter httpClient={$http} startDate={startDate} interval={interval}/>} />
                 </div>
             </Router>
