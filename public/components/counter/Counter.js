@@ -12,25 +12,31 @@ class Counter extends Component {
     render() {
         const { mySweetCounter } = this.props;
         return (
-            <p>
-                Clicked: {mySweetCounter.counter} times
-                {' '}
-                <button onClick={this.props.increment}>
-                    +
-                </button>
-                {' '}
-                <button onClick={this.props.decrement}>
-                    -
-                </button>
-                {' '}
-                <button onClick={this.props.incrementIfOdd}>
-                    Increment if odd
-                </button>
-                {' '}
-                <button onClick={this.incrementAsync}>
-                    Increment async
-                </button>
-            </p>
+            <div>
+                <p>
+                    Clicked: {mySweetCounter.counter} times
+                    {' '}
+                    <button onClick={this.props.increment}>
+                        +
+                    </button>
+                    {' '}
+                    <button onClick={this.props.decrement}>
+                        -
+                    </button>
+                    {' '}
+                    <button onClick={this.props.incrementIfOdd}>
+                        Increment if odd
+                    </button>
+                    {' '}
+                    <button onClick={this.incrementAsync}>
+                        Increment async
+                    </button>
+                </p>
+                <br/>
+                <br/>
+                <br/>
+                <br/>
+            </div>
         )
     }
 }
