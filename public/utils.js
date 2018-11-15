@@ -1,4 +1,6 @@
 
+export const KIBANA_THUNDRA_PATH = "/nwz/app/thundra#/";
+
 export function getRealPath(){
     const url = window.location.href;
     const startChar = url.indexOf('/', 8);

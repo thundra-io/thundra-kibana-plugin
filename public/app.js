@@ -44,7 +44,7 @@ import {combineReducers, createStore} from "redux";
 import {Provider}  from "react-redux";
 
 
-import {getRealPath} from './utils'
+import {getRealPath, KIBANA_THUNDRA_PATH} from './utils'
 import firstReducer from "./reducers/counter";
 import timeSelectorReducer from "./reducers/timeSelector";
 // import Functions from "./components/counter/Functions";
@@ -79,9 +79,10 @@ function RootController($scope, $element, $http) {
     const startDate = new Date(d - 3600000).getTime();
 
 
+    console.log( KIBANA_THUNDRA_PATH);
     render(
         <Provider store={store}>
-            <Router basename="/nwz/app/thundra#/">
+            <Router basename={KIBANA_THUNDRA_PATH}>
                 <div className="overview">
                     <App/>
                     <Route path="/overview" component={() => <Overview httpClient={$http} startDate={startDate} interval={interval}/>}/>

@@ -19,7 +19,7 @@ import {
     EuiSelect,
 } from '@elastic/eui';
 
-import {getRealPath} from '../../utils'
+import {getRealPath, KIBANA_THUNDRA_PATH} from '../../utils'
 
 import {
     EuiAreaSeries,
@@ -27,6 +27,7 @@ import {
     EuiSeriesChart,
     EuiSeriesChartUtils
 } from '@elastic/eui/lib/experimental';
+import {connect} from "react-redux";
 
 const {
     CURVE_MONOTONE_X,
@@ -215,7 +216,7 @@ class Invocations extends React.Component {
             name: 'Transaction Id',
             sortable: true,
             render: (transactionId) => (
-                <EuiLink href={`/nwz/app/thundra#/invocationDetails/${transactionId}`} target="_blank">
+                <EuiLink href={KIBANA_THUNDRA_PATH+`invocationDetails/${transactionId}`} target="_blank">
                     {transactionId}
                 </EuiLink>
             )
@@ -464,4 +465,25 @@ class Invocations extends React.Component {
     }
 }
 
-export default Invocations;
+const mapStateToProps = state => {
+    return {
+        startDate:  state.timeSelectorReducer.startDate,
+        interval: state.timeSelectorReducer.interval,
+    }
+};
+
+const mapDispatchToProps = dispatch => {
+    return {
+        changeTime: (x) => {
+            const MS_PER_MINUTE = 60000;
+            let d = new Date();
+            let date = new Date(d - x.value*(MS_PER_MINUTE));
+            return dispatch({type: 'CHANGE_TIME', val: date.getTime() , interval: x.interval });
+        }
+    }
+};
+
+export default connect(
+    mapStateToProps,
+    mapDispatchToProps,
+)(Invocations);

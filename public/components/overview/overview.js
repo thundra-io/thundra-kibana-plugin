@@ -22,6 +22,7 @@ import {
 } from '@elastic/eui/lib/experimental';
 
 import axios from 'axios';
+import {connect} from "react-redux";
 
 const { SCALE, ORIENTATION } = EuiSeriesChartUtils;
 const { CURVE_MONOTONE_X } = EuiSeriesChartUtils.CURVE;
@@ -346,4 +347,26 @@ class Overview extends React.Component {
         );
     }
 }
-export default Overview;
+
+const mapStateToProps = state => {
+    return {
+        startDate:  state.timeSelectorReducer.startDate,
+        interval: state.timeSelectorReducer.interval,
+    }
+};
+
+const mapDispatchToProps = dispatch => {
+    return {
+        changeTime: (x) => {
+            const MS_PER_MINUTE = 60000;
+            let d = new Date();
+            let date = new Date(d - x.value*(MS_PER_MINUTE));
+            return dispatch({type: 'CHANGE_TIME', val: date.getTime() , interval: x.interval });
+        }
+    }
+};
+
+export default connect(
+    mapStateToProps,
+    mapDispatchToProps,
+)(Overview)

@@ -1,21 +1,21 @@
 import React from 'react';
-import {EuiBasicTable,
+import {
+    EuiBasicTable,
     EuiButton,
     EuiCode,
-    EuiHealth,
-    EuiLink,
-    EuiSpacer,
-    EuiSwitch,
     EuiComboBox,
     EuiFlexGrid,
     EuiFlexItem,
-    EuiText,
-    EuiTextColor,
-    EuiInMemoryTable
+    EuiHealth,
+    EuiInMemoryTable,
+    EuiLink,
+    EuiSpacer,
+    EuiSwitch
 } from '@elastic/eui';
 
-import {EuiLineSeries, EuiSeriesChart, EuiSeriesChartUtils} from '@elastic/eui/lib/experimental';
-import {getRealPath} from "../../utils";
+import {EuiSeriesChartUtils} from '@elastic/eui/lib/experimental';
+import {KIBANA_THUNDRA_PATH} from "../../utils";
+import {connect} from "react-redux";
 
 const {
     CURVE_MONOTONE_X,
@@ -90,7 +90,7 @@ class Functions extends React.Component {
             name: 'Application Name',
             sortable: true,
             render: (functionName) => (
-                <EuiLink href={`/nwz/app/thundra#/invocations/${functionName}`} target="_blank">
+                <EuiLink href={KIBANA_THUNDRA_PATH+`invocations/${functionName}`} target="_blank">
                     {functionName}
                 </EuiLink>
             )
@@ -193,4 +193,25 @@ class Functions extends React.Component {
     }
 }
 
-export default Functions;
+const mapStateToProps = state => {
+    return {
+        startDate:  state.timeSelectorReducer.startDate,
+        interval: state.timeSelectorReducer.interval,
+    }
+};
+
+const mapDispatchToProps = dispatch => {
+    return {
+        changeTime: (x) => {
+            const MS_PER_MINUTE = 60000;
+            let d = new Date();
+            let date = new Date(d - x.value*(MS_PER_MINUTE));
+            return dispatch({type: 'CHANGE_TIME', val: date.getTime() , interval: x.interval });
+        }
+    }
+};
+
+export default connect(
+    mapStateToProps,
+    mapDispatchToProps,
+)(Functions);
