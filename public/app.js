@@ -2,7 +2,7 @@ import React, { Component, Fragment }from 'react';
 import {uiModules} from 'ui/modules';
 import chrome from 'ui/chrome';
 import {render} from 'react-dom';
-import {BrowserRouter as Router, Route, Link} from 'react-router-dom';
+import {BrowserRouter as Router, Route, Link, Redirect} from 'react-router-dom';
 
 import {
     EuiPage,
@@ -44,11 +44,9 @@ import {combineReducers, createStore} from "redux";
 import {Provider}  from "react-redux";
 
 
-import {getRealPath, KIBANA_THUNDRA_PATH} from './utils'
+import {KIBANA_THUNDRA_PATH} from './utils'
 import firstReducer from "./reducers/counter";
 import timeSelectorReducer from "./reducers/timeSelector";
-// import Functions from "./components/counter/Functions";
-import Home from "./components/counter/Home";
 
 const app = uiModules.get('apps/thundra');
 
@@ -83,6 +81,7 @@ function RootController($scope, $element, $http) {
             <Router basename={KIBANA_THUNDRA_PATH}>
                 <div className="overview">
                     <App/>
+                    <Route exact path="/" component={() => <Redirect to="/overview" />}/>
                     <Route path="/overview" component={() => <Overview httpClient={$http} startDate={startDate} interval={interval}/>}/>
                     <Route path="/functions" component={() => <Functions httpClient={$http} startDate={startDate} interval={interval}/>}/>
                     <Route path="/invocations" component={() => <Invocations httpClient={$http} startDate={startDate} interval={interval}/>}/>
