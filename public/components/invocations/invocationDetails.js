@@ -1,9 +1,16 @@
 import React from 'react';
 import {
+    EuiAccordion,
     EuiBasicTable,
     EuiButton,
+    EuiButtonIcon,
     EuiCode,
     EuiComboBox,
+    EuiDescriptionList,
+    EuiDescriptionListDescription,
+    EuiDescriptionListTitle,
+    EuiFieldPassword,
+    EuiFieldText,
     EuiFlexGrid,
     EuiFlexGroup,
     EuiFlexItem,
@@ -14,8 +21,11 @@ import {
     EuiLink,
     EuiPanel,
     EuiSelect,
+    EuiSpacer,
     EuiStat,
-    EuiSwitch
+    EuiSwitch,
+    EuiTextArea,
+    EuiTitle
 } from '@elastic/eui';
 
 import {EuiSeriesChartUtils} from '@elastic/eui/lib/experimental';
@@ -114,15 +124,32 @@ class InvocationDetails extends React.Component {
         let NA = "N/A";
         let duration;
         let errorType;
+        let startTime;
+        let arn;
+        let logStreamName;
+        let requestId;
+        let coldStart;
+        let runtime;
         for (let key in this.state.invocation) {
             let obj = this.state.invocation[key];
             let source = obj['_source'];
+            let tags = source['tags'];
+
             duration = source['duration'];
             errorType = source['errorType'];
+            startTime = source['startTime'];
+            runtime = source['applicationRuntime'];
+
+            arn = tags['aws.lambda.arn'];
+            logStreamName = tags['aws.lambda.log_stream_name'];
+            requestId = tags['aws.lambda.invocation.request_id'];
+            coldStart = tags['aws.lambda.invocation.coldstart'];
+
             if ( ! errorType ){
                 errorType = "NONE"
             }
         }
+        console.log( coldStart );
 
         let appUsedMemory = NA;
         let appMaxMemory = NA;
@@ -147,6 +174,46 @@ class InvocationDetails extends React.Component {
             let metrics = source['metrics'];
             appCpuLoad = (metrics['app.cpuLoad']*100).toFixed(2);
         }
+
+        const repeatableForm = (
+            <EuiForm>
+                <EuiFlexGroup>
+                    <EuiFlexItem>
+                        <EuiFormRow label="Username">
+                            <EuiFieldText icon="user" placeholder="John" />
+                        </EuiFormRow>
+                    </EuiFlexItem>
+
+                    <EuiFlexItem>
+                        <EuiFormRow label="Password" helpText="Must include one number and one symbol">
+                            <EuiFieldPassword icon="lock" />
+                        </EuiFormRow>
+                    </EuiFlexItem>
+                </EuiFlexGroup>
+
+                <EuiSpacer size="m" />
+
+                <EuiFormRow label="Body">
+                    <EuiTextArea placeholder="I am a textarea, put some content in me!" />
+                </EuiFormRow>
+            </EuiForm>
+        );
+
+        const buttonContent = (
+            <div>
+                <EuiFlexGroup gutterSize="s" alignItems="center">
+                    <EuiFlexItem grow={false}>
+                        <EuiIcon type="tokenException" size="m" />
+                    </EuiFlexItem>
+
+                    <EuiFlexItem>
+                        <EuiTitle size="s" className="euiAccordionForm__title">
+                            <h6>Basic Information</h6>
+                        </EuiTitle>
+                    </EuiFlexItem>
+                </EuiFlexGroup>
+            </div>
+        );
 
         return (
             <div>
@@ -209,8 +276,71 @@ class InvocationDetails extends React.Component {
                             </EuiPanel>
                         </EuiFlexItem>
                     }
-
                 </EuiFlexGroup>
+
+                <div>
+                    <EuiSpacer size="l" />
+                    <EuiAccordion
+                        id="accordionForm1"
+                        className="euiAccordionForm"
+                        buttonClassName="euiAccordionForm__button"
+                        buttonContent={buttonContent}
+                        paddingSize="l"
+                    >
+                        <EuiFlexGroup>
+
+                            <EuiFlexItem>
+                                <EuiDescriptionList>
+                                    <EuiDescriptionListTitle>
+                                       Date
+                                    </EuiDescriptionListTitle>
+                                    <EuiDescriptionListDescription>
+                                        {startTime}
+                                    </EuiDescriptionListDescription>
+                                    <EuiDescriptionListTitle>
+                                       Arn
+                                    </EuiDescriptionListTitle>
+                                    <EuiDescriptionListDescription>
+                                        {arn}
+                                    </EuiDescriptionListDescription>
+
+                                    <EuiDescriptionListTitle>
+                                        Request Id
+                                    </EuiDescriptionListTitle>
+                                    <EuiDescriptionListDescription>
+                                        {requestId}
+                                    </EuiDescriptionListDescription>
+                                </EuiDescriptionList>
+                            </EuiFlexItem>
+
+                            <EuiFlexItem>
+                                <EuiDescriptionList>
+                                    <EuiDescriptionListTitle>
+                                        Cloudwatch Logs
+                                    </EuiDescriptionListTitle>
+                                    <EuiDescriptionListDescription>
+                                        {logStreamName}
+                                    </EuiDescriptionListDescription>
+
+                                    <EuiDescriptionListTitle>
+                                        Runtime
+                                    </EuiDescriptionListTitle>
+                                    <EuiDescriptionListDescription>
+                                        {runtime}
+                                    </EuiDescriptionListDescription>
+
+                                    <EuiDescriptionListTitle>
+                                       Cold Start
+                                    </EuiDescriptionListTitle>
+                                    <EuiDescriptionListDescription>
+                                        { "" + coldStart}
+                                    </EuiDescriptionListDescription>
+                                </EuiDescriptionList>
+                            </EuiFlexItem>
+                        </EuiFlexGroup>
+                    </EuiAccordion>
+                </div>
+
             </div>
         );
     }

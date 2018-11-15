@@ -78,8 +78,6 @@ function RootController($scope, $element, $http) {
     const d = new Date();
     const startDate = new Date(d - 3600000).getTime();
 
-
-    console.log( KIBANA_THUNDRA_PATH);
     render(
         <Provider store={store}>
             <Router basename={KIBANA_THUNDRA_PATH}>
