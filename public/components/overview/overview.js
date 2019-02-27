@@ -34,25 +34,40 @@ class Overview extends React.Component {
             coldStartFunctions: [],
             invocationCountPerHour: [],
             durationPerHour: [],
-            selectedFunctionName: null
+            selectedFunctionName: null,
+            
+            monthlyEstimatedBilledCost: 0,
+            invocationCount: 0,
+            errorCount: 0,
+            coldStartCount: 0,
+            estimatedBilledCost: 0,
+
         };
     }
 
-    componentWillMount() {
+    componentDidMount() {
+        // console.log("overview, CDM; props: ", this.props);
+        
         const {httpClient} = this.props;
         const {startDate} = this.props;
         const {interval} = this.props;
-        this.doRequest(httpClient, startDate, interval)
+        const {convertToMonthMultiplier} = this.props;
+        this.doRequest(httpClient, startDate, interval, convertToMonthMultiplier)
     }
 
     componentWillReceiveProps(nextProps) {
+        // console.log("overview, CWRP; props, nextProps: ", this.props, nextProps);
+
         const {httpClient} = nextProps;
         const {startDate} = nextProps;
         const {interval} = nextProps;
-        this.doRequest(httpClient, startDate, interval)
+        const {convertToMonthMultiplier} = nextProps;
+        this.doRequest(httpClient, startDate, interval, convertToMonthMultiplier)
     }
 
-    doRequest = (httpClient, startTime, interval) => {
+    doRequest = (httpClient, startTime, interval, convertToMonthMultiplier) => {
+        
+
         httpClient.get('../api/thundra/invocation-count', {
             params: {
                 startTimeStamp: startTime,
@@ -87,7 +102,8 @@ class Overview extends React.Component {
             }
         }).then((resp) => {
             this.setState({
-                estimatedBilledCost: resp.data.estimatedBilledCost
+                estimatedBilledCost: resp.data.estimatedBilledCost,
+                monthlyEstimatedBilledCost: resp.data.estimatedBilledCost * convertToMonthMultiplier
             });
         });
 
@@ -181,13 +197,15 @@ class Overview extends React.Component {
         const DATA_B = [];
         for (let key in this.state.durationPerHour) {
             let obj = this.state.durationPerHour[key];
-            DATA_B.push( { x: obj.key, y: (obj.duration.value / 60000).toFixed(2)} );
+            DATA_B.push( { x: obj.key, y: Number((obj.duration.value / 60000).toFixed(2))} );
         }
 
         yourData[0] = {
             data: DATA_B,
             name: "InvocationDuration"
         };
+
+        // console.log("renderBelowGraphs; myData, yourData: ", myData, yourData);
 
         return (
             <div>
@@ -198,7 +216,7 @@ class Overview extends React.Component {
                         </EuiText>
                         <EuiSeriesChart height={250} xType={SCALE.TIME}>
                             {myData.map((d, i) => (
-                                <EuiLineSeries key={i} name={d.name} data={d.data} showLineMarks={false} curve={CURVE_MONOTONE_X}/>
+                                <EuiLineSeries key={`count-${i}`} name={d.name} data={d.data} showLineMarks={false} curve={CURVE_MONOTONE_X}/>
                             ))}
                         </EuiSeriesChart>
                     </EuiFlexItem>
@@ -209,7 +227,7 @@ class Overview extends React.Component {
                         </EuiText>
                         <EuiSeriesChart height={250} xType={SCALE.TIME}>
                             {yourData.map((d, i) => (
-                                <EuiLineSeries key={i} name={d.name} data={d.data} showLineMarks={false} curve={CURVE_MONOTONE_X}/>
+                                <EuiLineSeries key={`duration-${i}`} name={d.name} data={d.data} showLineMarks={false} curve={CURVE_MONOTONE_X}/>
                             ))}
                         </EuiSeriesChart>
                     </EuiFlexItem>
@@ -219,7 +237,22 @@ class Overview extends React.Component {
         );
     };
 
+    computeHealth = () => {
+        const {invocationCount, errorCount} = this.state;
+        let health = 0;
+        if (invocationCount && errorCount) {
+            const invocationCountNumber = Number(invocationCount);
+            const errorCountNumber = Number(errorCount);
+
+            health = (invocationCountNumber - errorCountNumber) / invocationCountNumber * 100;
+        }
+
+        return health.toFixed(2);
+    }
+
     render() {
+        
+
         const {title} = this.props;
 
         const DATA = [];
@@ -243,9 +276,24 @@ class Overview extends React.Component {
             CDATA.push( { x: obj.doc_count, y: obj.key} );
         }
 
+        // console.log("overview, render; state, props: ", this.state, this.props);
+        // console.log("overview, render; DATA, EDATA, CDATA: ", DATA, EDATA, CDATA);
+
         return (
             <div>
                 <EuiFlexGroup >
+                    { (this.state.invocationCount && this.state.errorCount) &&
+                        <EuiFlexItem >
+                            <EuiStat
+                                title={`${this.computeHealth()} %`}
+                                description="Health"
+                                titleColor="secondary"
+                                textAlign="left"
+                                titleSize="l"
+                            />
+                        </EuiFlexItem>
+                    }
+
                     { this.state.invocationCount &&
                         <EuiFlexItem >
                             <EuiStat
@@ -270,6 +318,7 @@ class Overview extends React.Component {
                             </EuiStat>
                         </EuiFlexItem>
                     }
+
                     {this.state.coldStartCount &&
                         <EuiFlexItem>
                             <EuiStat
@@ -281,12 +330,25 @@ class Overview extends React.Component {
                             </EuiStat>
                         </EuiFlexItem>
                     }
-                    {
-                        this.state.estimatedBilledCost &&
+
+                    {this.state.estimatedBilledCost &&
                         <EuiFlexItem>
                             <EuiStat
                                 title={("$") + this.state.estimatedBilledCost}
                                 description="Estimated Billed Cost"
+                                titleColor="accent"
+                                textAlign="left"
+                                titleSize="l"
+                            >
+                            </EuiStat>
+                        </EuiFlexItem>
+                    }
+
+                    {this.state.monthlyEstimatedBilledCost &&
+                        <EuiFlexItem>
+                            <EuiStat
+                                title={("$") + this.state.monthlyEstimatedBilledCost}
+                                description="Monthly Estimated Billed Cost"
                                 titleColor="accent"
                                 textAlign="left"
                                 titleSize="l"

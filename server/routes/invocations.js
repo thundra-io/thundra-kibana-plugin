@@ -89,6 +89,16 @@ export default function (server) {
                                                     }
                                                 }
                                             },
+                                            invocationsWithoutError: {
+                                                filter: {
+                                                    term: {
+                                                        erroneous: {
+                                                            value: false,
+                                                            boost: 1
+                                                        }
+                                                    }
+                                                }
+                                            },
                                             invocationsWithColdStart: {
                                                 filter: {
                                                     term: {

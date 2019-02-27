@@ -293,24 +293,24 @@ class Invocations extends React.Component {
         for (let key in this.state.invocationsDurations) {
             let obj = this.state.invocationsDurations[key];
 
-            let totalAvg = obj.avgDuration['value'];
+            let totalAvg = obj.avgDuration['value'] || 0;
 
             let cold = obj.coldStartDuration;
-            let coldAvg = cold['avgOfDuration']['value'];
+            let coldAvg = cold['avgOfDuration']['value'] || 0;
 
             let error = obj.errorDuration;
-            let errAvg  = error['avgOfDuration']['value'];
+            let errAvg  = error['avgOfDuration']['value'] || 0;
 
 
             if( totalDuration ){
-                totalDuration.push( { x: obj.key, y: totalAvg.toFixed(2) } );
+                totalDuration.push( { x: obj.key, y: Number(totalAvg.toFixed(2)) } );
             }
             if ( coldAvg ){
-                coldStartDuration.push( { x: obj.key, y: coldAvg.toFixed(2) } );
+                coldStartDuration.push( { x: obj.key, y: Number(coldAvg.toFixed(2)) } );
             }
 
             if ( errAvg ){
-                errorDuration.push( { x: obj.key, y: errAvg.toFixed(2) } );
+                errorDuration.push( { x: obj.key, y: Number(errAvg.toFixed(2)) } );
             }
         }
 
@@ -394,7 +394,7 @@ class Invocations extends React.Component {
                             </EuiText>
                             <EuiSeriesChart height={250} xType={SCALE.TIME_UTC}>
                                 {invocationData.map((d, i) => (
-                                    <EuiLineSeries key={i} name={d.name} data={d.data} showLineMarks={true} curve={this.state.curve}/>
+                                    <EuiLineSeries key={`invocations-${i}`} name={d.name} data={d.data} showLineMarks={true} curve={this.state.curve}/>
                                 ))}
                             </EuiSeriesChart>
                         </EuiFlexItem>
@@ -406,7 +406,7 @@ class Invocations extends React.Component {
                             </EuiText>
                             <EuiSeriesChart height={250} xType={SCALE.TIME_UTC}>
                                 {invocationDurationData.map((d, i) => (
-                                    <EuiLineSeries key={i} name={d.name} data={d.data} showLineMarks={true} curve={this.state.curve}/>
+                                    <EuiLineSeries key={`invocations-duration-${i}`} name={d.name} data={d.data} showLineMarks={true} curve={this.state.curve}/>
                                 ))}
                             </EuiSeriesChart>
                         </EuiFlexItem>

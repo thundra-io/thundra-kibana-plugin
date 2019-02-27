@@ -27,31 +27,15 @@ import Invocations from "../invocations/invocations";
 import Counter from "../counter/Counter";
 import {connect} from "react-redux";
 
+import {timeSelectorOptions} from "../../reducers/timeSelector";
+
 class Main extends Component {
 
     constructor(props) {
         super(props);
-        this.options = [{
-                label: 'Last 1 hour',
-                value: 60,
-                interval: 10,
-            }, {
-                label: 'Last 2 hours',
-                value: 120,
-                interval: 30,
-            }, {
-                label: 'Last 4 hours',
-                value: 240,
-                interval: 30,
-            }, {
-                label: 'Last 1 day',
-                value: 1440,
-                interval: 60,
-            }
-        ];
 
         this.state = {
-            selectedOptions: [this.options[0]]
+            selectedOptions: [timeSelectorOptions[0]]
         };
     }
 
@@ -71,6 +55,7 @@ class Main extends Component {
         const {httpClient} = this.props;
         const {startDate} = this.props;
         const {interval} = this.props;
+        const {convertToMonthMultiplier} = this.props;
 
         this.tabs = [{
             id: 'overview',
@@ -79,7 +64,7 @@ class Main extends Component {
                 <Fragment>
                     <EuiSpacer />
                     <EuiTitle><h3>Overview</h3></EuiTitle>
-                    <Overview startDate={startDate} interval={interval} httpClient={httpClient}></Overview>
+                    <Overview startDate={startDate} interval={interval} httpClient={httpClient} convertToMonthMultiplier={convertToMonthMultiplier}></Overview>
                 </Fragment>
             ),
         }, {
@@ -89,7 +74,7 @@ class Main extends Component {
                 <Fragment>
                     <EuiSpacer />
                     <EuiTitle><h3>Functions</h3></EuiTitle>
-                    <Functions startDate={startDate} interval={interval} httpClient={httpClient}></Functions>
+                    <Functions startDate={startDate} interval={interval} httpClient={httpClient} convertToMonthMultiplier={convertToMonthMultiplier}></Functions>
                 </Fragment>
             ),
         }, {
@@ -119,6 +104,8 @@ class Main extends Component {
     };
 
     render() {
+        // console.log("main, render; state, props: ", this.state, this.props);
+        
         let tabs = this.renderTab();
         return (
             <div className="overview">
@@ -139,7 +126,7 @@ class Main extends Component {
                             <EuiComboBox
                                 placeholder="Select a date"
                                 singleSelection={{ asPlainText: true }}
-                                options={this.options}
+                                options={timeSelectorOptions}
                                 selectedOptions={this.state.selectedOptions}
                                 onChange={this.onChange}
                                 isClearable={false}
@@ -149,7 +136,7 @@ class Main extends Component {
 
                     <EuiTabbedContent
                         tabs={tabs}
-                        initialSelectedTab={tabs[1]}
+                        initialSelectedTab={tabs[0]}
                         onTabClick={this.onTabClick}
                     />
                 </Fragment>
@@ -162,6 +149,7 @@ const mapStateToProps = state => {
     return {
         startDate:  state.timeSelectorReducer.startDate,
         interval: state.timeSelectorReducer.interval,
+        convertToMonthMultiplier: state.timeSelectorReducer.convertToMonthMultiplier,
     }
 };
 
@@ -171,7 +159,7 @@ const mapDispatchToProps = dispatch => {
             const MS_PER_MINUTE = 60000;
             let d = new Date();
             let date = new Date(d - x.value*(MS_PER_MINUTE));
-            return dispatch({type: 'CHANGE_TIME', val: date.getTime() , interval: x.interval });
+            return dispatch({type: 'CHANGE_TIME', val: date.getTime() , interval: x.interval, convertToMonthMultiplier: x.converttomonthmultiplier });
         }
     }
 };

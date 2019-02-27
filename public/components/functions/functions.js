@@ -33,26 +33,32 @@ class Functions extends React.Component {
         };
     }
 
-    componentWillMount() {
+    componentDidMount() {
         const {httpClient} = this.props;
         const {startDate} = this.props;
         const {interval} = this.props;
-        this.doRequest(httpClient, startDate, interval)
+        const {convertToMonthMultiplier} = this.props;
+        this.doRequest(httpClient, startDate, interval, convertToMonthMultiplier)
     }
 
     componentWillReceiveProps(nextProps) {
         const {httpClient} = nextProps;
         const {startDate} = nextProps;
         const {interval} = nextProps;
-        this.doRequest(httpClient, startDate, interval)
+        const {convertToMonthMultiplier} = nextProps;
+        this.doRequest(httpClient, startDate, interval, convertToMonthMultiplier);
     }
 
-    doRequest = (httpClient, startDate, interval) => {
+    doRequest = (httpClient, startDate, interval, convertToMonthMultiplier) => {
+        // console.log("functions, doRequest; ", startDate, interval, convertToMonthMultiplier);
+
         httpClient.get('../api/thundra/invocations-v2', {
             params:{
                 startTimeStamp: startDate
             }
         }).then((resp) => {
+            // console.log("funcitons, doRequest; resp: ", resp);
+
             let funcs = [];
             for (let key in resp.data.invocations) {
                 let invocation={};
@@ -72,6 +78,12 @@ class Functions extends React.Component {
 
                     invocation.invocationsWithColdStart = bucket.invocationsWithColdStart['doc_count'];
                     invocation.invocationsWithError = bucket.invocationsWithError['doc_count'];
+                    invocation.invocationsWithoutError = bucket.invocationsWithoutError['doc_count'];
+                    invocation.invocationCount = invocation.invocationsWithoutError + invocation.invocationsWithError;
+                    invocation.health = Number((invocation.invocationsWithoutError / invocation.invocationCount * 100).toFixed(2));
+
+                    invocation.estimatedCost = Number(bucket.estimatedTotalBilledCost.value.toFixed(3));
+                    invocation.monthlyCost = Number((invocation.estimatedCost * convertToMonthMultiplier).toFixed(2));
 
                     invocation.newestInvocationTime = new Date(bucket.newestInvocationTime['value']);
                     invocation.oldestInvocationTime = new Date(bucket.oldestInvocationTime['value']);
@@ -96,29 +108,44 @@ class Functions extends React.Component {
         },
         {
             field: 'applicationRuntime',
-            name: 'Application Runtime',
+            name: 'Runtime',
             sortable: true
         },
-        {
-            field: 'totalDuration',
-            name: 'Total Duration (ms)',
-            sortable: true
-        },
+        // {
+        //     field: 'totalDuration',
+        //     name: 'Total Duration (ms)',
+        //     sortable: true
+        // },
         {
             field: 'averageDuration',
             name: 'Avg Duration (ms)',
             sortable: true
         },
         {
-            field: 'minDuration',
-            name: 'Min Duration (ms)',
-            sortable: true
+            field: 'health',
+            name: 'Health',
+            sortable: true,
+            render: (health) => {
+                return (
+                    `${health} %`
+                );
+            }
         },
         {
-            field: 'maxDuration',
-            name: 'Max Duration (ms)',
+            field: 'invocationCount',
+            name: 'Invocations',
             sortable: true
         },
+        // {
+        //     field: 'minDuration',
+        //     name: 'Min Duration (ms)',
+        //     sortable: true
+        // },
+        // {
+        //     field: 'maxDuration',
+        //     name: 'Max Duration (ms)',
+        //     sortable: true
+        // },
         {
             field: 'invocationsWithColdStart',
             name: 'Cold Start',
@@ -130,18 +157,35 @@ class Functions extends React.Component {
             sortable: true
         },
         {
+            field: 'monthlyCost',
+            name: 'Monthly Cost',
+            sortable: true
+        },
+        {
+            field: 'estimatedCost',
+            name: 'Estimated Cost',
+            sortable: true,
+            render: (cost) => {
+                return (
+                    `$${cost}`
+                );
+            }
+        },
+        {
             field: 'newestInvocationTime',
             name: 'Newest Invocation',
             sortable: true
         },
-        {
-            field: 'oldestInvocationTime',
-            name: 'Oldest Invocation',
-            sortable: true
-        }
+        // {
+        //     field: 'oldestInvocationTime',
+        //     name: 'Oldest Invocation',
+        //     sortable: true
+        // }
     ];
 
     render() {
+        // console.log("functions, render; this.state, this.props: ", this.state, this.props);
+        
         let debounceTimeoutId;
         let requestTimeoutId;
 
