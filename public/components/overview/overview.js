@@ -47,7 +47,7 @@ class Overview extends React.Component {
 
     componentDidMount() {
         // console.log("overview, CDM; props: ", this.props);
-        
+
         const {httpClient} = this.props;
         const {startDate} = this.props;
         const {interval} = this.props;
@@ -103,7 +103,7 @@ class Overview extends React.Component {
         }).then((resp) => {
             this.setState({
                 estimatedBilledCost: resp.data.estimatedBilledCost,
-                monthlyEstimatedBilledCost: resp.data.estimatedBilledCost * convertToMonthMultiplier
+                monthlyEstimatedBilledCost: Number((resp.data.estimatedBilledCost * convertToMonthMultiplier).toFixed(2))
             });
         });
 

@@ -33,6 +33,13 @@
   },
   "dependencies": {
     "@elastic/eui": "5.0.1",
+    "axios": "^0.18.0",
+    "blipp": "^2.3.0",
+    "bluebird": "^3.5.1",
+    "boom": "^7.2.0",
+    "classnames": "^2.2.5",
+    "history": "^4.7.2",
+    "joi": "^13.3.0",
     "lodash": "^4.17.4",
     "moment": "^2.22.2",
     "prop-types": "^15.6.1",
@@ -40,8 +47,17 @@
     "react-dom": "^16.6.0",
     "react-native-md5": "^1.0.0",
     "react-redux": "^5.0.7",
+    "react-router": "^4.2.0",
+    "react-router-dom": "^4.2.2",
+    "react-router-redux": "^5.0.0-alpha.9",
+    "connected-react-router": "4.5.0",
     "reactstrap": "^6.5.0",
     "recharts": "^1.0.0-beta.0",
-    "redux": "^3.5.2"
+    "redux": "^3.5.2",
+    "redux-thunk": "^2.3.0",
+    "redux-saga": "^0.16.0",
+    "redux-seamless-immutable": "^0.4.0",
+    "reselect": "^3.0.1",
+    "seamless-immutable": "^7.1.3"
   }
 }
