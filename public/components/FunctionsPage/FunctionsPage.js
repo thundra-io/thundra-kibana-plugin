@@ -5,7 +5,9 @@ import {
     Switch,
     Link
 } from 'react-router-dom';
-import {HeaderContainer} from "../../containers";
+import {HeaderTab} from "../../components";
+
+import { TimeSelectorContainer } from "../../containers";
 
 export default class FunctionsPage extends React.Component {
 
@@ -18,7 +20,9 @@ export default class FunctionsPage extends React.Component {
 
         return(
             <div className="functions-page">
-                <HeaderContainer history={this.props.history}/>
+                <TimeSelectorContainer />
+
+                <HeaderTab history={this.props.history}/>
 
                 <p>this is functions</p>
                 <Link

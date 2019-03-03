@@ -20,7 +20,8 @@ import {Provider}  from "react-redux";
 import { HashRouter } from 'react-router-dom';
 // import { ConnectedRouter } from 'react-router-redux';
 import { ConnectedRouter } from 'connected-react-router'
-import { router } from './router';
+// import { router } from './router';
+import { MainRouter } from './router';
 
 import firstReducer from "./reducers/counter";
 import timeSelectorReducer from "./reducers/timeSelector";
@@ -28,7 +29,6 @@ import timeSelectorReducer from "./reducers/timeSelector";
 import store, {history} from "./store/configureStore";
 
 
-// const history = createHistory();
 const app = uiModules.get('apps/thundra');
 
 app.config($locationProvider => {
@@ -57,8 +57,11 @@ function RootController($scope, $element, $http) {
             {/* <Main title="thundra" httpClient={$http}/> */}
 
             <ConnectedRouter history={history}>
-                <HashRouter>{router}</HashRouter>
+                <HashRouter>
+                    <MainRouter httpClient={$http}/>
+                </HashRouter>
             </ConnectedRouter>
+            
         </Provider>, domNode
     );
 

@@ -67,7 +67,8 @@ class Overview extends React.Component {
 
     doRequest = (httpClient, startTime, interval, convertToMonthMultiplier) => {
         
-
+        console.log("overview, doRequest; startTime, interval: ", startTime, interval);
+        
         httpClient.get('../api/thundra/invocation-count', {
             params: {
                 startTimeStamp: startTime,

@@ -3,10 +3,10 @@ import { EuiPage } from '@elastic/eui/lib/components/page/page';
 import { EuiPanel } from '@elastic/eui/lib/components/panel/panel';
 import React from 'react';
 import {
-  Redirect,
-  Route,
-  Switch,
-  Link
+    Redirect,
+    Route,
+    Switch,
+    Link
 } from 'react-router-dom';
 
 // import SettingsModal from './components/SettingsModal/SettingsModal';
@@ -15,7 +15,7 @@ import {
 // import Header from './containers/Header';
 // import SourceList from './containers/SourceList';
 
-import {OverviewPage, FunctionsPage} from "./components";
+import { OverviewPage, FunctionsPage } from "./components";
 
 const SourceComponent = () => {
     return (
@@ -26,8 +26,8 @@ const SourceComponent = () => {
                 key={"details"}
                 // to={`/${tab.id}`}
                 to={`/details`}
-                // className={classes}
-                // replace={selected === tab.id}
+            // className={classes}
+            // replace={selected === tab.id}
             >
                 go to details
             </Link>
@@ -79,31 +79,34 @@ export const routeList = {
 };
 
 // build the router
-const router = (
+const MainRouter = (routerProps) => {
+    console.log("MainRouter; props: ", routerProps);
+    return (
+        <EuiErrorBoundary>
+            <div className={'content-wrapper'}>
+                <EuiPage>
+                    <EuiPanel paddingSize="l" hasShadow>
+                        {/* <SettingsModal /> */}
+                        <Switch>
+                            {/* <Route path="/source" component={SourceList} /> */}
+                            {/* <Route path={routeList.overview.path} component={OverviewPage}/> */}
 
-  <EuiErrorBoundary>
-    <div className={'content-wrapper'}>
-      {/* <Header /> */}
-      <EuiPage>
-        <EuiPanel paddingSize="l" hasShadow>
-          {/* <SettingsModal /> */}
-          <Switch>
-            {/* <Route path="/source" component={SourceList} /> */}
-            <Route path={routeList.overview.path} component={OverviewPage} />
-            <Route path={routeList.functions.path} component={FunctionsPage} />
-            <Route path="/source" component={SourceComponent} />
-            <Route path="/details" component={DetailsComponent} />
-            {/* <Route path="/channel" component={ChannelList} exact={true} /> */}
-            {/* <Route path="/channel/create/from/:name" component={ChannelCreate} exact={true} /> */}
-            {/* <Redirect to="/source" /> */}
-            <Redirect to={routeList.overview.path} />
-          </Switch>
-        </EuiPanel>
-      </EuiPage>
-    </div>
-  </EuiErrorBoundary>
+                            <Route path={routeList.overview.path}
+                                render={(props) => <OverviewPage {...props} newProps="osmann" httpClient={routerProps.httpClient}/>} 
+                            />
+                            <Route path={routeList.functions.path} component={FunctionsPage} />
+                            <Route path="/source" component={SourceComponent} />
+                            <Route path="/details" component={DetailsComponent} />
+                            {/* <Route path="/channel" component={ChannelList} exact={true} /> */}
+                            {/* <Route path="/channel/create/from/:name" component={ChannelCreate} exact={true} /> */}
+                            {/* <Redirect to="/source" /> */}
+                            <Redirect to={routeList.overview.path} />
+                        </Switch>
+                    </EuiPanel>
+                </EuiPage>
+            </div>
+        </EuiErrorBoundary>
+    );
 
-);
-
-// export
-export { router };
+};
+export { MainRouter };

@@ -6,29 +6,8 @@ import {
 } from '@elastic/eui';
 import {routeList} from "../../router";
 
-// export const TABS = [
-//     {
-//         id: 'overview',
-//         name: 'Overview',
-//         disabled: false,
-//     },
-//     {
-//         id: 'functions',
-//         name: 'Functions',
-//         disabled: false,
-//     }
-// ];
 
-// console.log("HC, tabs; routeList: ", routeList);
-// const tabs = Object.keys(routeList).map((route) => {
-//     return {
-//         id: routeList[route].path,
-//         name: routeList[route].name,
-//         disabled: routeList[route].disabled
-//     };
-// });
-
-export class HeaderContainer extends Component {
+export default class HeaderTab extends Component {
     constructor(props) {
         super(props);
 
@@ -41,24 +20,23 @@ export class HeaderContainer extends Component {
         });
 
         this.state = {
-            // selectedTabId: this.tabs[0].id,
+            // Find initial selected tab id from the url pathname.
             selectedTabId: this.tabs.find( (tab) => {
                 return tab.id === props.history.location.pathname
             }).id,
         };
     }
 
-    onSelectedTabChanged = id => {
-        // this.setState({
-        //     selectedTabId: id,
-        // }, () => this.props.history.replace(id));
+    componentWillUnmount() {
+        // console.log("CWUN; props: ", this.props);
+    }
 
-        // this.props.history.goBack();
+    onSelectedTabChanged = id => {
+        // When tab changes replace new id (id ~ path)
         this.props.history.replace(id);
     }
 
     renderTabs() {
-        // return this.tabs.map((tab, index) => (
         return this.tabs.map((tab, index) => (
             <EuiTab
                 onClick={() => this.onSelectedTabChanged(tab.id)}
@@ -72,7 +50,7 @@ export class HeaderContainer extends Component {
     }
 
     render() {
-        console.log("HeaderContainer, render; props, tabs: ", this.props, this.tabs);
+        console.log("HeaderTab, render; props, tabs: ", this.props, this.tabs);
 
         return (
             <div>
@@ -85,5 +63,3 @@ export class HeaderContainer extends Component {
         );
     }
 }
-
-// export default HeaderContainer;

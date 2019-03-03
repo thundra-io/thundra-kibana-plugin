@@ -1,14 +1,25 @@
 import React from 'react';
+
+import {
+    EuiTitle,
+    EuiFlexGrid,
+    EuiFlexItem,
+    EuiTextColor,
+    EuiComboBox,
+    EuiSpacer
+} from '@elastic/eui';
+
 import {
     Redirect,
     Route,
     Switch,
     Link
 } from 'react-router-dom';
-import {connect} from "react-redux";
-import {incrementCounter, decrementCounter} from "../../store/actions";
+import { connect } from "react-redux";
+import { incrementCounter, decrementCounter } from "../../store/actions";
 
-import {HeaderContainer} from "../../containers";
+import { HeaderTab } from "../../components";
+import { OverviewInfoContainer, TimeSelectorContainer } from "../../containers";
 
 // export default class OverviewPage extends React.Component {
 class OverviewPage extends React.Component {
@@ -20,33 +31,16 @@ class OverviewPage extends React.Component {
     render() {
         console.log("OverviewPage, render; props: ", this.props);
 
-        return(
+        return (
             <div className="overview-page">
-                <HeaderContainer history={this.props.history}/>
 
-                <p>this is overviews</p>
-                <Link
-                    // key={index}
-                    key={"details"}
-                    // to={`/${tab.id}`}
-                    to={`/details`}
-                    // className={classes}
-                    // replace={selected === tab.id}
-                >
-                    go to details
-                </Link>
+                <TimeSelectorContainer />
 
-                {/* <button
-                    className="button icon-left"
-                    onClick={this.context.router.history.goBack}>
-                    Back
-                </button> */}
+                <HeaderTab history={this.props.history} />
 
-                <div className="counter">
-                    <p>This is counter: {this.props.mySweetCounter}</p>
-                    <button onClick={this.props.increment}>Increment</button>
-                    <button onClick={this.props.decrement}>Decrement</button>
-                </div>
+                <OverviewInfoContainer
+                    httpClient={this.props.httpClient}
+                />
 
             </div>
         )
@@ -54,25 +48,4 @@ class OverviewPage extends React.Component {
 
 }
 
-const mapStateToProps = state => {
-    return {mySweetCounter:  state.counter.counter}
-};
-
-const incMe = (dispatch) => {
-    return (dispatch({type: 'INCREMENT_ODD', val: 2}));
-};
-
-const mapDispatchToProps = dispatch => {
-    return {
-        // increment: () => dispatch({type: 'INCREMENT', val: 1}),
-        increment: () => dispatch(incrementCounter()),
-        incrementIfOdd: () => incMe(dispatch),
-        // decrement: () => dispatch({type: 'DECREMENT', val: 1})
-        decrement: () => dispatch(decrementCounter())
-    }
-};
-
-export default connect(
-    mapStateToProps,
-    mapDispatchToProps,
-)(OverviewPage)
+export default OverviewPage;
