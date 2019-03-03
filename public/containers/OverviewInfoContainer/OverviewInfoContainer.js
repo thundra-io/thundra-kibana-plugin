@@ -34,27 +34,12 @@ class OverviewInfoContainer extends React.Component {
     componentDidMount() {
         const { startDate, interval } = this.props;
         console.log("CDM, OverviewInfoContainer; props: ", this.props);
-        // this.props.fetchInvocationCounts(
-        //     this.props.httpClient,
-        //     // new Date(1551626901342),
-        //     // 1551626901342,
-        //     // 10,
-        //     startDate,
-        //     interval
-        // );
+
         this.fetchData(startDate, interval);
     }
 
     componentWillReceiveProps(nextProps) {
         if (this.props.startDate !== nextProps.startDate) {
-            // this.props.fetchInvocationCounts(
-            //     nextProps.httpClient,
-            //     // new Date(1551626901342),
-            //     // 1551626901342,
-            //     // 10,
-            //     nextProps.startDate,
-            //     nextProps.interval
-            // );
             this.fetchData(nextProps.startDate, nextProps.interval);
         }
     }
@@ -79,7 +64,7 @@ class OverviewInfoContainer extends React.Component {
     }
 
     render() {
-        console.log("OverviewInfoContainer, render; props: ", this.props);
+        // console.log("OverviewInfoContainer, render; props: ", this.props);
 
         return (
             <div className="overview-info-container">
@@ -128,16 +113,12 @@ class OverviewInfoContainer extends React.Component {
 
 
 
-                <Link
-                    // key={index}
+                {/* <Link
                     key={"details"}
-                    // to={`/${tab.id}`}
                     to={`/details`}
-                // className={classes}
-                // replace={selected === tab.id}
                 >
                     go to details
-                </Link>
+                </Link> */}
 
                 {/* <button
                     className="button icon-left"

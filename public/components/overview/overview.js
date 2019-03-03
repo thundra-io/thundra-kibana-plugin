@@ -108,6 +108,7 @@ class Overview extends React.Component {
             });
         });
 
+        // invocations by functions
         httpClient.get('../api/thundra/functions', {
             params: {
                 startTimeStamp: startTime,

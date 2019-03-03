@@ -9,9 +9,6 @@ import {
     FETCH_COLD_START_INVOCATION_COUNT_SUCCESS,
     FETCH_COLD_START_INVOCATION_COUNT_FAILURE,
 } from "../constants";
-// } from "../actions/invocationCounts";
-
-import { routerActions } from "connected-react-router";
 
 const initialState = {
     invocationCount: 0,

@@ -11,7 +11,7 @@ import {
 } from "../constants";
 
 export const fetchInvocationCounts = (httpClient, startTime, interval) => {
-    console.log("actions, fetchInvocationCounts; httpClient, startTime, interval: ", httpClient, startTime, interval);
+    // console.log("actions, fetchInvocationCounts; httpClient, startTime, interval: ", httpClient, startTime, interval);
 
     return dispatch => {
         dispatch(fetchInvocationCountStarted());
@@ -53,7 +53,7 @@ const fetchInvocationCountFailure = (error) => ({
 });
 
 export const fetchErroneousInvocationCounts = (httpClient, startTime, interval) => {
-    console.log("actions, fetchErroneousInvocationCounts; httpClient, startTime, interval: ", httpClient, startTime, interval);
+    // console.log("actions, fetchErroneousInvocationCounts; httpClient, startTime, interval: ", httpClient, startTime, interval);
 
     return dispatch => {
         dispatch(fetchErroneousInvocationCountStarted());
@@ -93,7 +93,7 @@ const fetchErroneousInvocationCountFailure = (error) => ({
 
 
 export const fetchColdStartInvocationCounts = (httpClient, startTime, interval) => {
-    console.log("actions, fetchColdStartInvocationCounts; httpClient, startTime, interval: ", httpClient, startTime, interval);
+    // console.log("actions, fetchColdStartInvocationCounts; httpClient, startTime, interval: ", httpClient, startTime, interval);
 
     return dispatch => {
         dispatch(fetchColdStartInvocationCountStarted());

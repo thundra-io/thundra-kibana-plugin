@@ -19,7 +19,7 @@ import { connect } from "react-redux";
 import { incrementCounter, decrementCounter } from "../../store/actions";
 
 import { HeaderTab } from "../../components";
-import { OverviewInfoContainer, TimeSelectorContainer } from "../../containers";
+import { OverviewInfoContainer, OverviewGraphsContainer, TimeSelectorContainer } from "../../containers";
 
 // export default class OverviewPage extends React.Component {
 class OverviewPage extends React.Component {
@@ -29,7 +29,7 @@ class OverviewPage extends React.Component {
     }
 
     render() {
-        console.log("OverviewPage, render; props: ", this.props);
+        // console.log("OverviewPage, render; props: ", this.props);
 
         return (
             <div className="overview-page">
@@ -39,6 +39,10 @@ class OverviewPage extends React.Component {
                 <HeaderTab history={this.props.history} />
 
                 <OverviewInfoContainer
+                    httpClient={this.props.httpClient}
+                />
+
+                <OverviewGraphsContainer
                     httpClient={this.props.httpClient}
                 />
 
