@@ -15,6 +15,8 @@ import {
 // import Header from './containers/Header';
 // import SourceList from './containers/SourceList';
 
+import {OverviewPage, FunctionsPage} from "./components";
+
 const SourceComponent = () => {
     return (
         <div>
@@ -60,6 +62,22 @@ const HeaderComponent = () => {
     )
 }
 
+// This is for routes to be shown on HeaderContainer
+export const routeList = {
+    overview: {
+        path: "/overview",
+        title: "Welcome to Thundra Kibana Plugin",
+        name: 'Overview',
+        disabled: false,
+    },
+    functions: {
+        path: "/functions",
+        title: "Functions",
+        name: 'Functions',
+        disabled: false,
+    }
+};
+
 // build the router
 const router = (
 
@@ -71,11 +89,14 @@ const router = (
           {/* <SettingsModal /> */}
           <Switch>
             {/* <Route path="/source" component={SourceList} /> */}
+            <Route path={routeList.overview.path} component={OverviewPage} />
+            <Route path={routeList.functions.path} component={FunctionsPage} />
             <Route path="/source" component={SourceComponent} />
             <Route path="/details" component={DetailsComponent} />
             {/* <Route path="/channel" component={ChannelList} exact={true} /> */}
             {/* <Route path="/channel/create/from/:name" component={ChannelCreate} exact={true} /> */}
-            <Redirect to="/source" />
+            {/* <Redirect to="/source" /> */}
+            <Redirect to={routeList.overview.path} />
           </Switch>
         </EuiPanel>
       </EuiPage>

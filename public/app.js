@@ -1,4 +1,4 @@
-import createHistory from 'history/createHashHistory';
+// import createHistory from 'history/createHashHistory';
 import React from 'react';
 import {uiModules} from 'ui/modules';
 import chrome from 'ui/chrome';
@@ -18,15 +18,17 @@ import Main from './components/main/main';
 import {combineReducers, createStore} from "redux";
 import {Provider}  from "react-redux";
 import { HashRouter } from 'react-router-dom';
-import { ConnectedRouter } from 'react-router-redux';
-// import { ConnectedRouter } from 'connected-react-router'
+// import { ConnectedRouter } from 'react-router-redux';
+import { ConnectedRouter } from 'connected-react-router'
 import { router } from './router';
 
 import firstReducer from "./reducers/counter";
 import timeSelectorReducer from "./reducers/timeSelector";
 
+import store, {history} from "./store/configureStore";
 
-const history = createHistory();
+
+// const history = createHistory();
 const app = uiModules.get('apps/thundra');
 
 app.config($locationProvider => {
@@ -41,23 +43,22 @@ app.config(stateManagementConfigProvider =>
     stateManagementConfigProvider.disable()
 );
 
-const myapp = combineReducers({
-    firstReducer,
-    timeSelectorReducer
-});
-
-const store = createStore(myapp);
+// const myapp = combineReducers({
+//     firstReducer,
+//     timeSelectorReducer
+// });
+// const store = createStore(myapp);
 
 function RootController($scope, $element, $http) {
     const domNode = $element[0];
     // render react to DOM
     render(
         <Provider store={store}>
-            <Main title="thundra" httpClient={$http}/>
+            {/* <Main title="thundra" httpClient={$http}/> */}
 
-            {/* <ConnectedRouter history={history}>
+            <ConnectedRouter history={history}>
                 <HashRouter>{router}</HashRouter>
-            </ConnectedRouter> */}
+            </ConnectedRouter>
         </Provider>, domNode
     );
 
