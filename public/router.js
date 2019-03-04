@@ -83,7 +83,10 @@ const MainRouter = (routerProps) => {
                             <Route path={routeList.overview.path}
                                 render={(props) => <OverviewPage {...props} httpClient={routerProps.httpClient}/>} 
                             />
-                            <Route path={routeList.functions.path} component={FunctionsPage} />
+                            <Route path={routeList.functions.path}
+                                render={(props) => <FunctionsPage {...props} httpClient={routerProps.httpClient}/>} 
+                            />
+
                             <Route path="/source" component={SourceComponent} />
                             <Route path="/details" component={DetailsComponent} />
                             {/* <Route path="/channel" component={ChannelList} exact={true} /> */}

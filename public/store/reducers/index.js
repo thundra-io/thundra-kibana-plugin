@@ -3,10 +3,12 @@ import counter from './counter';
 import invocationCounts from './invocationCounts';
 import timeSelector from './timeSelector';
 import functionStats from './functionStats';
+import functionList from './functions'
 
 export default combineReducers({
   counter,
   invocationCounts,
   timeSelector,
-  functionStats
+  functionStats,
+  functionList
 });

@@ -7,7 +7,7 @@ import {
 } from 'react-router-dom';
 import {HeaderTab} from "../../components";
 
-import { TimeSelectorContainer } from "../../containers";
+import { TimeSelectorContainer, FunctionsTableContainer } from "../../containers";
 
 export default class FunctionsPage extends React.Component {
 
@@ -24,17 +24,16 @@ export default class FunctionsPage extends React.Component {
 
                 <HeaderTab history={this.props.history}/>
 
-                <p>this is functions</p>
-                <Link
-                    // key={index}
+                <FunctionsTableContainer 
+                    httpClient={this.props.httpClient}
+                />
+
+                {/* <Link
                     key={"details"}
-                    // to={`/${tab.id}`}
                     to={`/details`}
-                    // className={classes}
-                    // replace={selected === tab.id}
                 >
                     go to details
-                </Link>
+                </Link> */}
 
                 {/* <button
                     className="button icon-left"

@@ -288,18 +288,18 @@ export const fetchInvocationDurationsPerHourByName = (httpClient, startTime, int
 }
 
 const fetchInvocationDurationsPerHourByNameStarted = () => ({
-    type: FETCH_INVOCATION_DURATIONS_PER_HOUR_STARTED
+    type: FETCH_INVOCATION_DURATIONS_PER_HOUR_BY_NAME_STARTED
 });
 
 const fetchInvocationDurationsPerHourByNameSuccess = (invocationDurationsPerHour) => ({
-    type: FETCH_INVOCATION_DURATIONS_PER_HOUR_SUCCESS,
+    type: FETCH_INVOCATION_DURATIONS_PER_HOUR_BY_NAME_SUCCESS,
     payload: {
         invocationDurationsPerHour: invocationDurationsPerHour
     }
 });
 
 const fetchInvocationDurationsPerHourByNameFailure = (error) => ({
-    type: FETCH_INVOCATION_DURATIONS_PER_HOUR_FAILURE,
+    type: FETCH_INVOCATION_DURATIONS_PER_HOUR_BY_NAME_FAILURE,
     payload: {
         ...error
     }
