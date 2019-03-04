@@ -1,27 +1,8 @@
 import React from 'react';
 
-import {
-    EuiTitle,
-    EuiFlexGrid,
-    EuiFlexItem,
-    EuiTextColor,
-    EuiComboBox,
-    EuiSpacer
-} from '@elastic/eui';
-
-import {
-    Redirect,
-    Route,
-    Switch,
-    Link
-} from 'react-router-dom';
-import { connect } from "react-redux";
-import { incrementCounter, decrementCounter } from "../../store/actions";
-
 import { HeaderTab } from "../../components";
 import { OverviewInfoContainer, OverviewGraphsContainer, TimeSelectorContainer } from "../../containers";
 
-// export default class OverviewPage extends React.Component {
 class OverviewPage extends React.Component {
 
     constructor(props) {
@@ -47,7 +28,7 @@ class OverviewPage extends React.Component {
                 />
 
             </div>
-        )
+        );
     }
 
 }

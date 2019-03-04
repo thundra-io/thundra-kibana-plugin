@@ -54,14 +54,6 @@ const DetailsComponent = () => {
     )
 }
 
-const HeaderComponent = () => {
-    return (
-        <div>
-            this is header component
-        </div>
-    )
-}
-
 // This is for routes to be shown on HeaderContainer
 export const routeList = {
     overview: {
@@ -88,11 +80,8 @@ const MainRouter = (routerProps) => {
                     <EuiPanel paddingSize="l" hasShadow>
                         {/* <SettingsModal /> */}
                         <Switch>
-                            {/* <Route path="/source" component={SourceList} /> */}
-                            {/* <Route path={routeList.overview.path} component={OverviewPage}/> */}
-
                             <Route path={routeList.overview.path}
-                                render={(props) => <OverviewPage {...props} newProps="osmann" httpClient={routerProps.httpClient}/>} 
+                                render={(props) => <OverviewPage {...props} httpClient={routerProps.httpClient}/>} 
                             />
                             <Route path={routeList.functions.path} component={FunctionsPage} />
                             <Route path="/source" component={SourceComponent} />

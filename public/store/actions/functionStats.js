@@ -13,7 +13,13 @@ import {
     FETCH_INVOCATION_COUNTS_PER_HOUR_FAILURE,
     FETCH_INVOCATION_DURATIONS_PER_HOUR_STARTED,
     FETCH_INVOCATION_DURATIONS_PER_HOUR_SUCCESS,
-    FETCH_INVOCATION_DURATIONS_PER_HOUR_FAILURE
+    FETCH_INVOCATION_DURATIONS_PER_HOUR_FAILURE,
+    FETCH_INVOCATION_COUNTS_PER_HOUR_BY_NAME_STARTED,
+    FETCH_INVOCATION_COUNTS_PER_HOUR_BY_NAME_SUCCESS,
+    FETCH_INVOCATION_COUNTS_PER_HOUR_BY_NAME_FAILURE,
+    FETCH_INVOCATION_DURATIONS_PER_HOUR_BY_NAME_STARTED,
+    FETCH_INVOCATION_DURATIONS_PER_HOUR_BY_NAME_SUCCESS,
+    FETCH_INVOCATION_DURATIONS_PER_HOUR_BY_NAME_FAILURE
 } from "../constants";
 
 export const fetchInvocationsByFunctions = (httpClient, startTime, interval) => {
@@ -211,6 +217,88 @@ const fetchInvocationDurationsPerHourSuccess = (invocationDurationsPerHour) => (
 });
 
 const fetchInvocationDurationsPerHourFailure = (error) => ({
+    type: FETCH_INVOCATION_DURATIONS_PER_HOUR_FAILURE,
+    payload: {
+        ...error
+    }
+});
+
+
+export const fetchInvocationCountsPerHourByName = (httpClient, startTime, interval, functionName) => {
+    // console.log("actions, fetchInvocationCountsPerHour; httpClient, startTime, interval: ", httpClient, startTime, interval);
+
+    return dispatch => {
+        dispatch(fetchInvocationCountsPerHourByNameStarted());
+
+        httpClient.get('../api/thundra/invocation-counts-per-hour-with-function-name', {
+            params: {
+                startTimeStamp: startTime,
+                interval: interval,
+                functionName: functionName
+            }
+        }).then((resp) => {
+            dispatch(fetchInvocationCountsPerHourByNameSuccess(resp.data.invocationCountPerHour))
+        })
+        .catch((err) => {
+            dispatch(fetchInvocationCountsPerHourByNameFailure(err))
+        });
+
+    }
+}
+
+const fetchInvocationCountsPerHourByNameStarted = () => ({
+    type: FETCH_INVOCATION_COUNTS_PER_HOUR_BY_NAME_STARTED
+});
+
+const fetchInvocationCountsPerHourByNameSuccess = (invocationCountsPerHour) => ({
+    type: FETCH_INVOCATION_COUNTS_PER_HOUR_BY_NAME_SUCCESS,
+    payload: {
+        invocationCountsPerHour: invocationCountsPerHour
+    }
+});
+
+const fetchInvocationCountsPerHourByNameFailure = (error) => ({
+    type: FETCH_INVOCATION_COUNTS_PER_HOUR_BY_NAME_FAILURE,
+    payload: {
+        ...error
+    }
+});
+
+
+export const fetchInvocationDurationsPerHourByName = (httpClient, startTime, interval, functionName) => {
+    // console.log("actions, fetchInvocationDurationsPerHour; httpClient, startTime, interval: ", httpClient, startTime, interval);
+
+    return dispatch => {
+        dispatch(fetchInvocationDurationsPerHourByNameStarted());
+
+        httpClient.get('../api/thundra/invocation-duration-per-hour-with-function-name', {
+            params: {
+                startTimeStamp: startTime,
+                interval: interval,
+                functionName: functionName
+            }
+        }).then((resp) => {
+            dispatch(fetchInvocationDurationsPerHourByNameSuccess(resp.data.durationPerHour))
+        })
+        .catch((err) => {
+            dispatch(fetchInvocationDurationsPerHourByNameFailure(err))
+        });
+
+    }
+}
+
+const fetchInvocationDurationsPerHourByNameStarted = () => ({
+    type: FETCH_INVOCATION_DURATIONS_PER_HOUR_STARTED
+});
+
+const fetchInvocationDurationsPerHourByNameSuccess = (invocationDurationsPerHour) => ({
+    type: FETCH_INVOCATION_DURATIONS_PER_HOUR_SUCCESS,
+    payload: {
+        invocationDurationsPerHour: invocationDurationsPerHour
+    }
+});
+
+const fetchInvocationDurationsPerHourByNameFailure = (error) => ({
     type: FETCH_INVOCATION_DURATIONS_PER_HOUR_FAILURE,
     payload: {
         ...error

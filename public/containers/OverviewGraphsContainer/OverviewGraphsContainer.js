@@ -21,7 +21,9 @@ import {
     fetchErroneousInvocationsByFunctions,
     fetchColdStartInvocationsByFunctions,
     fetchInvocationCountsPerHour,
-    fetchInvocationDurationsPerHour
+    fetchInvocationDurationsPerHour,
+    fetchInvocationCountsPerHourByName,
+    fetchInvocationDurationsPerHourByName
 } from "../../store/actions";
 
 import { connect } from "react-redux";
@@ -34,6 +36,10 @@ class OverviewGraphsContainer extends React.Component {
 
     constructor(props) {
         super(props);
+
+        this.state = {
+            selectedFunctionName: null
+        }
     }
 
     componentDidMount() {
@@ -90,7 +96,7 @@ class OverviewGraphsContainer extends React.Component {
                         orientation={ORIENTATION.HORIZONTAL}
                         height={250}
                     >
-                        <EuiBarSeries name="Invocation Count" data={DATA} color={"#65a637"} onValueClick={(e) => console.log("value clicked; e: ", e)} />
+                        <EuiBarSeries name="Invocation Count" data={DATA} color={"#65a637"} onValueClick={(e) => this.onClick(e)} />
                     </EuiSeriesChart>
                 </EuiFlexItem>
 
@@ -103,7 +109,7 @@ class OverviewGraphsContainer extends React.Component {
                         orientation={ORIENTATION.HORIZONTAL}
                         height={250}
                     >
-                        <EuiBarSeries name="Invocation Count" data={EDATA} color={"#d93f3c"} onValueClick={(e) => console.log("value clicked; e: ", e)} />
+                        <EuiBarSeries name="Invocation Count" data={EDATA} color={"#d93f3c"} onValueClick={(e) => this.onClick(e)} />
                     </EuiSeriesChart>
                 </EuiFlexItem>
 
@@ -116,7 +122,7 @@ class OverviewGraphsContainer extends React.Component {
                         orientation={ORIENTATION.HORIZONTAL}
                         height={250}
                     >
-                        <EuiBarSeries name="Invocation Count" data={CDATA} color={"#6db7c6"} onValueClick={(e) => console.log("value clicked; e: ", e)} />
+                        <EuiBarSeries name="Invocation Count" data={CDATA} color={"#6db7c6"} onValueClick={(e) => this.onClick(e)} />
                     </EuiSeriesChart>
                 </EuiFlexItem>
 
@@ -124,6 +130,16 @@ class OverviewGraphsContainer extends React.Component {
 
         );
     }
+
+    onClick = (e) => {
+        const {startDate, interval} = this.props;
+        const functionName = e.y;
+
+        this.props.fetchInvocationCountsPerHourByName(this.props.httpClient, startDate, interval, functionName);
+        this.props.fetchInvocationDurationsPerHourByName(this.props.httpClient, startDate, interval, functionName);
+
+        this.setState({selectedFunctionName: functionName});
+    };
 
 
     renderPerHourLineCharts = () => {
@@ -156,8 +172,7 @@ class OverviewGraphsContainer extends React.Component {
                 <EuiFlexGrid columns={2}>
                     <EuiFlexItem>
                         <EuiText grow={false}>
-                            {/* <p> Total invocation count for <EuiTextColor color="subdued"> {this.state.selectedFunctionName == null ? 'all' : this.state.selectedFunctionName}</EuiTextColor> function(s)</p> */}
-                            <p> Total invocation count for <EuiTextColor color="subdued">all</EuiTextColor> function(s)</p>
+                            <p> Total invocation count for <EuiTextColor color="subdued"> {this.state.selectedFunctionName == null ? 'all' : this.state.selectedFunctionName}</EuiTextColor> function(s)</p>
                         </EuiText>
                         <EuiSeriesChart height={250} xType={SCALE.TIME}>
                             {myData.map((d, i) => (
@@ -168,8 +183,7 @@ class OverviewGraphsContainer extends React.Component {
 
                     <EuiFlexItem>
                         <EuiText grow={false}>
-                            {/* <p>Total  Invocation duration for <EuiTextColor color="subdued"> {this.state.selectedFunctionName == null ? 'all' : this.state.selectedFunctionName}</EuiTextColor> function(s)</p> */}
-                            <p>Total  Invocation duration for <EuiTextColor color="subdued">all</EuiTextColor> function(s)</p>
+                            <p>Total  Invocation duration for <EuiTextColor color="subdued"> {this.state.selectedFunctionName == null ? 'all' : this.state.selectedFunctionName}</EuiTextColor> function(s)</p>
                         </EuiText>
                         <EuiSeriesChart height={250} xType={SCALE.TIME}>
                             {yourData.map((d, i) => (
@@ -190,14 +204,6 @@ class OverviewGraphsContainer extends React.Component {
 
         return (
             <div className="overview-graphs-container">
-
-                {/* {!this.props.invocationsByFunctionsFetching &&
-                    <Fragment>
-                        {this.renderHorizontalBarCharts()}
-                        {this.renderPerHourLineCharts()}
-                    </Fragment>
-                } */}
-
                 {this.renderHorizontalBarCharts()}
                 {this.renderPerHourLineCharts()}
             </div>
@@ -226,8 +232,11 @@ const mapDispatchToProps = dispatch => {
         fetchInvocationsByFunctions: (httpClient, startTime, interval) => dispatch(fetchInvocationsByFunctions(httpClient, startTime, interval)),
         fetchErroneousInvocationsByFunctions: (httpClient, startTime, interval) => dispatch(fetchErroneousInvocationsByFunctions(httpClient, startTime, interval)),
         fetchColdStartInvocationsByFunctions: (httpClient, startTime, interval) => dispatch(fetchColdStartInvocationsByFunctions(httpClient, startTime, interval)),
+
         fetchInvocationCountsPerHour: (httpClient, startTime, interval) => dispatch(fetchInvocationCountsPerHour(httpClient, startTime, interval)),
         fetchInvocationDurationsPerHour: (httpClient, startTime, interval) => dispatch(fetchInvocationDurationsPerHour(httpClient, startTime, interval)),
+        fetchInvocationCountsPerHourByName: (httpClient, startTime, interval, functionName) => dispatch(fetchInvocationCountsPerHourByName(httpClient, startTime, interval, functionName)),
+        fetchInvocationDurationsPerHourByName: (httpClient, startTime, interval, functionName) => dispatch(fetchInvocationDurationsPerHourByName(httpClient, startTime, interval, functionName)),
     }
 };
 

@@ -13,7 +13,13 @@ import {
     FETCH_INVOCATION_COUNTS_PER_HOUR_FAILURE,
     FETCH_INVOCATION_DURATIONS_PER_HOUR_STARTED,
     FETCH_INVOCATION_DURATIONS_PER_HOUR_SUCCESS,
-    FETCH_INVOCATION_DURATIONS_PER_HOUR_FAILURE
+    FETCH_INVOCATION_DURATIONS_PER_HOUR_FAILURE,
+    FETCH_INVOCATION_COUNTS_PER_HOUR_BY_NAME_STARTED,
+    FETCH_INVOCATION_COUNTS_PER_HOUR_BY_NAME_SUCCESS,
+    FETCH_INVOCATION_COUNTS_PER_HOUR_BY_NAME_FAILURE,
+    FETCH_INVOCATION_DURATIONS_PER_HOUR_BY_NAME_STARTED,
+    FETCH_INVOCATION_DURATIONS_PER_HOUR_BY_NAME_SUCCESS,
+    FETCH_INVOCATION_DURATIONS_PER_HOUR_BY_NAME_FAILURE
 } from "../constants";
 
 const initialState = {
@@ -130,6 +136,45 @@ export default function invocationsByFunctions(state = initialState, action) {
                 invocationDurationsPerHour: action.payload.invocationDurationsPerHour
             };
         case FETCH_INVOCATION_DURATIONS_PER_HOUR_FAILURE:
+            return {
+                ...state,
+                invocationDurationsPerHourFetching: false,
+                invocationDurationsPerHourError: action.payload.error
+            }
+        // TODO: BY_NAME version is same as previous count and duration version
+        case FETCH_INVOCATION_COUNTS_PER_HOUR_BY_NAME_STARTED:
+            return {
+                ...state,
+                invocationCountsPerHourFetching: true,
+                invocationCountsPerHourError: null
+            };
+        case FETCH_INVOCATION_COUNTS_PER_HOUR_BY_NAME_SUCCESS:
+            return {
+                ...state,
+                invocationCountsPerHourFetching: false,
+                invocationCountsPerHourError: null,
+                invocationCountsPerHour: action.payload.invocationCountsPerHour
+            };
+        case FETCH_INVOCATION_COUNTS_PER_HOUR_BY_NAME_FAILURE:
+            return {
+                ...state,
+                invocationCountsPerHourFetching: false,
+                invocationCountsPerHourError: action.payload.error
+            }
+        case FETCH_INVOCATION_DURATIONS_PER_HOUR_BY_NAME_STARTED:
+            return {
+                ...state,
+                invocationDurationsPerHourFetching: true,
+                invocationDurationsPerHourError: null
+            };
+        case FETCH_INVOCATION_DURATIONS_PER_HOUR_BY_NAME_SUCCESS:
+            return {
+                ...state,
+                invocationDurationsPerHourFetching: false,
+                invocationDurationsPerHourError: null,
+                invocationDurationsPerHour: action.payload.invocationDurationsPerHour
+            };
+        case FETCH_INVOCATION_DURATIONS_PER_HOUR_BY_NAME_FAILURE:
             return {
                 ...state,
                 invocationDurationsPerHourFetching: false,
