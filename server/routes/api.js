@@ -132,6 +132,8 @@ export default function (server) {
                 let query = {
                     index: 'lab-invocation-*',
                     body: {
+                        from: req.query.paginationFrom,
+                        size: req.query.paginationSize,
                         query: {
                             bool: {
                                 must: [
@@ -165,11 +167,19 @@ export default function (server) {
                                     min_doc_count: 0
                                 }
                             }
-                        }
+                        },
+                        sort: [
+                            {
+                                finishTimestamp: {
+                                    order: 'desc'
+                                }
+                            }
+                        ]
                     }
                 };
                 callWithInternalUser('search', query).then(response => {
-                    reply({ invocations: (response.hits.hits)});
+                    // reply({ invocations: (response.hits.hits)});
+                    reply({ invocations: (response.hits)});
                 });
             }
         }

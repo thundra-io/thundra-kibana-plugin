@@ -15,12 +15,16 @@ import {
 // import Header from './containers/Header';
 // import SourceList from './containers/SourceList';
 
-import { OverviewPage, FunctionsPage } from "./components";
+import { OverviewPage, FunctionsPage, InvocationsPage } from "./components";
 
-const SourceComponent = () => {
+const SourceComponent = (props) => {
+
+    console.log("SourceComponent; props: ", props);
+
     return (
         <div>
-            this is source
+            <p>this is source</p>
+            <p>functionName: {props.match.params.functionName}</p>
             <Link
                 // key={index}
                 key={"details"}
@@ -67,7 +71,13 @@ export const routeList = {
         title: "Functions",
         name: 'Functions',
         disabled: false,
-    }
+    },
+    // invocations: {
+    //     path: "/functions/:functionName",
+    //     title: "Invocations",
+    //     name: "Invocations",
+    //     disabled: false
+    // }
 };
 
 // build the router
@@ -83,8 +93,11 @@ const MainRouter = (routerProps) => {
                             <Route path={routeList.overview.path}
                                 render={(props) => <OverviewPage {...props} httpClient={routerProps.httpClient}/>} 
                             />
-                            <Route path={routeList.functions.path}
+                            <Route exact path={routeList.functions.path}
                                 render={(props) => <FunctionsPage {...props} httpClient={routerProps.httpClient}/>} 
+                            />
+                            <Route path="/functions/:functionName" 
+                                render={(props) => <InvocationsPage {...props} httpClient={routerProps.httpClient}/>} 
                             />
 
                             <Route path="/source" component={SourceComponent} />

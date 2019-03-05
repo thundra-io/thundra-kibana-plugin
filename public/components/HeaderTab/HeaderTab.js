@@ -19,6 +19,8 @@ export default class HeaderTab extends Component {
             };
         });
 
+        console.log("HeaderTab, constructor; tabs: ", this.tabs);
+
         this.state = {
             // Find initial selected tab id from the url pathname.
             selectedTabId: this.tabs.find( (tab) => {

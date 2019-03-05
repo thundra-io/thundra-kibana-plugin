@@ -1,6 +1,10 @@
 import React, { Fragment } from 'react';
 
 import {
+    Link
+} from 'react-router-dom';
+
+import {
     EuiSpacer,
     EuiInMemoryTable,
     EuiLink
@@ -47,9 +51,15 @@ class FunctionsTableContainer extends React.Component {
                 name: 'Application Name',
                 sortable: true,
                 render: (functionName) => (
-                    <EuiLink href={`https://github.com/${functionName}`} target="_blank">
+                    // <EuiLink href={`https://github.com/${functionName}`} target="_blank">
+                    //     {functionName}
+                    // </EuiLink>
+                    <Link
+                        key={"invocations"}
+                        to={`/functions/${functionName}`}
+                    >
                         {functionName}
-                    </EuiLink>
+                    </Link>
                 )
             },
             {

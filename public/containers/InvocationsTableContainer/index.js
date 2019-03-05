@@ -1,0 +1,1 @@
+export { default as InvocationsTableContainer } from './InvocationsTableContainer';

@@ -71,7 +71,7 @@ export default function (server) {
             }
         }
     );
-    
+
     server.route(
         {
             path: '/api/thundra/cpu-metrics',
@@ -206,7 +206,7 @@ export default function (server) {
                     }
                 };
                 callWithInternalUser('search', query).then(response => {
-                    reply({ invocations: (response.aggregations.timeSeriesByStartTime.buckets)});
+                    reply({ invocations: (response.aggregations.timeSeriesByStartTime.buckets) });
                 });
             }
         }
@@ -296,10 +296,12 @@ export default function (server) {
                     }
                 };
                 callWithInternalUser('search', query).then(response => {
-                    reply({ invocations: (response.aggregations.timeSeriesByStartTime.buckets)});
+                    reply({ invocations: (response.aggregations.timeSeriesByStartTime.buckets) });
                 });
             }
         }
     );
 
 }
+
+
