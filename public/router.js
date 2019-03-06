@@ -15,7 +15,12 @@ import {
 // import Header from './containers/Header';
 // import SourceList from './containers/SourceList';
 
-import { OverviewPage, FunctionsPage, InvocationsPage } from "./components";
+import { 
+    OverviewPage, 
+    FunctionsPage, 
+    InvocationsPage,
+    InvocationTracePage
+} from "./components";
 
 const SourceComponent = (props) => {
 
@@ -96,9 +101,13 @@ const MainRouter = (routerProps) => {
                             <Route exact path={routeList.functions.path}
                                 render={(props) => <FunctionsPage {...props} httpClient={routerProps.httpClient}/>} 
                             />
-                            <Route path="/functions/:functionName" 
+                            <Route exact path="/functions/:functionName" 
                                 render={(props) => <InvocationsPage {...props} httpClient={routerProps.httpClient}/>} 
                             />
+                            <Route path="/functions/:functionName/invocation/:invocationId" 
+                                render={(props) => <InvocationTracePage {...props} httpClient={routerProps.httpClient}/>} 
+                            />
+
 
                             <Route path="/source" component={SourceComponent} />
                             <Route path="/details" component={DetailsComponent} />

@@ -41,7 +41,6 @@ class TimeSelectorContainer extends Component {
 
         return (
             <Fragment>
-                <EuiSpacer size="m" />
                 <EuiFlexGrid>
                     <EuiFlexItem grow={10}>
                         <EuiTitle>

@@ -124,6 +124,7 @@ export default function (server) {
         }
     );
 
+    // fetch list of invocations for a given function name.
     server.route(
         {
             path: '/api/thundra/invocations-with-function-name',

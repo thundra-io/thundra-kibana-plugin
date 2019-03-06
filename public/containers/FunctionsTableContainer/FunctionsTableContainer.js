@@ -50,17 +50,17 @@ class FunctionsTableContainer extends React.Component {
                 field: 'applicationName',
                 name: 'Application Name',
                 sortable: true,
-                render: (functionName) => (
-                    // <EuiLink href={`https://github.com/${functionName}`} target="_blank">
-                    //     {functionName}
-                    // </EuiLink>
-                    <Link
-                        key={"invocations"}
-                        to={`/functions/${functionName}`}
-                    >
-                        {functionName}
-                    </Link>
-                )
+                render: (functionName, item) => {
+                    // console.log("FunctionTable, item: ", item);
+                    return (
+                        <Link
+                            to={`/functions/${functionName}`}
+                        >
+                            {functionName}
+                        </Link>
+                    );
+                    
+                }
             },
             {
                 field: 'applicationRuntime',
@@ -155,10 +155,8 @@ class FunctionsTableContainer extends React.Component {
 
         return (
             <EuiInMemoryTable
-                // items={this.state.functions}
                 items={this.props.functionList}
                 pagination={true}
-                // loading={this.state.isLoading}
                 loading={this.props.functionListFetching}
                 columns={columns}
                 search={search}

@@ -4,7 +4,10 @@ import {
     FETCH_FUNCTION_LIST_FAILURE,
     FETCH_INVOCATIONS_BY_FUNCTION_NAME_STARTED,
     FETCH_INVOCATIONS_BY_FUNCTION_NAME_SUCCESS,
-    FETCH_INVOCATIONS_BY_FUNCTION_NAME_FAILURE
+    FETCH_INVOCATIONS_BY_FUNCTION_NAME_FAILURE,
+    FETCH_FUNCTION_METADATA_BY_FUNCTION_NAME_STARTED,
+    FETCH_FUNCTION_METADATA_BY_FUNCTION_NAME_SUCCESS,
+    FETCH_FUNCTION_METADATA_BY_FUNCTION_NAME_FAILURE
 } from "../constants";
 
 const initialState = {
@@ -14,7 +17,11 @@ const initialState = {
 
     invocationsByFunctionName: [],
     invocationsByFunctionNameFetching: false,
-    invocationsByFunctionNameError: null
+    invocationsByFunctionNameError: null,
+
+    functionMetadataByFunctionName: {},
+    functionMetadataByFunctionNameFetching: false,
+    functionMetadataByFunctionNameError: null,
 };
 
 export default function functionList(state = initialState, action) {
@@ -56,6 +63,25 @@ export default function functionList(state = initialState, action) {
                 ...state,
                 invocationsByFunctionNameFetching: false,
                 invocationsByFunctionNameError: action.payload.error
+            }
+        case FETCH_FUNCTION_METADATA_BY_FUNCTION_NAME_STARTED:
+            return {
+                ...state,
+                functionMetadataByFunctionNameFetching: true,
+                functionMetadataByFunctionNameError: null
+            };
+        case FETCH_FUNCTION_METADATA_BY_FUNCTION_NAME_SUCCESS:
+            return {
+                ...state,
+                functionMetadataByFunctionNameFetching: false,
+                functionMetadataByFunctionNameError: null,
+                functionMetadataByFunctionName: action.payload.functionMetadataByFunctionName
+            };
+        case FETCH_FUNCTION_METADATA_BY_FUNCTION_NAME_FAILURE:
+            return {
+                ...state,
+                functionMetadataByFunctionNameFetching: false,
+                functionMetadataByFunctionNameError: action.payload.error
             }
         default:
             return state;

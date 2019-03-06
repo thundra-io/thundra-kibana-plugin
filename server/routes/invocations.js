@@ -42,96 +42,128 @@ export default function (server) {
                                     ]
                                 },
                                 aggregations: {
-                                    groupByApplicationRuntime: {
+                                    groupByApplicationStage: {
                                         terms: {
-                                            field: "applicationRuntime",
+                                            field: "applicationStage",
                                             size: 9999,
                                             min_doc_count: 1,
                                             shard_min_doc_count: 0,
                                             show_term_doc_count_error: false,
-                                            order: [
-                                                {
-                                                    _count: "desc"
-                                                },
-                                                {
-                                                    _key: "asc"
-                                                }
-                                            ]
+                                            order: [{
+                                                _count: "desc"
+                                            }, {
+                                                _key: "asc"
+                                            }]
                                         },
                                         aggregations: {
-                                            averageDuration: {
-                                                avg: {
-                                                    field: "duration"
-                                                }
-                                            },
-                                            minDuration: {
-                                                min: {
-                                                    field: "duration"
-                                                }
-                                            },
-                                            maxDuration: {
-                                                max: {
-                                                    field: "duration"
-                                                }
-                                            },
-                                            totalDuration: {
-                                                sum: {
-                                                    field: "duration"
-                                                }
-                                            },
-                                            invocationsWithError: {
-                                                filter: {
-                                                    term: {
-                                                        erroneous: {
-                                                            value: true,
-                                                            boost: 1
+                                            groupByRegion: {
+                                                terms: {
+                                                    field: "functionRegion",
+                                                    size: 9999,
+                                                    min_doc_count: 1,
+                                                    shard_min_doc_count: 0,
+                                                    show_term_doc_count_error: false,
+                                                    order: [{
+                                                        _count: "desc"
+                                                    }, {
+                                                        _key: "asc"
+                                                    }]
+                                                },
+                                                aggregations: {
+                                                    groupByApplicationRuntime: {
+                                                        terms: {
+                                                            field: "applicationRuntime",
+                                                            size: 9999,
+                                                            min_doc_count: 1,
+                                                            shard_min_doc_count: 0,
+                                                            show_term_doc_count_error: false,
+                                                            order: [
+                                                                {
+                                                                    _count: "desc"
+                                                                },
+                                                                {
+                                                                    _key: "asc"
+                                                                }
+                                                            ]
+                                                        },
+                                                        aggregations: {
+                                                            averageDuration: {
+                                                                avg: {
+                                                                    field: "duration"
+                                                                }
+                                                            },
+                                                            minDuration: {
+                                                                min: {
+                                                                    field: "duration"
+                                                                }
+                                                            },
+                                                            maxDuration: {
+                                                                max: {
+                                                                    field: "duration"
+                                                                }
+                                                            },
+                                                            totalDuration: {
+                                                                sum: {
+                                                                    field: "duration"
+                                                                }
+                                                            },
+                                                            invocationsWithError: {
+                                                                filter: {
+                                                                    term: {
+                                                                        erroneous: {
+                                                                            value: true,
+                                                                            boost: 1
+                                                                        }
+                                                                    }
+                                                                }
+                                                            },
+                                                            invocationsWithoutError: {
+                                                                filter: {
+                                                                    term: {
+                                                                        erroneous: {
+                                                                            value: false,
+                                                                            boost: 1
+                                                                        }
+                                                                    }
+                                                                }
+                                                            },
+                                                            invocationsWithColdStart: {
+                                                                filter: {
+                                                                    term: {
+                                                                        coldStart: {
+                                                                            value: true,
+                                                                            boost: 1
+                                                                        }
+                                                                    }
+                                                                }
+                                                            },
+                                                            invocationsWithTimeout: {
+                                                                filter: {
+                                                                    term: {
+                                                                        timeout: {
+                                                                            value: true,
+                                                                            boost: 1
+                                                                        }
+                                                                    }
+                                                                }
+                                                            },
+                                                            oldestInvocationTime: {
+                                                                min: {
+                                                                    field: "startTime"
+                                                                }
+                                                            },
+                                                            newestInvocationTime: {
+                                                                max: {
+                                                                    field: "startTime"
+                                                                }
+                                                            },
+                                                            estimatedTotalBilledCost: {
+                                                                sum: {
+                                                                    field: "billedCost"
+                                                                }
+                                                            }
                                                         }
                                                     }
-                                                }
-                                            },
-                                            invocationsWithoutError: {
-                                                filter: {
-                                                    term: {
-                                                        erroneous: {
-                                                            value: false,
-                                                            boost: 1
-                                                        }
-                                                    }
-                                                }
-                                            },
-                                            invocationsWithColdStart: {
-                                                filter: {
-                                                    term: {
-                                                        coldStart: {
-                                                            value: true,
-                                                            boost: 1
-                                                        }
-                                                    }
-                                                }
-                                            },
-                                            invocationsWithTimeout: {
-                                                filter: {
-                                                    term: {
-                                                        timeout: {
-                                                            value: true,
-                                                            boost: 1
-                                                        }
-                                                    }
-                                                }
-                                            },
-                                            oldestInvocationTime: {
-                                                min: {
-                                                    field: "startTime"
-                                                }
-                                            },
-                                            newestInvocationTime: {
-                                                max: {
-                                                    field: "startTime"
-                                                }
-                                            },
-                                            estimatedTotalBilledCost: {
-                                                sum: {
-                                                    field: "billedCost"
                                                 }
                                             }
                                         }
@@ -139,6 +171,7 @@ export default function (server) {
                                 }
                             }
                         }
+
                     }
                 };
                 callWithInternalUser('search', query).then(response => {
@@ -149,7 +182,179 @@ export default function (server) {
     );
 
 
+    server.route(
+        {
+            path: '/api/thundra/invocations-v2-by-function-name',
+            method: 'GET',
+            handler(req, reply) {
+                let query = {
+                    index: 'lab-invocation-*',
+                    body: {
+                        query: {
+                            bool: {
+                                must: [
+                                    {
+                                        range: {
+                                            collectedTimestamp: {
+                                                gte: req.query.startTimeStamp
+                                            }
+                                        }
+                                    },
+                                    {
+                                        term: {
+                                            applicationName: {
+                                                // value: "user-notification-dispatcher-lambda-java-lab",
+                                                value: req.query.functionName,
+                                                boost: 1
+                                            }
+                                        }
+                                    },
+                                ],
+                                adjust_pure_negative: true,
+                                boost: 1
+                            }
+                        },
+                        aggregations: {
+                            groupByApplicationStage: {
+                                terms: {
+                                    field: "applicationStage",
+                                    size: 9999,
+                                    min_doc_count: 1,
+                                    shard_min_doc_count: 0,
+                                    show_term_doc_count_error: false,
+                                    order: [{
+                                        _count: "desc"
+                                    }, {
+                                        _key: "asc"
+                                    }]
+                                },
+                                aggregations: {
+                                    groupByRegion: {
+                                        terms: {
+                                            field: "functionRegion",
+                                            size: 9999,
+                                            min_doc_count: 1,
+                                            shard_min_doc_count: 0,
+                                            show_term_doc_count_error: false,
+                                            order: [{
+                                                _count: "desc"
+                                            }, {
+                                                _key: "asc"
+                                            }]
+                                        },
+                                        aggregations: {
+                                            groupByApplicationRuntime: {
+                                                terms: {
+                                                    field: "applicationRuntime",
+                                                    size: 9999,
+                                                    min_doc_count: 1,
+                                                    shard_min_doc_count: 0,
+                                                    show_term_doc_count_error: false,
+                                                    order: [
+                                                        {
+                                                            _count: "desc"
+                                                        },
+                                                        {
+                                                            _key: "asc"
+                                                        }
+                                                    ]
+                                                },
+                                                aggregations: {
+                                                    averageDuration: {
+                                                        avg: {
+                                                            field: "duration"
+                                                        }
+                                                    },
+                                                    minDuration: {
+                                                        min: {
+                                                            field: "duration"
+                                                        }
+                                                    },
+                                                    maxDuration: {
+                                                        max: {
+                                                            field: "duration"
+                                                        }
+                                                    },
+                                                    totalDuration: {
+                                                        sum: {
+                                                            field: "duration"
+                                                        }
+                                                    },
+                                                    invocationsWithError: {
+                                                        filter: {
+                                                            term: {
+                                                                erroneous: {
+                                                                    value: true,
+                                                                    boost: 1
+                                                                }
+                                                            }
+                                                        }
+                                                    },
+                                                    invocationsWithoutError: {
+                                                        filter: {
+                                                            term: {
+                                                                erroneous: {
+                                                                    value: false,
+                                                                    boost: 1
+                                                                }
+                                                            }
+                                                        }
+                                                    },
+                                                    invocationsWithColdStart: {
+                                                        filter: {
+                                                            term: {
+                                                                coldStart: {
+                                                                    value: true,
+                                                                    boost: 1
+                                                                }
+                                                            }
+                                                        }
+                                                    },
+                                                    invocationsWithTimeout: {
+                                                        filter: {
+                                                            term: {
+                                                                timeout: {
+                                                                    value: true,
+                                                                    boost: 1
+                                                                }
+                                                            }
+                                                        }
+                                                    },
+                                                    oldestInvocationTime: {
+                                                        min: {
+                                                            field: "startTime"
+                                                        }
+                                                    },
+                                                    newestInvocationTime: {
+                                                        max: {
+                                                            field: "startTime"
+                                                        }
+                                                    },
+                                                    estimatedTotalBilledCost: {
+                                                        sum: {
+                                                            field: "billedCost"
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                };
+                callWithInternalUser('search', query).then(response => {
+                    // reply({ invocations: response.aggregations.groupByApplicationName.buckets });
+                    reply({ invocations: response.aggregations.groupByApplicationStage.buckets });
+                });
+            }
+        }
+    );
 
+
+
+    // This is to compare function metadata in given timeframe.
     server.route(
         {
             path: '/api/thundra/invocations-by-function-name-comparison-basic-data',
@@ -458,7 +663,7 @@ export default function (server) {
     );
 
 
-
+    // this is to fetch spans given span id.
     server.route(
         {
             path: '/api/thundra/invocations-get-span-by-invocation-id',
@@ -505,5 +710,5 @@ export default function (server) {
             }
         }
     );
-    
+
 }

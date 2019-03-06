@@ -1,6 +1,10 @@
 import React, { Fragment } from 'react';
 
 import {
+    Link
+} from 'react-router-dom';
+
+import {
     EuiSpacer,
     EuiInMemoryTable,
     EuiLink,
@@ -9,7 +13,8 @@ import {
 
 import {
     fetchFunctionList,
-    fetchInvocationsByFunctionName
+    fetchInvocationsByFunctionName,
+    fetchFunctionDataByFunctionName
 } from "../../store/actions";
 
 import { connect } from "react-redux";
@@ -32,23 +37,9 @@ class InvocationsTableContainer extends React.Component {
         const { startDate, interval } = this.props;
         // const { paginationFrom, paginationSize } = this.state;
 
-        // console.log("CDM, OverviewGraphsContainer; props: ", this.props);
-
         this.fetchData(startDate, interval);
 
-
         /*
-        this.props.httpClient.get('../api/thundra/invocations-by-function-name-comparison-basic-data', {
-            params: {
-                // functionName: selectedOptions[0].label,
-                // startTimeStamp: startDate,
-                // interval: interval
-            }
-        }).then((resp) => {
-            // this.setState({invocationsDurations: resp.data.invocations});
-            console.log("basicData; resp: ", resp);
-        });
-
         this.props.httpClient.get('../api/thundra/invocations-get-span-by-invocation-id', {
             params: {
                 // functionName: selectedOptions[0].label,
@@ -73,6 +64,7 @@ class InvocationsTableContainer extends React.Component {
         const { paginationFrom, paginationSize } = this.state;
 
         this.props.fetchInvocationsByFunctionName(this.props.httpClient, startDate, interval, functionName, paginationSize, paginationFrom);
+        this.props.fetchFunctionDataByFunctionName(this.props.httpClient, startDate, functionName);
     }
 
     onTableChange = ({ page = {} }) => {
@@ -80,7 +72,7 @@ class InvocationsTableContainer extends React.Component {
 
         const { startDate, interval } = this.props;
         const { functionName } = this.props.match.params;
-        const {pageIndex, paginationSize, paginationFrom} = this.state;
+        const { pageIndex, paginationSize, paginationFrom } = this.state;
 
         const {
             index: newPageIndex,
@@ -99,36 +91,57 @@ class InvocationsTableContainer extends React.Component {
 
     }
 
+    onTraceIconClick = (item) => {
+        console.log("trace clicked; item: ", item)
+        const { functionName } = this.props.match.params;
+        const invocationId = item._source.id;
+        this.props.history.push(`/functions/${functionName}/invocation/${invocationId}`);
+    }
+
     renderInvocationsTable = () => {
 
         const { pageIndex, paginationSize } = this.state;
 
-        const columns = [
-            // {
-            //     field: '_source.applicationRuntime',
-            //     name: 'Runtime',
-            //     sortable: true
-            // },
-            // {
-            //     field: '_source.applicationName',
-            //     name: 'Application Name',
-            //     sortable: true
-            // },
-            // {
-            //     field: '_source.functionRegion',
-            //     name: 'Region',
-            //     sortable: true
-            // },
+        const actions = [
             {
-                // field: '_source.finishTimestamp',
-                field: '_source.finishTime',
+                name: 'Trace Chart',
+                description: 'Go to trace chart for this invocation',
+                icon: 'apmTrace',
+                type: 'icon',
+                onClick: this.onTraceIconClick
+            }
+        ];
+
+        const columns = [
+            {
+                field: '_source.finishTimestamp',
+                // field: '_source.finishTime',
                 name: 'Time',
+                sortable: true,
+                render: (finishTime) => {
+                    const date = new Date(finishTime);
+                    const options = { year: 'numeric', month: 'numeric', day: 'numeric', hour: 'numeric', minute: 'numeric', second: 'numeric' };
+                    return (
+                        date.toLocaleDateString('en-GB', options)
+                    );
+                }
+            },
+            {
+                field: '_source.duration',
+                name: 'Duration (ms)',
                 sortable: true
             },
             {
                 field: '_source.errorType',
                 name: 'Error Type',
-                sortable: true
+                sortable: true,
+                render: (errorType) => {
+                    if (errorType === "") {
+                        return "None";
+                    }
+
+                    return errorType;
+                }
             },
             {
                 field: '_source.coldStart',
@@ -136,11 +149,14 @@ class InvocationsTableContainer extends React.Component {
                 sortable: true
             },
             {
-                field: '_source.duration',
-                name: 'Duration (ms)',
+                field: '_source.timeout',
+                name: 'Timeout',
                 sortable: true
             },
-
+            {
+                name: 'Actions',
+                actions
+            }
         ];
 
         const pagination = {
@@ -150,7 +166,7 @@ class InvocationsTableContainer extends React.Component {
             pageSizeOptions: [10, 20, 50],
         };
 
-        console.log("renderInvocationsTable; invocationList, pagination: ", this.props.invocationList, pagination);
+        // console.log("renderInvocationsTable; invocationList, pagination: ", this.props.invocationList, pagination);
         return (
             <EuiBasicTable
                 items={this.props.invocationList.hits || []}
@@ -164,10 +180,18 @@ class InvocationsTableContainer extends React.Component {
 
     render() {
         console.log("InvocationsTableContainer, render; props: ", this.props);
+        const {applicationRuntime, region, stage, invocationCount, invocationsWithColdStart, invocationsWithError} = this.props.functionMetadataByFunctionName;
 
         return (
             <div className="functions-table-container">
-                <p>invocations table here: {this.props.match.params.functionName}</p>
+                <p>invocations table here: {this.props.match.params.functionName }</p>
+                <p>Invocation Count: {invocationCount}</p>
+                <p>Cold Start Invocation Count: {invocationsWithColdStart}</p>
+                <p>Error Invocation Count: {invocationsWithError}</p>
+                <p>Region: {region}</p>
+                <p>Stage: {stage}</p>
+                <p>Application Runtime: {applicationRuntime}</p>
+
                 {this.renderInvocationsTable()}
             </div>
         )
@@ -180,8 +204,8 @@ const mapStateToProps = state => {
         invocationList: state.functionList.invocationsByFunctionName,
         invocationListFetching: state.functionList.invocationsByFunctionNameFetching,
 
-        functionList: state.functionList.functionList,
-        functionListFetching: state.functionList.functionListFetching,
+        functionMetadataByFunctionName: state.functionList.functionMetadataByFunctionName,
+        functionMetadataByFunctionNameFetching: state.functionList.functionMetadataByFunctionNameFetching,
 
         startDate: state.timeSelector.startDate,
         interval: state.timeSelector.interval,
@@ -193,6 +217,7 @@ const mapDispatchToProps = dispatch => {
         fetchFunctionList: (httpClient, startTime) => dispatch(fetchFunctionList(httpClient, startTime)),
         fetchInvocationsByFunctionName: (httpClient, startTime, interval, functionName, paginationSize, paginationFrom) =>
             dispatch(fetchInvocationsByFunctionName(httpClient, startTime, interval, functionName, paginationSize, paginationFrom)),
+        fetchFunctionDataByFunctionName: (httpClient, startTime, functionName) => dispatch(fetchFunctionDataByFunctionName(httpClient, startTime, functionName))
     }
 };
 
