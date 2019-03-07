@@ -666,7 +666,7 @@ export default function (server) {
     // this is to fetch spans given span id.
     server.route(
         {
-            path: '/api/thundra/invocations-get-span-by-invocation-id',
+            path: '/api/thundra/invocations-get-invocation-span-by-transaction-id',
             method: 'GET',
             handler(req, reply) {
                 let query = {
@@ -679,7 +679,7 @@ export default function (server) {
                                     {
                                         term: {
                                             transactionId: {
-                                                value: 'a4ae221f-9ea6-454f-9777-b8929953e8e9',
+                                                value: req.query.transactionId,
                                                 boost: 1
                                             }
                                         }
@@ -705,7 +705,7 @@ export default function (server) {
 
                 };
                 callWithInternalUser('search', query).then(response => {
-                    reply({ invocationSpansByInvocationId: (response) });
+                    reply({ invocationSpansByTransactionId: response.hits.hits });
                 });
             }
         }

@@ -7,7 +7,10 @@ import {
     FETCH_INVOCATIONS_BY_FUNCTION_NAME_FAILURE,
     FETCH_FUNCTION_METADATA_BY_FUNCTION_NAME_STARTED,
     FETCH_FUNCTION_METADATA_BY_FUNCTION_NAME_SUCCESS,
-    FETCH_FUNCTION_METADATA_BY_FUNCTION_NAME_FAILURE
+    FETCH_FUNCTION_METADATA_BY_FUNCTION_NAME_FAILURE,
+    FETCH_INVOCATION_SPANS_STARTED,
+    FETCH_INVOCATION_SPANS_SUCCESS,
+    FETCH_INVOCATION_SPANS_FAILURE
 } from "../constants";
 
 const initialState = {
@@ -22,6 +25,10 @@ const initialState = {
     functionMetadataByFunctionName: {},
     functionMetadataByFunctionNameFetching: false,
     functionMetadataByFunctionNameError: null,
+
+    invocationSpans: [],
+    invocationSpansFetching: false,
+    invocationSpansError: null
 };
 
 export default function functionList(state = initialState, action) {
@@ -82,6 +89,25 @@ export default function functionList(state = initialState, action) {
                 ...state,
                 functionMetadataByFunctionNameFetching: false,
                 functionMetadataByFunctionNameError: action.payload.error
+            }
+        case FETCH_INVOCATION_SPANS_STARTED:
+            return {
+                ...state,
+                invocationSpansFetching: true,
+                invocationSpansError: null
+            };
+        case FETCH_INVOCATION_SPANS_SUCCESS:
+            return {
+                ...state,
+                invocationSpansFetching: false,
+                invocationSpansError: null,
+                invocationSpans: action.payload.invocationSpans
+            };
+        case FETCH_INVOCATION_SPANS_FAILURE:
+            return {
+                ...state,
+                invocationSpansFetching: false,
+                invocationSpansError: action.payload.error
             }
         default:
             return state;

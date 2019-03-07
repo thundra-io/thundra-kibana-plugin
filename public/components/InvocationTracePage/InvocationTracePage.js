@@ -20,7 +20,7 @@ import {
     EuiBreadcrumbs
 } from '@elastic/eui';
 
-import { TimeSelectorContainer, InvocationsTableContainer } from "../../containers";
+import { TimeSelectorContainer, InvocationsTableContainer, InvocationTraceChartContainer } from "../../containers";
 
 class InvocationTracePage extends React.Component {
 
@@ -57,7 +57,7 @@ class InvocationTracePage extends React.Component {
                     </h5>
                 </EuiTitle>
                 <EuiSpacer />
-                
+
                 <p>invocation trace page</p>
 
                 <EuiSpacer />
@@ -70,11 +70,10 @@ class InvocationTracePage extends React.Component {
 
                 <EuiSpacer />
 
-                {/* <InvocationsTableContainer
+                <InvocationTraceChartContainer
                     httpClient={this.props.httpClient}
-                    history={this.props.history}
                     match={this.props.match}
-                /> */}
+                />
 
             </div>
         );

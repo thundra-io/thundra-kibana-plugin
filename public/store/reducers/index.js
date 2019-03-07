@@ -7,8 +7,8 @@ import functionList from './functions'
 
 export default combineReducers({
   counter,
-  invocationCounts,
   timeSelector,
+  invocationCounts,
   functionStats,
   functionList
 });

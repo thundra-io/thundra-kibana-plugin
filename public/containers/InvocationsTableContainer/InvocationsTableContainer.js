@@ -39,17 +39,6 @@ class InvocationsTableContainer extends React.Component {
 
         this.fetchData(startDate, interval);
 
-        /*
-        this.props.httpClient.get('../api/thundra/invocations-get-span-by-invocation-id', {
-            params: {
-                // functionName: selectedOptions[0].label,
-                // startTimeStamp: startDate,
-                // interval: interval
-            }
-        }).then((resp) => {
-            // this.setState({invocationsDurations: resp.data.invocations});
-            console.log("invcation span data; resp: ", resp);
-        });*/
     }
 
     componentWillReceiveProps(nextProps) {
@@ -94,8 +83,10 @@ class InvocationsTableContainer extends React.Component {
     onTraceIconClick = (item) => {
         console.log("trace clicked; item: ", item)
         const { functionName } = this.props.match.params;
-        const invocationId = item._source.id;
-        this.props.history.push(`/functions/${functionName}/invocation/${invocationId}`);
+        // const invocationId = item._source.id;
+        const transactionId = item._source.transactionId;
+        // this.props.history.push(`/functions/${functionName}/invocation/${invocationId}`);
+        this.props.history.push(`/functions/${functionName}/invocation/${transactionId}`);
     }
 
     renderInvocationsTable = () => {
@@ -183,7 +174,7 @@ class InvocationsTableContainer extends React.Component {
         const {applicationRuntime, region, stage, invocationCount, invocationsWithColdStart, invocationsWithError} = this.props.functionMetadataByFunctionName;
 
         return (
-            <div className="functions-table-container">
+            <div className="invocations-table-container">
                 <p>invocations table here: {this.props.match.params.functionName }</p>
                 <p>Invocation Count: {invocationCount}</p>
                 <p>Cold Start Invocation Count: {invocationsWithColdStart}</p>

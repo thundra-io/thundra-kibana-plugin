@@ -7,7 +7,10 @@ import {
     FETCH_INVOCATIONS_BY_FUNCTION_NAME_FAILURE,
     FETCH_FUNCTION_METADATA_BY_FUNCTION_NAME_STARTED,
     FETCH_FUNCTION_METADATA_BY_FUNCTION_NAME_SUCCESS,
-    FETCH_FUNCTION_METADATA_BY_FUNCTION_NAME_FAILURE
+    FETCH_FUNCTION_METADATA_BY_FUNCTION_NAME_FAILURE,
+    FETCH_INVOCATION_SPANS_STARTED,
+    FETCH_INVOCATION_SPANS_SUCCESS,
+    FETCH_INVOCATION_SPANS_FAILURE
 } from "../constants";
 
 export const fetchFunctionList = (httpClient, startTime) => {
@@ -228,6 +231,47 @@ const fetchFunctionDataByFunctionNameSuccess = (functionMetadataByFunctionName) 
 
 const fetchFunctionDataByFunctionNameFailure = (error) => ({
     type: FETCH_FUNCTION_METADATA_BY_FUNCTION_NAME_FAILURE,
+    payload: {
+        ...error
+    }
+});
+
+
+
+export const fetchInvocationSpans = (httpClient, transactionId) => {
+
+    return dispatch => {
+        dispatch(fetchInvocationSpansStarted());
+        
+        httpClient.get('../api/thundra/invocations-get-invocation-span-by-transaction-id', {
+            params: {
+                transactionId: transactionId
+            }
+        }).then((resp) => {
+            // console.log("success - fetchInvocationSpans; resp: ", resp);
+            dispatch(fetchInvocationSpansSuccess(resp.data.invocationSpansByTransactionId));
+        })
+        .catch((err) => {
+            // console.log("error - fetchInvocationSpans; err: ", err);
+            dispatch(fetchInvocationSpansFailure(err))
+        });
+
+    }
+}
+
+const fetchInvocationSpansStarted = () => ({
+    type: FETCH_INVOCATION_SPANS_STARTED
+});
+
+const fetchInvocationSpansSuccess = (invocationSpans) => ({
+    type: FETCH_INVOCATION_SPANS_SUCCESS,
+    payload: {
+        invocationSpans: invocationSpans
+    }
+});
+
+const fetchInvocationSpansFailure = (error) => ({
+    type: FETCH_INVOCATION_SPANS_FAILURE,
     payload: {
         ...error
     }

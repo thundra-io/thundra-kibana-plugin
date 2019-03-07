@@ -104,7 +104,7 @@ const MainRouter = (routerProps) => {
                             <Route exact path="/functions/:functionName" 
                                 render={(props) => <InvocationsPage {...props} httpClient={routerProps.httpClient}/>} 
                             />
-                            <Route path="/functions/:functionName/invocation/:invocationId" 
+                            <Route path="/functions/:functionName/invocation/:transactionId" 
                                 render={(props) => <InvocationTracePage {...props} httpClient={routerProps.httpClient}/>} 
                             />
 
