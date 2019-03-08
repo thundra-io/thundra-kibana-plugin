@@ -41,45 +41,45 @@ class DetailedTraceSummary extends React.Component {
         this.setState({ startTs, endTs });
     }
 
-    //   renderHeader() {
-    //     const { traceId, traceSummary } = this.props;
-    //     const {
-    //       durationStr,
-    //       serviceNameAndSpanCounts,
-    //       spans,
-    //       depth,
-    //     } = traceSummary;
+      renderHeader() {
+        const { traceId, traceSummary } = this.props;
+        const {
+          durationStr,
+          serviceNameAndSpanCounts,
+          spans,
+          depth,
+        } = traceSummary;
 
-    //     return (
-    //       <div className="detailed-trace-summary__header">
-    //         <div className="detailed-trace-summary__trace-id">
-    //           {traceId}
-    //         </div>
-    //         <div className="detailed-trace-summary__trace-data-list">
-    //           {
-    //             [
-    //               { label: 'Duration', value: durationStr },
-    //               { label: 'Services', value: serviceNameAndSpanCounts.length },
-    //               { label: 'Depth', value: depth },
-    //               { label: 'Total Spans', value: spans.length },
-    //             ].map(elem => (
-    //               <div
-    //                 key={elem.label}
-    //                 className="detailed-trace-summary__data-wrapper"
-    //               >
-    //                 <div className="detailed-trace-summary__data-label">
-    //                   {elem.label}
-    //                 </div>
-    //                 <div className="detailed-trace-summary__data-value">
-    //                   {elem.value}
-    //                 </div>
-    //               </div>
-    //             ))
-    //           }
-    //         </div>
-    //       </div>
-    //     );
-    //   }
+        return (
+          <div className="detailed-trace-summary__header">
+            <div className="detailed-trace-summary__trace-id">
+              {traceId}
+            </div>
+            <div className="detailed-trace-summary__trace-data-list">
+              {
+                [
+                  { label: 'Duration', value: durationStr },
+                  { label: 'Services', value: serviceNameAndSpanCounts.length },
+                  { label: 'Depth', value: depth },
+                  { label: 'Total Spans', value: spans.length },
+                ].map(elem => (
+                  <div
+                    key={elem.label}
+                    className="detailed-trace-summary__data-wrapper"
+                  >
+                    <div className="detailed-trace-summary__data-label">
+                      {elem.label}
+                    </div>
+                    <div className="detailed-trace-summary__data-value">
+                      {elem.value}
+                    </div>
+                  </div>
+                ))
+              }
+            </div>
+          </div>
+        );
+      }
 
     render() {
         const { startTs, endTs } = this.state;
@@ -89,9 +89,9 @@ class DetailedTraceSummary extends React.Component {
 
         return (
             <div>
-                <p>
+                {/* <p>
                     this is detailed summary
-                </p>
+                </p> */}
 
                 {/* <LoadingOverlay active={isLoading} /> */}
 
@@ -103,7 +103,7 @@ class DetailedTraceSummary extends React.Component {
                             : (
                                 <div>
 
-                                    {/* {this.renderHeader()} */}
+                                    {this.renderHeader()}
 
                                     <div className="detailed-trace-summary__mini-trace-viewer-wrapper">
 
@@ -122,7 +122,6 @@ class DetailedTraceSummary extends React.Component {
                                             traceSummary={traceSummary}
                                         />
                                     </div>
-
 
                                 </div>
                             )
