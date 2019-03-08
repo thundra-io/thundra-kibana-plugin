@@ -5,9 +5,11 @@ import invocations from './server/routes/invocations';
 
 
 export default function (kibana) {
+  
   return new kibana.Plugin({
     require: ['elasticsearch', 'kibana'],
     name: 'thundra',
+    
     uiExports: {
       app: {
         title: 'Thundra',

@@ -14,6 +14,9 @@ import {timefilter} from 'ui/timefilter';
 
 import 'ui/autoload/styles';
 import './less/main.less';
+// import './scss/main.scss';
+import "../node_modules/react-table/react-table.css";
+
 import Main from './components/main/main';
 import {combineReducers, createStore} from "redux";
 import {Provider}  from "react-redux";
