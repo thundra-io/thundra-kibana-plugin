@@ -2,7 +2,11 @@ import PropTypes from 'prop-types';
 
 export const spanTagPropTypes = PropTypes.shape({
   key: PropTypes.string.isRequired,
-  value: PropTypes.string.isRequired,
+  // value: PropTypes.string.isRequired,
+  value: PropTypes.oneOfType([
+    PropTypes.string,
+    PropTypes.boolean
+  ]).isRequired,
 });
 
 export const spanTagsPropTypes = PropTypes.arrayOf(

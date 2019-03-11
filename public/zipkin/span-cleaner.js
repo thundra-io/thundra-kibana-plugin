@@ -44,6 +44,7 @@ export function clean(span) {
   }
 
   res.tags = span.tags || {};
+  // console.log("span-cleaner; tags: ", res.tags);
 
   if (span.debug) res.debug = true;
   // shared is for the server side, unset it if accidentally set on the client side
@@ -88,6 +89,7 @@ export function merge(left, right) {
   }
 
   res.tags = Object.assign({}, left.tags, right.tags);
+  // console.log("span-cleaner; left, right, tags: ", left, right, res.tags);
 
   if (left.debug || right.debug) res.debug = true;
   if (left.shared || right.shared) res.shared = true;

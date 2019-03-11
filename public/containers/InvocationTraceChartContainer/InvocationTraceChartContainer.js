@@ -183,17 +183,34 @@ class InvocationTraceChartContainer extends React.Component {
         return mockTraceSummary;
     }
 
+    prepareTagsForSpan = (tags) => {
+        // console.log("prepareTagsForSpan; tags: ", tags);
+        let processedSpanTags = {};
+
+        Object.keys(tags).forEach( (key) => 
+            processedSpanTags[key] = 
+                typeof tags[key] === "object" ? JSON.stringify(tags[key]) : tags[key]
+        );
+
+        // console.log("prepareTagsForSpan; processedSpanTags: ", processedSpanTags);
+
+        return processedSpanTags;
+    }
+
     convertThundraInvocationsToTrace = () => {
         const { transactionId } = this.props.match.params;
         const { invocationSpans } = this.props;
 
-        console.log("convertThundraInvocationsToTrace; transactionId, invocationSpans: ", transactionId, invocationSpans);
+        // console.log("convertThundraInvocationsToTrace; transactionId, invocationSpans: ", transactionId, invocationSpans);
 
         const thundraTrace = invocationSpans.map( (rawSpan, index) => {
 
             const span = rawSpan._source;
+            
             // console.log(`${index}: span tag: `, span.tags);
             // console.log(`${index}: span tag: `, JSON.stringify(span.tags));
+
+            const spanTags = this.prepareTagsForSpan(span.tags);
 
             return(
                 {
@@ -205,19 +222,11 @@ class InvocationTraceChartContainer extends React.Component {
                     timestamp: span.startTimestamp,
                     duration: span.duration < 1 ? 1 : span.duration,
                     localEndpoint: {serviceName: span.serviceName, ipv4: '172.17.0.13'},
-                    annotations: [
+                    annotations: [ // TODO: remove annos?
                         { value: 'ws', timestamp: 1541138169337695 },
                         { value: 'wr', timestamp: 1541138169368570 },
                     ],
-                    // tags: {
-                    //     ...span.tags
-                    // },
-                    tags: {
-                        'http.method': 'GET',
-                        'http.path': '/',
-                        'mvc.controller.class': 'Frontend',
-                        'mvc.controller.method': 'callBackend',
-                    },
+                    tags: spanTags,
                 }
             )
         });
@@ -394,6 +403,7 @@ class InvocationTraceChartContainer extends React.Component {
             // const rawMockTraceSummary = this.sampleThundraTrace();
             const rawMockTraceSummary = this.convertThundraInvocationsToTrace();
             const correctedMockTraceSummary = treeCorrectedForClockSkew(rawMockTraceSummary);
+            console.log("ITCC; correctedMockTraceSummary: ", correctedMockTraceSummary);
             mockTraceSummary = detailedTraceSummary(correctedMockTraceSummary);
             
             console.log("ITCC; mockTraceSummary: ", mockTraceSummary);

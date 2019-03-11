@@ -13,8 +13,25 @@ const propTypes = {
     span: detailedSpanPropTypes.isRequired,
 };
 
+// Parse string values if objects, to display better objects instead of plain strings.
+const parseTagsData = (tags) => {
+    let parsedTags = {};
+
+    Object.keys(tags).forEach( tagKey => {
+        try {
+            const parsedTagValue = JSON.parse(tags[tagKey]);
+            parsedTags[tagKey] = parsedTagValue;
+        } catch(e) {
+            parsedTags[tagKey] = tags[tagKey];
+        }
+    });
+
+    return parsedTags;
+}
+
 const renderInfo = span => {
-    console.log("TSD; span: ", span);
+    // console.log("TSD; span: ", span);
+
     return (
         <div className="timeline-span-data__content">
             <div
@@ -38,9 +55,10 @@ const renderInfo = span => {
                         : null
                 }
             </div>
-            <ReactTable
+            
+            {/* <ReactTable
                 showPagination={false}
-                minRows={0 /* Hide empty rows */}
+                minRows={0} // Hide empty rows  
                 data={
                     span.annotations.map(a => (
                         {
@@ -59,10 +77,11 @@ const renderInfo = span => {
                         { Header: 'Address', accessor: 'address' },
                     ]
                 }
-            />
-            <ReactTable
+            /> */}
+
+            {/* <ReactTable
                 showPagination={false}
-                minRows={0 /* Hide empty rows */}
+                minRows={0} // Hide empty rows
                 data={span.tags}
                 columns={
                     [
@@ -70,9 +89,13 @@ const renderInfo = span => {
                         { Header: 'Value', accessor: 'value' },
                     ]
                 }
-            />
+            /> */}
 
-            {/* <ReactJson src={JSON.stringify(span.tags)} /> */}
+            <ReactJson 
+                name={false} 
+                displayDataTypes={false}
+                src={parseTagsData(span.tagsObj)} 
+            />
 
         </div>
     );

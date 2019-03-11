@@ -283,7 +283,7 @@ export function newSpanRow(spansToMerge, isLeafSpan) {
     serviceNames: [],
     annotations: [],
     tags: [],
-    errorType: 'none',
+    errorType: 'none'
   };
 
   let sharedTimestamp;
@@ -318,6 +318,8 @@ export function newSpanRow(spansToMerge, isLeafSpan) {
 
     parseAnnotationRows(next).forEach(a => maybePushAnnotation(res.annotations, a));
     parseTagRows(next).forEach(t => maybePushTag(res.tags, t));
+    res.tagsObj = next.tags;
+    // console.log("span-row; res, next: ", res, next);
 
     res.errorType = getErrorType(next, res.errorType);
 

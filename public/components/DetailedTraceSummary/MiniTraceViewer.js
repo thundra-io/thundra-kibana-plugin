@@ -13,7 +13,8 @@ const propTypes = {
   onStartAndEndTsChange: PropTypes.func.isRequired,
 };
 
-const GRAPH_HEIGHT = 75;
+// Correct graph height for padding and border amount to fit in the div.
+const GRAPH_HEIGHT = 75-6;
 const NUM_TICKS = 5;
 const LEFT_MOUSE_BUTTON = 0;
 

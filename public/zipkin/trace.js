@@ -299,6 +299,7 @@ export function detailedTraceSummary(root, logsUrl) {
 
     const isLeafSpan = children.length === 0;
     const spanRow = newSpanRow(spansToMerge, isLeafSpan);
+    // console.log("trace, detailedTraceSummary; spanRow: ", spanRow);
 
     addLayoutDetails(spanRow, timestamp, duration, depth, childIds);
     // NOTE: This will increment both the local and remote service name
