@@ -85,7 +85,7 @@ class DetailedTraceSummary extends React.Component {
         const { startTs, endTs } = this.state;
         const { isLoading, traceId, traceSummary } = this.props;
 
-        console.log("DTS; props: ", this.props);
+        // console.log("DTS; props: ", this.props);
 
         return (
             <div>

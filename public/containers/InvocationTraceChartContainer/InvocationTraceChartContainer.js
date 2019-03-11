@@ -45,7 +45,7 @@ class InvocationTraceChartContainer extends React.Component {
     }
 
     createMockTraceSummary = () => {
-        console.log("createMockTraceSummary; props: ", this.props);
+        // console.log("createMockTraceSummary; props: ", this.props);
 
         const { invocationSpans } = this.props;
 
@@ -189,11 +189,11 @@ class InvocationTraceChartContainer extends React.Component {
 
         console.log("convertThundraInvocationsToTrace; transactionId, invocationSpans: ", transactionId, invocationSpans);
 
-        // const thundraTrace = [];
-
-        const thundraTrace = invocationSpans.map( rawSpan => {
+        const thundraTrace = invocationSpans.map( (rawSpan, index) => {
 
             const span = rawSpan._source;
+            // console.log(`${index}: span tag: `, span.tags);
+            // console.log(`${index}: span tag: `, JSON.stringify(span.tags));
 
             return(
                 {
@@ -417,8 +417,8 @@ class InvocationTraceChartContainer extends React.Component {
 
                 <EuiSpacer />
                 <EuiSpacer />
-                <p>invocation trace chart</p>
-                {/* <p>transaction id: {this.props.match.params.transactionId}</p> */}
+
+                {/* <p>invocation trace chart</p>
                 <p>transaction id: {transactionId}</p>
                 <p>.</p>
                 <p>.</p>
@@ -436,7 +436,7 @@ class InvocationTraceChartContainer extends React.Component {
                             </div>
                         )
                     })
-                }
+                } */}
 
             </div>
         )

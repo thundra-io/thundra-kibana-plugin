@@ -32,7 +32,7 @@ const renderTickLines = () => {
     );
   }
 
-  
+
   return (
     <g
       stroke="#888"
@@ -132,7 +132,7 @@ class MiniTraceViewer extends React.Component {
     const {
       traceSummary,
     } = this.props;
-    console.log("MTV, renderTicks; props: ", this.props);
+    // console.log("MTV, renderTicks; props: ", this.props);
 
     const timeMarkers = [];
     for (let i = 0; i < NUM_TICKS; i += 1) {

@@ -195,7 +195,7 @@ export function mergeV2ById(spans) {
 
   // Let's cleanup any spans and pick the longest ID
   let traceId;
-  console.log("mergeV2ById; spans, traceId; ", spans, traceId);
+  // console.log("mergeV2ById; spans, traceId; ", spans, traceId);
   spans.forEach((span) => {
     const cleaned = clean(span);
     if (!traceId || traceId.length !== 32) traceId = cleaned.traceId;

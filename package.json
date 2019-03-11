@@ -74,6 +74,7 @@
     "react-router-redux": "^5.0.0-alpha.9",
     "connected-react-router": "4.5.0",
     "react-table": "^6.8.6",
+    "react-json-view": "latest",
     "reactstrap": "^6.5.0",
     "recharts": "^1.0.0-beta.0",
     "redux": "^3.5.2",
