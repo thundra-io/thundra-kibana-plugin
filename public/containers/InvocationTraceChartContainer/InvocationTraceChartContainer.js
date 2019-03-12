@@ -617,8 +617,8 @@ class InvocationTraceChartContainer extends React.Component {
                     parentId: span.parentSpanId || "",
                     id: span.id,
                     name: spanName,
-                    timestamp: span.startTimestamp,
-                    duration: span.duration < 1 ? 1 : span.duration,
+                    timestamp: span.startTimestamp * 1000,
+                    duration: span.duration < 1 ? 1 : span.duration * 1000,
                     localEndpoint: {serviceName: spanServiceName, ipv4: '0.0.0.0'},
                     annotations: [ // TODO: remove annos?
                         { value: 'ws', timestamp: 1541138169337695 },
