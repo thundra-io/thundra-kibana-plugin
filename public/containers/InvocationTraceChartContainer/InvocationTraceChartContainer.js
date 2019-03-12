@@ -20,6 +20,291 @@ import { treeCorrectedForClockSkew, detailedTraceSummary } from '../../zipkin';
 
 import { connect } from "react-redux";
 
+export const SERVICES_ASSETS = {
+    DynamoDB: {
+        color: "#327BEC",
+        iconCls: "table-services-icon-aws-dynamodb",
+        text: "DynamoDB"
+    },
+    ELASTICSEARCH: {
+        color: "#FEAE37",
+        iconCls: "services-icon-elasticsearch",
+        text: "ElasticSearch"
+    },
+    APIGATEWAY: {
+        color: "#D6B779",
+        iconCls: "services-icon-aws-apigateway",
+        text: "APIGateway"
+    },
+    SQS: {
+        color: "#D6B779",
+        iconCls: "table-services-icon-aws-sqs",
+        text: "SQS",
+    },
+    SNS: {
+        color: "#9E8739",
+        iconCls: "table-services-icon-aws-sns",
+        text: "SNS",
+    },
+    KINESIS: {
+        color: "#784C1D",
+        iconCls: "table-services-icon-aws-kinesis",
+        text: "Kinesis",
+    },
+    FIREHOSE: {
+        color: "#484839",
+        iconCls: "table-services-icon-aws-firehose",
+        text: "Firehose",
+    },
+    S3: {
+        color: "#DA2525",
+        iconCls: "table-services-icon-aws-s3",
+        text: "S3"
+    },
+    LAMBDA: {
+        color: "#DC822F",
+        iconCls: "table-services-icon-aws-lambda",
+        text: "Lambda",
+    },
+    RDB: {
+        color: "#E32828",
+        iconCls: "services-icon-rdb",
+        text: "RDB",
+    },
+    POSTGRESQL: {
+        color: "#E32828",
+        iconCls: "services-icon-postgresql",
+        text: "PostgreSQL"
+    },
+    MYSQL: {
+        color: "#E32828",
+        iconCls: "services-icon-mysql",
+        text: "MySQL"
+    },
+    MARIADB: {
+        color: "#E32828",
+        iconCls: "services-icon-mariadb"
+    },
+    MSSQL: {
+        color: "#E32828",
+        iconCls: "services-icon-mssql",
+        text: "MSSQL",
+    },
+    REDIS: {
+        color: "#CF186F",
+        iconCls: "table-services-icon-redis",
+        text: "Redis",
+    },
+    HTTP: {
+        color: "#44AB2D",
+        iconCls: "table-services-icon-http",
+        text: "HTTP"
+    },
+    FUNC: {
+        color: "#37BEDA",
+        iconCls: "table-services-icon-function",
+        text: ""
+    },
+    METHOD: {
+        color: "#DC811A",
+        iconCls: "table-services-icon-function",
+        text: "Method",
+    },
+    OTHER: {
+        color: "#B5CC18",
+        iconCls: "table-services-icon-function",
+        text: "Other",
+    },
+}
+
+const theme = {
+    scheme: 'google',
+    author: 'seth wright (http://sethawright.com)',
+    base00: '#1d1f21',
+    base01: '#282a2e',
+    base02: '#373b41',
+    base03: '#969896',
+    base04: '#b4b7b4',
+    base05: '#c5c8c6',
+    base06: '#e0e0e0',
+    base07: '#ffffff',
+    base08: '#CC342B',
+    base09: '#F96A38',
+    base0A: '#FBA922',
+    base0B: '#198844',
+    base0C: '#3971ED',
+    base0D: '#3971ED',
+    base0E: '#A36AC7',
+    base0F: '#3971ED'
+};
+
+
+const DBSummary = [
+        {title: "Error", prop: "error"},
+        {title: "Host", prop: "db.host"},
+        {title: "Instance", prop: "db.instance"},
+        {title: "Statement Type", prop: "db.statement.type"},
+        {title: "Statement", prop: "db.statement"}
+    ]
+;
+
+
+const SpanConstants = {
+    "AWS-DynamoDB": {
+        backgroundColor: SERVICES_ASSETS.DynamoDB.color,
+        iconClass: {cmd: 'static', clsname: SERVICES_ASSETS.DynamoDB.iconCls},
+        summaryRenderer: 'PropRenderer',
+        summary: [
+            {title: "Error", prop: "error"},
+            {title: "Operation Type", prop: "operation.type"},
+            {title: "Table Name", prop: "aws.dynamodb.table.name"},
+            {title: "Statement", prop: "db.statement"},
+            {title: "Request Name", prop: "aws.request.name"},
+        ]
+    },
+    "AWS-SQS": {
+        backgroundColor: SERVICES_ASSETS.SQS.color,
+        iconClass: {cmd: 'static', clsname: SERVICES_ASSETS.SQS.iconCls},
+        summaryRenderer: 'PropRenderer',
+        summary: [
+            {title: "Error", prop: "error"},
+            {title: "Operation Type", prop: "operation.type"},
+            {title: "Queue Name", prop: "aws.sqs.queue.name"},
+
+        ]
+    },
+    "AWS-SNS": {
+        backgroundColor: SERVICES_ASSETS.SNS.color,
+        iconClass: {cmd: 'static', clsname: SERVICES_ASSETS.SNS.iconCls},
+        summaryRenderer: 'PropRenderer',
+        summary: [
+            {title: "Error", prop: "error"},
+            {title: "Operation Type", prop: "operation.type"},
+            {title: "Topic Name", prop: "aws.sns.topic.name"},
+            {title: "Request Name", prop: "aws.request.name"},
+        ]
+
+    },
+    "AWS-Kinesis": {
+        backgroundColor: SERVICES_ASSETS.KINESIS.color,
+        iconClass: {cmd: 'static', clsname: SERVICES_ASSETS.KINESIS.iconCls},
+        summaryRenderer: 'PropRenderer',
+        summary: [
+            {title: "Error", prop: "error"},
+            {title: "Operation Type", prop: "operation.type"},
+            {title: "Stream Name", prop: "aws.kinesis.stream.name"},
+        ]
+    },
+    "AWS-Firehose": {
+        backgroundColor: SERVICES_ASSETS.FIREHOSE.color,
+        iconClass: {cmd: 'static', clsname: SERVICES_ASSETS.FIREHOSE.iconCls},
+        summaryRenderer: 'PropRenderer',
+        summary: [
+            {title: "Error", prop: "error"},
+            {title: "Operation Type", prop: "operation.type"},
+            {title: "Stream Name", prop: "aws.firehose.stream.name"},
+        ]
+    },
+    "AWS-S3": {
+        backgroundColor: SERVICES_ASSETS.S3.color,
+        iconClass: {cmd: 'static', clsname: SERVICES_ASSETS.S3.iconCls},
+        summaryRenderer: 'PropRenderer',
+        summary: [
+            {title: "Error", prop: "error"},
+            {title: "Operation Type", prop: "operation.type"},
+            {title: "Bucket Name", prop: "aws.s3.bucket.name"},
+            {title: "Object Name", prop: "aws.s3.object.name"},
+        ]
+    },
+
+    "AWS-Lambda": {
+        backgroundColor: SERVICES_ASSETS.LAMBDA.color,
+        iconClass: {cmd: 'static', clsname: SERVICES_ASSETS.LAMBDA.iconCls},
+        summaryRenderer: 'PropRenderer',
+        summary: [
+            {title: "Error", prop: "error"},
+            {title: "Trigger Class", prop: "trigger.className"},
+            {title: "Trigger Domain", prop: "trigger.domainName"},
+            {title: "Request", prop: "aws.lambda.invocation.request"},
+            {title: "Response", prop: "aws.lambda.invocation.response"},
+        ]
+    },
+    "POSTGRESQL": {
+        backgroundColor: SERVICES_ASSETS.POSTGRESQL.color,
+        iconClass: {cmd: 'static', clsname: SERVICES_ASSETS.POSTGRESQL.iconCls},
+        summaryRenderer: 'PropRenderer',
+        summary: DBSummary
+    },
+    "PG": {
+        backgroundColor: SERVICES_ASSETS.POSTGRESQL.color,
+        iconClass: {cmd: 'static', clsname: SERVICES_ASSETS.POSTGRESQL.iconCls},
+        summaryRenderer: 'PropRenderer',
+        summary: DBSummary
+    },
+    "ELASTICSEARCH": {
+        backgroundColor: SERVICES_ASSETS.ELASTICSEARCH.color,
+        iconClass: {cmd: 'static', clsname: SERVICES_ASSETS.ELASTICSEARCH.iconCls},
+        summaryRenderer: 'PropRenderer',
+        summary: DBSummary
+    },
+    "MYSQL": {
+        backgroundColor: SERVICES_ASSETS.MYSQL.color,
+        iconClass: {cmd: 'static', clsname: SERVICES_ASSETS.MYSQL.iconCls},
+        summaryRenderer: 'PropRenderer',
+        summary: DBSummary
+
+    },
+    "RDB": {
+        backgroundColor: SERVICES_ASSETS.RDB.color,
+        iconClass: {
+            cmd: 'regex',
+            arg0: "db.type",
+            arg2: {
+                default: SERVICES_ASSETS.RDB.iconCls,
+                mysql: SERVICES_ASSETS.MYSQL.iconCls,
+                postgresql: SERVICES_ASSETS.POSTGRESQL.iconCls,
+                mariadb: SERVICES_ASSETS.MARIADB.iconCls,
+                mssql: SERVICES_ASSETS.MSSQL.iconCls
+            }
+        },
+        summaryRenderer: 'PropRenderer',
+        summary: DBSummary
+    },
+    "Redis": {
+        backgroundColor: SERVICES_ASSETS.REDIS.color,
+        iconClass: {cmd: 'static', clsname: SERVICES_ASSETS.REDIS.iconCls},
+        summaryRenderer: 'PropRenderer',
+        summary: [
+            {title: "Error", prop: "error"},
+            {title: "Host", prop: "redis.host"},
+            {title: "Operation Type", prop: "operation.type"},
+            {title: "Command", prop: "redis.command"},
+        ]
+    },
+    "HTTP": {
+        backgroundColor: SERVICES_ASSETS.HTTP.color,
+        iconClass: {cmd: 'static', clsname: SERVICES_ASSETS.HTTP.iconCls},
+        summaryRenderer: 'PropRenderer',
+        summary: [
+            {title: "Error", prop: "error"},
+            {title: "URL", prop: "http.url"},
+            {title: "Query Params", prop: "http.query_params"},
+            {title: "Status Code", prop: "http.status_code"},
+            {title: "Method", prop: "http.method"},
+        ]
+    },
+    "Func": {
+        backgroundColor: SERVICES_ASSETS.FUNC.color,
+        iconClass: {cmd: 'static', clsname: SERVICES_ASSETS.FUNC.iconCls},
+        summaryRenderer: 'MethodRenderer',
+        summary: [
+            {title: "Error", prop: "error"},
+            {title: "Return Value", prop: "method.return_value"},
+            {title: "Args", prop: "method.args"},
+        ]
+    },
+
+}
 
 class InvocationTraceChartContainer extends React.Component {
 
@@ -42,6 +327,83 @@ class InvocationTraceChartContainer extends React.Component {
         const { transactionId } = this.props.match.params;
 
         this.props.fetchInvocationSpans(this.props.httpClient, transactionId);
+    }
+
+    sampleHttpTrace = () => {
+        const frontend = {
+            serviceName: 'frontend',
+            ipv4: '172.17.0.13',
+        };
+
+        const backend = {
+            serviceName: 'backend',
+            ipv4: '172.17.0.9',
+        };
+
+        const httpTrace = [
+            {
+                traceId: 'bb1f0e21882325b8',
+                parentId: 'bb1f0e21882325b8',
+                id: 'c8c50ebd2abc179e',
+                kind: 'CLIENT',
+                name: 'get',
+                timestamp: 1541138169297572,
+                duration: 111121,
+                localEndpoint: frontend,
+                annotations: [
+                    { value: 'ws', timestamp: 1541138169337695 },
+                    { value: 'wr', timestamp: 1541138169368570 },
+                ],
+                tags: {
+                    'http.method': 'GET',
+                    'http.path': '/api',
+                },
+            },
+            {
+                traceId: 'bb1f0e21882325b8',
+                id: 'bb1f0e21882325b8',
+                kind: 'SERVER',
+                name: 'get /',
+                timestamp: 1541138169255688,
+                duration: 168731,
+                localEndpoint: frontend,
+                remoteEndpoint: {
+                    ipv4: '110.170.201.178',
+                    port: 63678,
+                },
+                tags: {
+                    'http.method': 'GET',
+                    'http.path': '/',
+                    'mvc.controller.class': 'Frontend',
+                    'mvc.controller.method': 'callBackend',
+                },
+            },
+            {
+                traceId: 'bb1f0e21882325b8',
+                parentId: 'bb1f0e21882325b8',
+                id: 'c8c50ebd2abc179e',
+                kind: 'SERVER',
+                name: 'get /api',
+                timestamp: 1541138169377997, // this is actually skewed right, but we can't correct it
+                duration: 26326,
+                localEndpoint: backend,
+                remoteEndpoint: {
+                    ipv4: '172.17.0.13',
+                    port: 63679,
+                },
+                tags: {
+                    'http.method': 'GET',
+                    'http.path': '/api',
+                    'mvc.controller.class': 'Backend',
+                    'mvc.controller.method': 'printDate',
+                },
+                shared: true,
+            },
+        ];
+
+        console.log("sampleHttpTrace; httpTrace: ", httpTrace);
+
+        return httpTrace;
     }
 
     createMockTraceSummary = () => {
@@ -187,14 +549,49 @@ class InvocationTraceChartContainer extends React.Component {
         // console.log("prepareTagsForSpan; tags: ", tags);
         let processedSpanTags = {};
 
+        // If there is an object/array value, convert it to string because tags are supposed to 
+        // be string key/value pairs.
         Object.keys(tags).forEach( (key) => 
             processedSpanTags[key] = 
                 typeof tags[key] === "object" ? JSON.stringify(tags[key]) : tags[key]
         );
 
-        // console.log("prepareTagsForSpan; processedSpanTags: ", processedSpanTags);
-
         return processedSpanTags;
+    }
+
+    computeSpanServiceName = (span) => {
+        // console.log("computeSpanServiceName; span: ", span);
+        let serviceName = "";
+
+        if (span.className !== "") {
+            serviceName = span.className;
+        } else {
+            // serviceName = span.domainName || "asdf";
+            // serviceName = span.operationName || "asdf";
+            serviceName = "code";
+        }
+
+        // return span.serviceName;
+        return serviceName;
+    }
+
+    computeSpanName = (span) => {
+        // console.log("computeSpanName; span: ", span);
+        let spanName = "";
+
+        // if (span.domainName !== "") {
+        //     spanName = spanName + " " + span.domainName;
+        // }
+
+        // if (span.className !== "") {
+        //     spanName = spanName + " " + span.className;
+        // }
+
+        if (span.operationName !== "") {
+            spanName = spanName + " " + span.operationName;
+        }
+
+        return spanName;
     }
 
     convertThundraInvocationsToTrace = () => {
@@ -211,17 +608,18 @@ class InvocationTraceChartContainer extends React.Component {
             // console.log(`${index}: span tag: `, JSON.stringify(span.tags));
 
             const spanTags = this.prepareTagsForSpan(span.tags);
+            const spanName = this.computeSpanName(span);
+            const spanServiceName = this.computeSpanServiceName(span);
 
             return(
                 {
                     traceId: transactionId,
                     parentId: span.parentSpanId || "",
                     id: span.id,
-                    name: span.domainName + " " + span.className,
-                    // timestamp: 1552031926010000,
+                    name: spanName,
                     timestamp: span.startTimestamp,
                     duration: span.duration < 1 ? 1 : span.duration,
-                    localEndpoint: {serviceName: span.serviceName, ipv4: '172.17.0.13'},
+                    localEndpoint: {serviceName: spanServiceName, ipv4: '0.0.0.0'},
                     annotations: [ // TODO: remove annos?
                         { value: 'ws', timestamp: 1541138169337695 },
                         { value: 'wr', timestamp: 1541138169368570 },
@@ -234,173 +632,13 @@ class InvocationTraceChartContainer extends React.Component {
         return thundraTrace;
     }
 
-    sampleThundraTrace = () => {
-
-        const thundraTrace = [
-            {
-                traceId: "054289bf-e554-43bc-b6f2-b3eac2281cf0",
-                // parentId: "",
-                id: "f0cbe9cf-bc9e-4c89-ae28-11eb9b44afd6",
-                name: "AWS-Lambda",
-                // timestamp: 1552031926010000,
-                timestamp: 1552031926010,
-                duration: 113,
-                localEndpoint: {serviceName: 'frontendx',ipv4: '172.17.0.13'},
-                annotations: [
-                    { value: 'ws', timestamp: 1541138169337695 },
-                    { value: 'wr', timestamp: 1541138169368570 },
-                ],
-                tags: {
-                    'http.method': 'GET',
-                    'http.path': '/',
-                    'mvc.controller.class': 'Frontend',
-                    'mvc.controller.method': 'callBackend',
-                },
-                // error: "err-asdf"
-            },
-            {
-                traceId: "054289bf-e554-43bc-b6f2-b3eac2281cf0",
-                parentId: "f0cbe9cf-bc9e-4c89-ae28-11eb9b44afd6",
-                id: "9862fbb2-0989-49db-9a0c-21967877894d",
-                name: "Method",
-                // timestamp: 1552031926011000,
-                timestamp: 1552031926011,
-                duration: 44,
-                localEndpoint: {serviceName: 'frontend',ipv4: '172.17.0.13'},
-                annotations: [
-                    { value: 'ws', timestamp: 1541138169337695 },
-                    { value: 'wr', timestamp: 1541138169368570 },
-                ],
-                tags: {
-                    'http.method': 'GET',
-                    'http.path': '/',
-                    'mvc.controller.class': 'Frontend',
-                    'mvc.controller.method': 'callBackend',
-                },
-            },
-            {
-                traceId: "054289bf-e554-43bc-b6f2-b3eac2281cf0",
-                parentId: "f0cbe9cf-bc9e-4c89-ae28-11eb9b44afd6",
-                id: "a87d4604-1b96-46d4-b7b2-f89e042a9deb",
-                name: "AWS-SQS",
-                // timestamp: 1552031926011000,
-                timestamp: 1552031926055,
-                duration: 68,
-                localEndpoint: {serviceName: 'frontend',ipv4: '172.17.0.13'},
-                annotations: [
-                    { value: 'ws', timestamp: 1541138169337695 },
-                    { value: 'wr', timestamp: 1541138169368570 },
-                ],
-                tags: {
-                    'http.method': 'GET',
-                    'http.path': '/',
-                    'mvc.controller.class': 'Frontend',
-                    'mvc.controller.method': 'callBackend',
-                },
-            },
-        ];
-
-        return thundraTrace;
-    }
-
-
-
-    sampleHttpTrace = () => {
-        const frontend = {
-            serviceName: 'frontend',
-            ipv4: '172.17.0.13',
-        };
-
-        const backend = {
-            serviceName: 'backend',
-            ipv4: '172.17.0.9',
-        };
-
-        const httpTrace = [
-            {
-                traceId: 'bb1f0e21882325b8',
-                parentId: 'bb1f0e21882325b8',
-                id: 'c8c50ebd2abc179e',
-                kind: 'CLIENT',
-                name: 'get',
-                timestamp: 1541138169297572,
-                duration: 111121,
-                localEndpoint: frontend,
-                annotations: [
-                    { value: 'ws', timestamp: 1541138169337695 },
-                    { value: 'wr', timestamp: 1541138169368570 },
-                ],
-                tags: {
-                    'http.method': 'GET',
-                    'http.path': '/api',
-                },
-            },
-            {
-                traceId: 'bb1f0e21882325b8',
-                id: 'bb1f0e21882325b8',
-                kind: 'SERVER',
-                name: 'get /',
-                timestamp: 1541138169255688,
-                duration: 168731,
-                localEndpoint: frontend,
-                remoteEndpoint: {
-                    ipv4: '110.170.201.178',
-                    port: 63678,
-                },
-                tags: {
-                    'http.method': 'GET',
-                    'http.path': '/',
-                    'mvc.controller.class': 'Frontend',
-                    'mvc.controller.method': 'callBackend',
-                },
-            },
-            {
-                traceId: 'bb1f0e21882325b8',
-                parentId: 'bb1f0e21882325b8',
-                id: 'c8c50ebd2abc179e',
-                kind: 'SERVER',
-                name: 'get /api',
-                timestamp: 1541138169377997, // this is actually skewed right, but we can't correct it
-                duration: 26326,
-                localEndpoint: backend,
-                remoteEndpoint: {
-                    ipv4: '172.17.0.13',
-                    port: 63679,
-                },
-                tags: {
-                    'http.method': 'GET',
-                    'http.path': '/api',
-                    'mvc.controller.class': 'Backend',
-                    'mvc.controller.method': 'printDate',
-                },
-                shared: true,
-            },
-        ];
-
-        console.log("sampleHttpTrace; httpTrace: ", httpTrace);
-
-        return httpTrace;
-    }
-
     render() {
         console.log("InvocationTraceChartContainer, render; props: ", this.props);
         const { invocationSpans } = this.props;
-        const { transactionId } = this.props.match.params;
-
-        // const mockTraceSummary = this.createMockTraceSummary();
-        // const mockTraceSummary = this.sampleThundraTrace();
-
-        // const rawMockTraceSummary = this.createMockTraceSummary();
-        // const correctedMockTraceSummary = treeCorrectedForClockSkew(rawMockTraceSummary);
-        // const mockTraceSummary = detailedTraceSummary(correctedMockTraceSummary);
-
-        // const rawMockTraceSummary = this.sampleHttpTrace();
-        // const correctedMockTraceSummary = treeCorrectedForClockSkew(rawMockTraceSummary);
-        // const mockTraceSummary = detailedTraceSummary(correctedMockTraceSummary);
+        const { transactionId } = this.props.match.params
 
         let mockTraceSummary = [];
         if (invocationSpans.length > 0) {
-            // const rawMockTraceSummary = this.sampleThundraTrace();
             const rawMockTraceSummary = this.convertThundraInvocationsToTrace();
             const correctedMockTraceSummary = treeCorrectedForClockSkew(rawMockTraceSummary);
             console.log("ITCC; correctedMockTraceSummary: ", correctedMockTraceSummary);
@@ -414,12 +652,8 @@ class InvocationTraceChartContainer extends React.Component {
                 {invocationSpans.length > 0 ?
                     <DetailedTraceSummary
                         isLoading={this.props.invocationSpansFetching}
-                        
                         traceId={transactionId}
-                        // traceId={"trace-1"}
                         // traceId={"bb1f0e21882325b8"}
-                        // traceId={"054289bf-e554-43bc-b6f2-b3eac2281cf0"}
-
                         traceSummary={mockTraceSummary}
                     /> :
                     <div>traces are loading</div>
@@ -427,27 +661,6 @@ class InvocationTraceChartContainer extends React.Component {
 
                 <EuiSpacer />
                 <EuiSpacer />
-
-                {/* <p>invocation trace chart</p>
-                <p>transaction id: {transactionId}</p>
-                <p>.</p>
-                <p>.</p>
-                {
-                    invocationSpans.map(span => {
-                        return (
-                            <div key={span._id}>
-                                <p>parent-id: {span._source.parentSpanId || "ROOT"}</p>
-                                <p>id: {span._source.id}</p>
-                                <p>{span._source.className}</p>
-                                <p>{span._source.domainName}</p>
-                                <p>{span._source.duration}</p>
-                                <p>.</p>
-                                <p>.</p>
-                            </div>
-                        )
-                    })
-                } */}
-
             </div>
         )
     }

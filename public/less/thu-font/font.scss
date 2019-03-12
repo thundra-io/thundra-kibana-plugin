@@ -1,0 +1,175 @@
+@font-face {
+  font-family: "Thu-icons";
+  src: url("~assets/fonts/thu-font/fonts/thundra.eot");
+  src: url("~assets/fonts/thu-font/fonts/thundra.eot") format("embedded-opentype"),
+  url("~assets/fonts/thu-font/fonts/thundra.woff") format("woff"),
+  url("~assets/fonts/thu-font/fonts/thundra.ttf") format("truetype"),
+  url("~assets/fonts/thu-font/fonts/thundra.svg#Thu-icons") format("svg");
+  font-weight: normal;
+  font-style: normal;
+}
+
+//  I C O N
+//  İcons are using thu-icon fonts.
+[data-icon]:before {
+  font-family: "Thu-icons" !important;
+  content: attr(data-icon);
+  font-style: normal !important;
+  font-weight: normal !important;
+  font-variant: normal !important;
+  text-transform: none !important;
+  speak: none;
+  line-height: 1;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+[class^="thu-icon-"]:before,
+[class*="thu-icon-"]:before {
+  font-family: "Thu-icons" !important;
+  font-style: normal !important;
+  font-weight: normal !important;
+  font-variant: normal !important;
+  text-transform: none !important;
+  speak: none;
+  line-height: 1;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+i[class^="thu-icon-"],
+i[class*="thu-icon-"] {
+  font-family: "Thu-icons" !important;
+  font-style: normal !important;
+  font-weight: normal !important;
+  font-variant: normal !important;
+  text-transform: none !important;
+  display: inline-block;
+  font-size: 16px;
+}
+
+.thu-icon-1-function {
+  &:before {
+    content: '\e011';
+  }
+}
+
+.thu-icon-2-graphic {
+  &:before {
+    content: '\e000';
+  }
+}
+
+.thu-icon-3-arrow-down {
+  &:before {
+    content: '\e001';
+  }
+}
+
+.thu-icon-4-arrow-top {
+  &:before {
+    content: '\e002';
+  }
+}
+
+.thu-icon-5-arrow-left {
+  &:before {
+    content: '\e003';
+  }
+}
+
+.thu-icon-6-arrow-right {
+  &:before {
+    content: '\e004';
+  }
+}
+
+.thu-icon-7-arrow-2-left {
+  &:before {
+    content: '\e005';
+  }
+}
+
+.thu-icon-8-arrow-2-right {
+  &:before {
+    content: '\e006';
+  }
+}
+
+.thu-icon-9-tick {
+  &:before {
+    content: '\e007';
+  }
+}
+
+.thu-icon-10-circle-exclamation {
+  &:before {
+    content: '\e008';
+  }
+}
+
+.thu-icon-13-close {
+  &:before {
+    content: '\e009';
+  }
+}
+
+.thu-icon-14-api-key {
+  &:before {
+    content: "\e00a";
+  }
+}
+
+.thu-icon-15-delete {
+  &:before {
+    content: "\e00b";
+  }
+}
+
+.thu-icon-16-plus {
+  &:before {
+    content: "\e00c";
+  }
+}
+
+.thu-icon-17-chart {
+  &:before {
+    content: "\e00d";
+  }
+}
+
+.thu-icon-18-triangle-exclamation {
+  &:before {
+    content: "\e00e";
+  }
+}
+
+.thu-icon-19-circle-information {
+  &:before {
+    content: "\e00f";
+  }
+}
+
+.thu-icon-20-circle-tick {
+  &:before {
+    content: "\e010";
+  }
+}
+
+.thu-icon-21-search {
+  &:before {
+    content: "\e012";
+  }
+}
+
+.thu-icon-22-reset {
+  &:before {
+    content: "\e013";
+  }
+}
+
+.thu-icon-23-copy {
+  &:before {
+    content: "\e014";
+  }
+}
