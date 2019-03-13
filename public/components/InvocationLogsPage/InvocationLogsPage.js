@@ -22,6 +22,8 @@ import {
 
 import { InvocationLogsContainer } from "../../containers";
 
+import "./styles.less";
+
 class InvocationLogsPage extends React.Component {
 
     constructor(props) {
@@ -56,10 +58,7 @@ class InvocationLogsPage extends React.Component {
                         <EuiTextColor color="secondary">Thundra Serverless Observability</EuiTextColor>
                     </h5>
                 </EuiTitle>
-                <EuiSpacer />
-
-                <p>invocation logs page</p>
-
+                
                 <EuiSpacer />
 
                 <EuiTitle size={"s"}>
@@ -67,7 +66,8 @@ class InvocationLogsPage extends React.Component {
                         <EuiBreadcrumbs breadcrumbs={breadcrumbs} truncate={false} />
                     </h5>
                 </EuiTitle>
-
+                
+                <EuiSpacer />
                 <EuiSpacer />
 
                 <InvocationLogsContainer

@@ -8,7 +8,8 @@ import {
     EuiSpacer,
     EuiInMemoryTable,
     EuiLink,
-    EuiBasicTable
+    EuiBasicTable,
+    EuiLoadingKibana
 } from '@elastic/eui';
 
 import {
@@ -656,7 +657,7 @@ class InvocationTraceChartContainer extends React.Component {
                         // traceId={"bb1f0e21882325b8"}
                         traceSummary={mockTraceSummary}
                     /> :
-                    <div>traces are loading</div>
+                    <EuiLoadingKibana size="xl" />
                 }   
 
                 <EuiSpacer />

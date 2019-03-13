@@ -57,6 +57,7 @@ class InvocationsPage extends React.Component {
                 </EuiTitle>
 
                 <EuiSpacer />
+                <EuiSpacer />
 
                 <InvocationsTableContainer
                     httpClient={this.props.httpClient}
