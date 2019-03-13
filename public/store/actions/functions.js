@@ -10,7 +10,10 @@ import {
     FETCH_FUNCTION_METADATA_BY_FUNCTION_NAME_FAILURE,
     FETCH_INVOCATION_SPANS_STARTED,
     FETCH_INVOCATION_SPANS_SUCCESS,
-    FETCH_INVOCATION_SPANS_FAILURE
+    FETCH_INVOCATION_SPANS_FAILURE,
+    FETCH_INVOCATION_LOGS_STARTED,
+    FETCH_INVOCATION_LOGS_SUCCESS,
+    FETCH_INVOCATION_LOGS_FAILURE
 } from "../constants";
 
 export const fetchFunctionList = (httpClient, startTime) => {
@@ -272,6 +275,46 @@ const fetchInvocationSpansSuccess = (invocationSpans) => ({
 
 const fetchInvocationSpansFailure = (error) => ({
     type: FETCH_INVOCATION_SPANS_FAILURE,
+    payload: {
+        ...error
+    }
+});
+
+
+export const fetchInvocationLogs = (httpClient, transactionId) => {
+
+    return dispatch => {
+        dispatch(fetchInvocationLogsStarted());
+        
+        httpClient.get('../api/thundra/invocations-get-invocation-logs-by-transaction-id', {
+            params: {
+                transactionId: transactionId
+            }
+        }).then((resp) => {
+            // console.log("success - fetchInvocationLogs; resp: ", resp);
+            dispatch(fetchInvocationLogsSuccess(resp.data.invocationLogsByTransactionId));
+        })
+        .catch((err) => {
+            // console.log("error - fetchInvocationLogs; err: ", err);
+            dispatch(fetchInvocationLogsFailure(err))
+        });
+
+    }
+}
+
+const fetchInvocationLogsStarted = () => ({
+    type: FETCH_INVOCATION_LOGS_STARTED
+});
+
+const fetchInvocationLogsSuccess = (invocationLogs) => ({
+    type: FETCH_INVOCATION_LOGS_SUCCESS,
+    payload: {
+        invocationLogs: invocationLogs
+    }
+});
+
+const fetchInvocationLogsFailure = (error) => ({
+    type: FETCH_INVOCATION_LOGS_FAILURE,
     payload: {
         ...error
     }

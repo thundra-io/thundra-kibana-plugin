@@ -89,6 +89,13 @@ class InvocationsTableContainer extends React.Component {
         this.props.history.push(`/functions/${functionName}/invocation/${transactionId}`);
     }
 
+    onLogsIconClick = (item) => {
+        console.log("logs clicked; item: ", item)
+        const { functionName } = this.props.match.params;
+        const transactionId = item._source.transactionId;
+        this.props.history.push(`/functions/${functionName}/invocation/${transactionId}/logs`);
+    }
+
     renderInvocationsTable = () => {
 
         const { pageIndex, paginationSize } = this.state;
@@ -96,10 +103,17 @@ class InvocationsTableContainer extends React.Component {
         const actions = [
             {
                 name: 'Trace Chart',
-                description: 'Go to trace chart for this invocation',
+                description: 'Trace chart for this invocation',
                 icon: 'apmTrace',
                 type: 'icon',
                 onClick: this.onTraceIconClick
+            },
+            {
+                name: 'Logs',
+                description: 'Logs for this invocation',
+                icon: 'loggingApp',
+                type: 'icon',
+                onClick: this.onLogsIconClick
             }
         ];
 

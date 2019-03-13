@@ -19,7 +19,8 @@ import {
     OverviewPage, 
     FunctionsPage, 
     InvocationsPage,
-    InvocationTracePage
+    InvocationTracePage,
+    InvocationLogsPage,
 } from "./components";
 
 const SourceComponent = (props) => {
@@ -104,8 +105,11 @@ const MainRouter = (routerProps) => {
                             <Route exact path="/functions/:functionName" 
                                 render={(props) => <InvocationsPage {...props} httpClient={routerProps.httpClient}/>} 
                             />
-                            <Route path="/functions/:functionName/invocation/:transactionId" 
+                            <Route exact path="/functions/:functionName/invocation/:transactionId" 
                                 render={(props) => <InvocationTracePage {...props} httpClient={routerProps.httpClient}/>} 
+                            />
+                            <Route path="/functions/:functionName/invocation/:transactionId/logs" 
+                                render={(props) => <InvocationLogsPage {...props} httpClient={routerProps.httpClient}/>} 
                             />
 
 

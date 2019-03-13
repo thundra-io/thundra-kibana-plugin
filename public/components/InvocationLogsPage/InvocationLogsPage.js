@@ -20,16 +20,16 @@ import {
     EuiBreadcrumbs
 } from '@elastic/eui';
 
-import { TimeSelectorContainer, InvocationsTableContainer, InvocationTraceChartContainer } from "../../containers";
+import { InvocationLogsContainer } from "../../containers";
 
-class InvocationTracePage extends React.Component {
+class InvocationLogsPage extends React.Component {
 
     constructor(props) {
         super(props);
     }
 
     render() {
-        console.log("InvocationTracePage, render; props: ", this.props);
+        console.log("InvocationLogsPage, render; props: ", this.props);
         const { functionName } = this.props.match.params;
 
         const breadcrumbs = [
@@ -42,13 +42,13 @@ class InvocationTracePage extends React.Component {
                 href: `#/functions/${functionName}`
             },
             {
-                text: `Invocation Trace`,
+                text: `Invocation Logs`,
                 href: '#'
             }
         ];
 
         return (
-            <div className="invocation-trace-page">
+            <div className="invocation-logs-page">
 
                 {/* <TimeSelectorContainer /> */}
                 <EuiTitle>
@@ -56,7 +56,10 @@ class InvocationTracePage extends React.Component {
                         <EuiTextColor color="secondary">Thundra Serverless Observability</EuiTextColor>
                     </h5>
                 </EuiTitle>
-                
+                <EuiSpacer />
+
+                <p>invocation logs page</p>
+
                 <EuiSpacer />
 
                 <EuiTitle size={"s"}>
@@ -66,9 +69,8 @@ class InvocationTracePage extends React.Component {
                 </EuiTitle>
 
                 <EuiSpacer />
-                <EuiSpacer />
 
-                <InvocationTraceChartContainer
+                <InvocationLogsContainer
                     httpClient={this.props.httpClient}
                     match={this.props.match}
                 />
@@ -79,4 +81,4 @@ class InvocationTracePage extends React.Component {
 
 }
 
-export default InvocationTracePage;
+export default InvocationLogsPage;

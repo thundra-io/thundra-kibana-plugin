@@ -711,4 +711,54 @@ export default function (server) {
         }
     );
 
+
+
+    // this is to fetch logs given span/transaction id.
+    server.route(
+        {
+            path: '/api/thundra/invocations-get-invocation-logs-by-transaction-id',
+            method: 'GET',
+            handler(req, reply) {
+                let query = {
+                    index: 'lab-log-*',
+                    body: {
+                        size: 9999,
+                        query: {
+                            bool: {
+                                must: [
+                                    {
+                                        term: {
+                                            transactionId: {
+                                                value: req.query.transactionId,
+                                                boost: 1
+                                            }
+                                        }
+                                    }
+                                ],
+                                adjust_pure_negative: true,
+                                boost: 1
+                            }
+                        },
+                        sort: [
+                            {
+                                logTimestamp: {
+                                    order: 'desc'
+                                }
+                            },
+                            {
+                                collectedTimestamp: {
+                                    order: 'desc'
+                                }
+                            }
+                        ]
+                    }
+
+                };
+                callWithInternalUser('search', query).then(response => {
+                    reply({ invocationLogsByTransactionId: response.hits.hits });
+                });
+            }
+        }
+    );
+
 }
