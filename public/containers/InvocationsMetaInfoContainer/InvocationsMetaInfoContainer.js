@@ -14,7 +14,8 @@ import {
     EuiPanel,
     EuiStat,
     EuiIcon,
-    EuiToolTip
+    EuiToolTip,
+    EuiBadge
 } from '@elastic/eui';
 
 import { HeatMapComponent, Inject, Legend, Tooltip, Adaptor } from '@syncfusion/ej2-react-heatmap';
@@ -69,21 +70,29 @@ class InvocationsMetaInfoContainer extends React.Component {
                             position="top"
                             content="Runtime"
                         >
-                            <div>{applicationRuntime}</div>
+                            <EuiBadge color="danger">
+                                {applicationRuntime}
+                            </EuiBadge>
                         </EuiToolTip>
                         <EuiSpacer />
+
                         <EuiToolTip
                             position="top"
                             content="Region"
                         >
-                            <div>{region}</div>
+                            <EuiBadge color="warning">
+                                {region}
+                            </EuiBadge>
                         </EuiToolTip>
                         <EuiSpacer />
+
                         <EuiToolTip
                             position="top"
                             content="Stage"
                         >
-                            <div>{stage}</div>
+                            <EuiBadge color="secondary">
+                                {stage}
+                            </EuiBadge>
                         </EuiToolTip>
                     </EuiPanel>
                 </EuiFlexItem>

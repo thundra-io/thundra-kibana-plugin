@@ -91,6 +91,12 @@ class InvocationsPage extends React.Component {
                     />
                 }
 
+                {/* <InvocationsHeatMapContainer
+                    httpClient={this.props.httpClient}
+                    history={this.props.history}
+                    match={this.props.match}
+                /> */}
+
                 <EuiSpacer />
 
                 <InvocationsTableContainer

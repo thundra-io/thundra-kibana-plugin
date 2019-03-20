@@ -6,6 +6,7 @@ import {
 
 import {
     EuiSpacer,
+    EuiButton,
     EuiInMemoryTable,
     EuiLink,
     EuiBasicTable,
@@ -14,10 +15,11 @@ import {
     EuiPanel,
     EuiStat,
     EuiIcon,
-    EuiToolTip
+    EuiToolTip,
+    EuiLoadingKibana
 } from '@elastic/eui';
 
-import { HeatMapComponent, Inject, Legend, Tooltip, Adaptor } from '@syncfusion/ej2-react-heatmap';
+import { HeatMapComponent, HeatMap, Inject, Legend, Tooltip, Adaptor } from '@syncfusion/ej2-react-heatmap';
 
 import {
     fetchFunctionList,
@@ -40,7 +42,11 @@ class InvocationsHeatMapContainer extends React.Component {
             pageIndex: 0, // this holds the page index for pagination, default => 0
             paginationSize: 10, // 20
             paginationFrom: 0,
+
+            selectedArea: null
         }
+
+        this.heatmapRef = React.createRef();
     }
 
     componentDidMount() {
@@ -48,7 +54,13 @@ class InvocationsHeatMapContainer extends React.Component {
         // const { paginationFrom, paginationSize } = this.state;
 
         this.fetchData(startDate, endDate, interval);
+    }
 
+    componentWillUnmount() {
+        // this.heatmapRef.destroy;
+        // destroy();
+        
+        // this.heatmapRef = null;
     }
 
     componentWillReceiveProps(nextProps) {
@@ -76,6 +88,7 @@ class InvocationsHeatMapContainer extends React.Component {
 
         // this.props.fetchInvocationsHeatMap(this.props.httpClient);
 
+        // Here we assume function metadata is present on redux store.
         if (this.props.functionMetadataByFunctionName !== {}) {
             // this.props.fetchInvocationsHeatMap(httpClient, applicationName, stage, region, applicationRuntime, startDate, endDate, intervalMillis, bucketSize);
             this.props.fetchInvocationsHeatMap(this.props.httpClient, applicationName, stage, region, applicationRuntime, startDate, endDate);
@@ -95,6 +108,7 @@ class InvocationsHeatMapContainer extends React.Component {
             heats
         } = this.props.invocationHeats;
 
+        // console.log("convertRawHeatsToHeatmapData; props: ", this.props);
         // xlabels
         let xLabelsTimestamp = [];
         for (let timestamp = heatMapStartTime; timestamp < heatMapEndTime; timestamp = timestamp + timeGap) {
@@ -106,12 +120,14 @@ class InvocationsHeatMapContainer extends React.Component {
             }
         }
 
+        // console.log("convertRawHeatsToHeatmapData1; props: ", this.props);
         // ylabels
         let yLabels = [];
-        for (let duration = durationStart; duration < durationEnd; duration = duration + durationGap) {
+        for (let duration = durationStart; duration <= durationEnd; duration = duration + durationGap) {
             yLabels.push(duration);
         }
 
+        // console.log("convertRawHeatsToHeatmapData2; props: ", this.props);
         // If heats array is empty then return here immediately.
         if (!this.props.invocationHeats.heats) {
             return {
@@ -121,6 +137,7 @@ class InvocationsHeatMapContainer extends React.Component {
             };
         }
 
+        // console.log("convertRawHeatsToHeatmapData3; props, xLabels, yLabels: ", this.props, xLabelsTimestamp, yLabels);
         // Initialize 2D empty array.
         let data = new Array(yLabels.length)
             .fill(0)
@@ -128,6 +145,7 @@ class InvocationsHeatMapContainer extends React.Component {
                 new Array(xLabelsTimestamp.length).fill(0).map(() => 0)
             );
 
+        // console.log("convertRawHeatsToHeatmapData4; props, xLabels, yLabels, data: ", this.props, xLabelsTimestamp, yLabels, data);
         for (let heat of heats) {
             const colIndex = Math.floor((heat.xaxesStartTime - heatMapStartTime) / timeGap);
             const rowIndex = Math.floor((heat.yaxesStart - durationStart) / durationGap);
@@ -136,7 +154,7 @@ class InvocationsHeatMapContainer extends React.Component {
             rowArr[colIndex] = heat.invocationCount;
         }
 
-        console.log("convertRawHeatsToHeatmapData; props: ", this.props, xLabelsTimestamp, yLabels, data);
+        console.log("convertRawHeatsToHeatmapData; props, xLabels, yLabels, data: ", this.props, xLabelsTimestamp, yLabels, data);
         return {
             xLabels: xLabelsTimestamp,
             yLabels,
@@ -205,24 +223,48 @@ class InvocationsHeatMapContainer extends React.Component {
         );
     }
 
+    handleAreaSelected = (event) => {
+        console.log("cell selected; e: ", event);
+        this.setState({
+            selectedArea: event
+        })
+    }
+
     renderHeatMap = () => {
-        if (this.props.invocationHeatsFetching) {
+        // if (this.props.invocationHeatsFetching) {
+        //     return (
+        //         <div>
+        //             heatmap fetching
+        //         </div>
+        //     )
+        // }
+
+        let heatmapData = [];
+        const heatsData = this.convertRawHeatsToHeatmapData();
+
+        if (this.props.invocationHeatsFetching || heatsData.heats.length === 0) {
             return (
                 <div>
-                    heatmap fetching
+                    {/* heatmap fetching */}
+                    <EuiSpacer />
+                    <EuiSpacer />
+                    <EuiLoadingKibana size="xl" />
                 </div>
             )
         }
 
-        let heatmapData = [];
-        const heatsData = this.convertRawHeatsToHeatmapData();
         // Compute transpose of the heatsData array to fit the HeatMapComponent.
         if (heatsData.heats.length > 0) {
             heatmapData = heatsData.heats[0].map((col, i) => heatsData.heats.map(row => row[i]));
         }
 
+        console.log("renderHeatMapdata; heatmapData: ", heatmapData);
+
         return (
-            <HeatMapComponent id='heatmap'
+            <HeatMapComponent
+                ref={this.heatmapRef}
+                id='heatmap'
+                dataSource={heatmapData}
                 titleSettings={{
                     text: 'Invocations Heat Map',
                     textStyle: {
@@ -248,10 +290,17 @@ class InvocationsHeatMapContainer extends React.Component {
                 }}
                 cellSettings={{
                     showLabel: false,
+                    // tileType: "Bubble"
+                    tileType: "Rect"
                 }}
-                allowSelection={true}
-                cellSelected={(event) => console.log("cell selected; e: ", event)}
-                dataSource={heatmapData}
+
+                // allowSelection={true}
+                allowSelection={false}
+
+                // cellSelected={(event) => console.log("cell selected; e: ", event)}
+                // cellSelected={(event) => this.setState({selectedArea: event})}
+                cellSelected={this.handleAreaSelected}
+
                 // showTooltip={false}
             >
                 <Inject services={[Legend, Tooltip]} />
@@ -262,11 +311,25 @@ class InvocationsHeatMapContainer extends React.Component {
     render() {
         console.log("InvocationsHeatMapContainer, render; props: ", this.props);
         // const { applicationRuntime, region, stage, invocationCount, invocationsWithColdStart, invocationsWithError } = this.props.functionMetadataByFunctionName;
+        const { invocationHeats, invocationHeatsFetching } = this.props;
 
         return (
             <div className="invocations-heat-map-container">
                 {/* <p>heatmap here</p> */}
+
+                {/* <EuiButton
+                    // onClick={() => window.alert('Button clicked')}
+                    onClick={this.heatmapRef.clearSelection}
+                >
+                    Clear selection
+                </EuiButton> */}
+
                 {this.renderHeatMap()}
+
+                {/* {(invocationHeats !== {} && !invocationHeatsFetching) ?
+                    this.renderHeatMap() :
+                    <div>***sheat map fetching</div>
+                } */}
             </div>
         )
     }
