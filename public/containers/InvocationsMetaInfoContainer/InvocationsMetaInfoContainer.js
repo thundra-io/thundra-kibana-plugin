@@ -54,13 +54,13 @@ class InvocationsMetaInfoContainer extends React.Component {
     }
 
     renderFunctionMetaInfo = () => {
-        const { applicationRuntime, region, stage, invocationCount, invocationsWithColdStart, invocationsWithError } = this.props.functionMetadataByFunctionName;
+        const { applicationRuntime, region, stage, invocationCount, invocationsWithColdStart, invocationsWithError, averageDuration } = this.props.functionMetadataByFunctionName;
         let health = 0;
         if (typeof invocationCount == "number" && typeof invocationsWithError == "number" && invocationCount > 0) {
             health = (((invocationCount - invocationsWithError) / invocationCount) * 100).toFixed(2);
         }
         // console.log("renderFunctionMetaInfo; props: ", this.props, (((invocationCount - invocationsWithError) / invocationCount) * 100).toFixed(2));
-
+        
         return (
             <EuiFlexGroup>
 
@@ -94,6 +94,19 @@ class InvocationsMetaInfoContainer extends React.Component {
                                 {stage}
                             </EuiBadge>
                         </EuiToolTip>
+                    </EuiPanel>
+                </EuiFlexItem>
+
+                <EuiFlexItem>
+                    <EuiPanel>
+                        <EuiStat
+                            title={`${averageDuration || 0} ms`}
+                            description="Avg. Duration"
+                            textAlign="right"
+                            titleColor="accent"
+                        >
+                            <EuiIcon type="visGauge" color="accent" />
+                        </EuiStat>
                     </EuiPanel>
                 </EuiFlexItem>
 

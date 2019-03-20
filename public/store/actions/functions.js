@@ -81,7 +81,8 @@ export const fetchFunctionList = (httpClient, startTime) => {
                 func.totalDuration = funcRuntime.totalDuration['value'];
                 func.minDuration = funcRuntime.minDuration['value'];
                 func.maxDuration = funcRuntime.maxDuration['value'];
-                func.averageDuration = funcRuntime.averageDuration['value'].toFixed(2);
+                // func.averageDuration = funcRuntime.averageDuration['value'].toFixed(2);
+                func.averageDuration = Math.round(funcRuntime.averageDuration['value']);
 
                 func.invocationsWithColdStart = funcRuntime.invocationsWithColdStart['doc_count'];
                 func.invocationsWithError = funcRuntime.invocationsWithError['doc_count'];
@@ -200,7 +201,8 @@ export const fetchFunctionDataByFunctionName = (httpClient, startTime, functionN
             func.totalDuration = funcRuntime.totalDuration['value'];
             func.minDuration = funcRuntime.minDuration['value'];
             func.maxDuration = funcRuntime.maxDuration['value'];
-            func.averageDuration = funcRuntime.averageDuration['value'].toFixed(2);
+            // func.averageDuration = funcRuntime.averageDuration['value'].toFixed(2);
+            func.averageDuration = Math.round(funcRuntime.averageDuration['value']);
 
             func.invocationsWithColdStart = funcRuntime.invocationsWithColdStart['doc_count'];
             func.invocationsWithError = funcRuntime.invocationsWithError['doc_count'];
