@@ -133,6 +133,50 @@
   version "0.0.0"
   uid ""
 
+"@syncfusion/ej2-base@~16.4.52":
+  version "16.4.52"
+  resolved "https://registry.yarnpkg.com/@syncfusion/ej2-base/-/ej2-base-16.4.52.tgz#d81992c2cefa2f29e06c6b10908c053ac11e1137"
+  integrity sha512-Gd1IrXkuqGccKckpFgURam8tzDeo2ruMCz/iQcBx5aMnLmrnZo6UmwCH5xHFsiGrqb6BTNuVSG1MLj2If0w1/g==
+
+"@syncfusion/ej2-data@~16.4.52":
+  version "16.4.52"
+  resolved "https://registry.yarnpkg.com/@syncfusion/ej2-data/-/ej2-data-16.4.52.tgz#6d3c0de3c78f24fa44a35e1a2e504ffdc49004dc"
+  integrity sha512-HfDuE6ThEIO+4E0d+lkue9/lN+5shGuH+kpA+3k6mu+6v2xCXnNbR0KDrldCF6kYP8C3ndjrBhWrk4X+WVuIoA==
+  dependencies:
+    "@syncfusion/ej2-base" "~16.4.52"
+
+"@syncfusion/ej2-heatmap@16.4.53":
+  version "16.4.53"
+  resolved "https://registry.yarnpkg.com/@syncfusion/ej2-heatmap/-/ej2-heatmap-16.4.53.tgz#cef6cb03e45c41f4a1c90f9a3a9f0c59203ce1a8"
+  integrity sha512-A1rKysPY5YibCFRfDdZCnkyNVl6uRmfGYve31JAAjB3HPpK5AsadtDine/R4m/2QfebdMnW6Jk1KMsnkIfc7ZQ==
+  dependencies:
+    "@syncfusion/ej2-base" "~16.4.52"
+    "@syncfusion/ej2-data" "~16.4.52"
+    "@syncfusion/ej2-svg-base" "~16.4.52"
+
+"@syncfusion/ej2-react-base@~16.4.52":
+  version "16.4.52"
+  resolved "https://registry.yarnpkg.com/@syncfusion/ej2-react-base/-/ej2-react-base-16.4.52.tgz#ba33f77deb3ed0be6a489486e6f0e8f84a51c307"
+  integrity sha512-ICboq3FdPXzzQtHzoQHoe+TYyz2tEWDUnUpia/x8NMSs1keLdRNMFLoegT8iKGBkuYeLqqxC+qSGOzSjT69big==
+  dependencies:
+    "@syncfusion/ej2-base" "~16.4.52"
+
+"@syncfusion/ej2-react-heatmap@^16.4.53":
+  version "16.4.53"
+  resolved "https://registry.yarnpkg.com/@syncfusion/ej2-react-heatmap/-/ej2-react-heatmap-16.4.53.tgz#010fafefc3dd652737c0d80419a0cdae9e5710c2"
+  integrity sha512-les1A4jydpL0yVmG5DLfCDAlDBgdN9NsqCih0f4rt5sofjLSUQYdow7hGeVI3awdL5CzMKvu/+Lz0pp3gGN69Q==
+  dependencies:
+    "@syncfusion/ej2-base" "~16.4.52"
+    "@syncfusion/ej2-heatmap" "16.4.53"
+    "@syncfusion/ej2-react-base" "~16.4.52"
+
+"@syncfusion/ej2-svg-base@~16.4.52":
+  version "16.4.54"
+  resolved "https://registry.yarnpkg.com/@syncfusion/ej2-svg-base/-/ej2-svg-base-16.4.54.tgz#0dcd62de6641152ddabd822ec721805044e8150a"
+  integrity sha512-aMwwyZDWGDottMsw3PO/+DsVxdHgpNc/A1xCAmeE6BauJnjbz1ewyyrhAvzxUOM1Mn9Bl/cOr2KifEEWiGlVJQ==
+  dependencies:
+    "@syncfusion/ej2-base" "~16.4.52"
+
 "@webassemblyjs/ast@1.8.5":
   version "1.8.5"
   resolved "https://registry.yarnpkg.com/@webassemblyjs/ast/-/ast-1.8.5.tgz#51b1c5fe6576a34953bf4b253df9f0d490d9e359"

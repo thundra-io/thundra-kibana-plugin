@@ -13,7 +13,10 @@ import {
     FETCH_INVOCATION_SPANS_FAILURE,
     FETCH_INVOCATION_LOGS_STARTED,
     FETCH_INVOCATION_LOGS_SUCCESS,
-    FETCH_INVOCATION_LOGS_FAILURE
+    FETCH_INVOCATION_LOGS_FAILURE,
+    FETCH_INVOCATIONS_HEATMAP_STARTED,
+    FETCH_INVOCATIONS_HEATMAP_SUCCESS,
+    FETCH_INVOCATIONS_HEATMAP_FAILURE
 } from "../constants";
 
 export const fetchFunctionList = (httpClient, startTime) => {
@@ -65,7 +68,7 @@ export const fetchFunctionList = (httpClient, startTime) => {
 
                 let func = {};
                 func.applicationName = funcMeta.key;
-                
+
                 const funcStage = funcMeta.groupByApplicationStage.buckets[0];
                 func.stage = funcStage.key;
 
@@ -97,10 +100,10 @@ export const fetchFunctionList = (httpClient, startTime) => {
 
             dispatch(fetchFunctionListSuccess(funcs));
         })
-        .catch((err) => {
-            // console.log("error - fetchFunctionList; err: ", err);
-            dispatch(fetchFunctionListFailure(err))
-        });
+            .catch((err) => {
+                // console.log("error - fetchFunctionList; err: ", err);
+                dispatch(fetchFunctionListFailure(err))
+            });
 
     }
 }
@@ -142,10 +145,10 @@ export const fetchInvocationsByFunctionName = (httpClient, startTime, interval, 
 
             dispatch(fetchInvocationsByFunctionNameSuccess(resp.data.invocations));
         })
-        .catch((err) => {
-            // console.log("error - fetchFunctionList; err: ", err);
-            dispatch(fetchInvocationsByFunctionNameFailure(err))
-        });
+            .catch((err) => {
+                // console.log("error - fetchFunctionList; err: ", err);
+                dispatch(fetchInvocationsByFunctionNameFailure(err))
+            });
 
     }
 }
@@ -185,7 +188,7 @@ export const fetchFunctionDataByFunctionName = (httpClient, startTime, functionN
 
             let func = {};
             func.applicationName = functionName;
-            
+
             func.stage = funcMeta.key;
 
             const funcRegion = funcMeta.groupByRegion.buckets[0];
@@ -212,11 +215,14 @@ export const fetchFunctionDataByFunctionName = (httpClient, startTime, functionN
             func.oldestInvocationTime = new Date(funcRuntime.oldestInvocationTime['value']);
 
             dispatch(fetchFunctionDataByFunctionNameSuccess(func));
+
+            // const endTime = new Date().getTime(); // current time as timestamp
+            // dispatch(fetchInvocationsHeatMap(httpClient, functionName, func.stage, funcRegion.key, funcRuntime.key, startTime, endTime));
         })
-        .catch((err) => {
-            console.log("error - fetchFunctionDataByFunctionName; err: ", err);
-            dispatch(fetchFunctionDataByFunctionNameFailure(err))
-        });
+            .catch((err) => {
+                console.log("error - fetchFunctionDataByFunctionName; err: ", err);
+                dispatch(fetchFunctionDataByFunctionNameFailure(err))
+            });
 
     }
 }
@@ -245,7 +251,7 @@ export const fetchInvocationSpans = (httpClient, transactionId) => {
 
     return dispatch => {
         dispatch(fetchInvocationSpansStarted());
-        
+
         httpClient.get('../api/thundra/invocations-get-invocation-span-by-transaction-id', {
             params: {
                 transactionId: transactionId
@@ -285,7 +291,7 @@ export const fetchInvocationLogs = (httpClient, transactionId) => {
 
     return dispatch => {
         dispatch(fetchInvocationLogsStarted());
-        
+
         httpClient.get('../api/thundra/invocations-get-invocation-logs-by-transaction-id', {
             params: {
                 transactionId: transactionId
@@ -294,10 +300,10 @@ export const fetchInvocationLogs = (httpClient, transactionId) => {
             // console.log("success - fetchInvocationLogs; resp: ", resp);
             dispatch(fetchInvocationLogsSuccess(resp.data.invocationLogsByTransactionId));
         })
-        .catch((err) => {
-            // console.log("error - fetchInvocationLogs; err: ", err);
-            dispatch(fetchInvocationLogsFailure(err))
-        });
+            .catch((err) => {
+                // console.log("error - fetchInvocationLogs; err: ", err);
+                dispatch(fetchInvocationLogsFailure(err))
+            });
 
     }
 }
@@ -315,6 +321,162 @@ const fetchInvocationLogsSuccess = (invocationLogs) => ({
 
 const fetchInvocationLogsFailure = (error) => ({
     type: FETCH_INVOCATION_LOGS_FAILURE,
+    payload: {
+        ...error
+    }
+});
+
+
+const DURATION_BUCKET_COUNT = 20;
+const TIME_BUCKET_COUNT = 100;
+export const fetchInvocationsHeatMap = (httpClient, funcName, funcStage, funcRegion, funcRuntime, startTime, endTime) => {
+
+    return dispatch => {
+        // dispatch(fetchInvocationsHeatMapStarted());
+
+        httpClient.get('../api/thundra/invocations-get-min-max-duration', {
+            params: {
+                // transactionId: transactionId
+                functionName: funcName,
+                functionStage: funcStage,
+                functionRegion: funcRegion,
+                functionRuntime: funcRuntime,
+                startTime: startTime,
+                endTime: endTime
+            }
+        }).then((resp) => {
+            const minMaxDuration = resp.data.invocationsMinMaxDuration;
+            
+            // Here compute bucket size in terms of duration
+            const diff = minMaxDuration.maxDuration.value - minMaxDuration.minDuration.value;
+            const bucketSize = (diff < DURATION_BUCKET_COUNT) ? 1 : Math.round(diff / DURATION_BUCKET_COUNT);
+            
+            // Here compute time diff (x axes) in terms of millis
+            const timeDiff = endTime - startTime;
+            const intervalMillis = (timeDiff < TIME_BUCKET_COUNT) ? TIME_BUCKET_COUNT : Math.round(timeDiff / TIME_BUCKET_COUNT);
+
+            console.log("success - min/max - fetchInvocationsHeatMap; resp: ", resp, bucketSize, intervalMillis);
+            dispatch(fetchInvocationHeats(httpClient, funcName, funcStage, funcRegion, funcRuntime, startTime, endTime, intervalMillis, bucketSize, minMaxDuration))
+
+        })
+            .catch((err) => {
+                console.log("error - min/max - fetchInvocationsHeatMap; err: ", err);
+                // dispatch(fetchInvocationsHeatMapFailure(err))
+            });
+
+    }
+}
+
+const fetchInvocationsHeatMapStarted = () => ({
+    type: FETCH_INVOCATIONS_HEATMAP_STARTED
+});
+
+const fetchInvocationsHeatMapSuccess = (invocationLogs) => ({
+    type: FETCH_INVOCATIONS_HEATMAP_SUCCESS,
+    payload: {
+        invocationLogs: invocationLogs
+    }
+});
+
+const fetchInvocationsHeatMapFailure = (error) => ({
+    type: FETCH_INVOCATIONS_HEATMAP_FAILURE,
+    payload: {
+        ...error
+    }
+});
+
+
+
+export const fetchInvocationHeats = (httpClient, funcName, funcStage, funcRegion, funcRuntime, startTime, endTime, intervalMillis, bucketSize, minMaxDuration) => {
+
+    return dispatch => {
+        dispatch(fetchInvocationHeatsStarted());
+
+        //heats start
+        httpClient.get('../api/thundra/invocations-get-heats', {
+            params: {
+                functionName: funcName,
+                functionStage: funcStage,
+                functionRegion: funcRegion,
+                functionRuntime: funcRuntime,
+                startTime: startTime,
+                endTime: endTime,
+                intervalMillis: intervalMillis,
+                bucketSize: bucketSize // duration
+            }
+        }).then((resp) => {
+            let functionHeatMap = {};
+            // functionHeatMap.heatMapDurationEnd = minMaxDuration.maxDuration.value;
+            functionHeatMap.heatMapDurationEnd = Math.ceil(minMaxDuration.maxDuration.value / bucketSize) * bucketSize;
+            // functionHeatMap.heatMapDurationStart = minMaxDuration.minDuration.value;
+            functionHeatMap.heatMapDurationStart = Math.floor(minMaxDuration.minDuration.value / bucketSize) * bucketSize;
+            functionHeatMap.heatMapDurationGap = bucketSize;
+
+            // Use these times if there is no buckets.
+            functionHeatMap.heatMapEndTime = Math.round(endTime/1000) * 1000;
+            functionHeatMap.heatMapStartTime = Math.round(startTime/1000) * 1000;
+            functionHeatMap.heatMapTimeGap = intervalMillis;
+
+            // Align start/end times according to last bucket's time.
+            const rawBuckets = resp.data.invocationHeatsRaw.buckets;
+            if (rawBuckets.length > 0) {
+                const lastBucket = rawBuckets[rawBuckets.length - 1];
+                const lastBucketStartTime = lastBucket.key;
+                functionHeatMap.heatMapEndTime = lastBucketStartTime + intervalMillis;
+                functionHeatMap.heatMapStartTime = functionHeatMap.heatMapEndTime - (TIME_BUCKET_COUNT * intervalMillis);
+            }
+
+            // Create rawHeats array based on rawBuckets array.
+            let rawHeats = [];
+            for (let bucket of rawBuckets) {
+                const bucketStartTime = bucket.key;
+                const bucketEndTime = bucketStartTime + intervalMillis;
+
+                for (let duration of bucket.duration.buckets) {
+                    const durationStart = duration.key;
+                    const durationEnd = durationStart + bucketSize;
+                    const invocationCount = duration.doc_count;
+
+                    // Same data structure with the console app
+                    rawHeats.push({
+                        invocationCount,
+                        xaxesStartTime: bucketStartTime,
+                        xaxesEndTime: bucketEndTime,
+                        yaxesStart: durationStart,
+                        yaxesEnd: durationEnd
+                    });
+                }
+            }
+
+
+            // functionHeatMap.heats = resp.data.invocationHeatsRaw.buckets;
+            functionHeatMap.heats = rawHeats;
+
+            // dispatch(fetchInvocationHeatsSuccess(resp.data.invocationHeatsRaw.buckets));
+            dispatch(fetchInvocationHeatsSuccess(functionHeatMap));
+            console.log("success - fetchInvocationHeats; resp, functionHeatMap: ", resp, functionHeatMap);
+        })
+        .catch((err) => {
+            console.log("error - fetchInvocationHeats; err: ", err);
+            dispatch(fetchInvocationHeatsFailure(err))
+        });
+
+    }
+}
+
+const fetchInvocationHeatsStarted = () => ({
+    type: FETCH_INVOCATIONS_HEATMAP_STARTED
+});
+
+const fetchInvocationHeatsSuccess = (invocationHeats) => ({
+    type: FETCH_INVOCATIONS_HEATMAP_SUCCESS,
+    payload: {
+        invocationHeats: invocationHeats
+    }
+});
+
+const fetchInvocationHeatsFailure = (error) => ({
+    type: FETCH_INVOCATIONS_HEATMAP_FAILURE,
     payload: {
         ...error
     }

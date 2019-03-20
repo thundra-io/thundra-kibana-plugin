@@ -761,4 +761,209 @@ export default function (server) {
         }
     );
 
+    // 
+    // this is to fetch min-max duration of invocations for heatmap given function name.
+    server.route(
+        {
+            path: '/api/thundra/invocations-get-min-max-duration',
+            method: 'GET',
+            handler(req, reply) {
+                // console.log("min-max; req: ", req);
+
+                let query = {
+                    index: 'lab-invocation-*',
+                    body: {
+                        size: 9999,
+                        query: {
+                            bool: {
+                                must: [
+                                    {
+                                        term: {
+                                            applicationName: {
+                                                value: req.query.functionName,
+                                                boost: 1
+                                            }
+                                        }
+                                    },
+                                    {
+                                        terms: {
+                                            applicationStage: [
+                                                req.query.functionStage,
+                                                ''
+                                            ],
+                                            boost: 1
+                                        }
+                                    },
+                                    {
+                                        term: {
+                                            functionRegion: {
+                                                value: req.query.functionRegion,
+                                                boost: 1
+                                            }
+                                        }
+                                    },
+                                    {
+                                        term: {
+                                            applicationRuntime: {
+                                                value: req.query.functionRuntime,
+                                                boost: 1
+                                            }
+                                        }
+                                    },
+                                    {
+                                        range: {
+                                            startTimestamp: {
+                                                from: req.query.startTime,
+                                                to: req.query.endTime,
+                                                include_lower: true,
+                                                include_upper: true,
+                                                boost: 1
+                                            }
+                                        }
+                                    }
+                                ],
+                                adjust_pure_negative: true,
+                                boost: 1
+
+                            }
+                        },
+                        aggregations: {
+                            minDuration: {
+                                min: {
+                                    field: 'duration'
+                                }
+                            },
+                            maxDuration: {
+                                max: {
+                                    field: 'duration'
+                                }
+                            }
+                        }
+                    }
+                };
+                callWithInternalUser('search', query).then(response => {
+                    // reply({ invocationsMinMaxDuration: response.hits.hits });
+                    reply({ invocationsMinMaxDuration: response.aggregations });
+                });
+            }
+        }
+    );
+
+
+    // 
+    // this is to fetch invocation heats given min-max durations.
+    server.route(
+        {
+            path: '/api/thundra/invocations-get-heats',
+            method: 'GET',
+            handler(req, reply) {
+                // console.log("heats; req: ", req);
+
+                let query = {
+                    index: 'lab-invocation-*',
+                    body: {
+                        size: 9999,
+                        query: {
+                            bool: {
+                                must: [
+                                    {
+                                        term: {
+                                            applicationName: {
+                                                value: req.query.functionName,
+                                                boost: 1
+                                            }
+                                        }
+                                    },
+                                    {
+                                        range: {
+                                            startTimestamp: {
+                                                from: req.query.startTime,
+                                                to: req.query.endTime,
+                                                include_lower: true,
+                                                include_upper: true,
+                                                boost: 1
+                                            }
+                                        }
+                                    },
+                                    {
+                                        range: {
+                                            duration: {
+                                                from: 0,
+                                                to: 900000,
+                                                include_lower: true,
+                                                include_upper: true,
+                                                boost: 1
+                                            }
+                                        }
+                                    },
+                                    {
+                                        terms: {
+                                            applicationStage: [
+                                                req.query.functionStage,
+                                                ''
+                                            ],
+                                            boost: 1
+                                        }
+                                    },
+                                    {
+                                        term: {
+                                            functionRegion: {
+                                                value: req.query.functionRegion,
+                                                boost: 1
+                                            }
+                                        }
+                                    },
+                                    {
+                                        term: {
+                                            applicationRuntime: {
+                                                value: req.query.functionRuntime,
+                                                boost: 1
+                                            }
+                                        }
+                                    }
+                                ],
+                                adjust_pure_negative: true,
+                                boost: 1
+                            }
+                        },
+                        aggregations: {
+                            timeSeriesByStartTime: {
+                                date_histogram: {
+                                    field: 'startTime',
+                                    // interval: 36000,
+                                    // interval: 36088,
+                                    interval: Number(req.query.intervalMillis),
+                                    offset: 0,
+                                    order: {
+                                        _key: 'asc'
+                                    },
+                                    keyed: false,
+                                    min_doc_count: 1
+                                },
+                                aggregations: {
+                                    duration: {
+                                        histogram: {
+                                            field: 'duration',
+                                            // interval: 2990,
+                                            interval: req.query.bucketSize,
+                                            offset: 0,
+                                            order: {
+                                                _key: 'asc'
+                                            },
+                                            keyed: false,
+                                            min_doc_count: 1
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                };
+                callWithInternalUser('search', query).then(response => {
+                    reply({ invocationHeatsRaw: response.aggregations.timeSeriesByStartTime });
+                });
+            }
+        }
+    );
+
 }

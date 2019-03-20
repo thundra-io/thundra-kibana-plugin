@@ -13,7 +13,10 @@ import {
     FETCH_INVOCATION_SPANS_FAILURE,
     FETCH_INVOCATION_LOGS_STARTED,
     FETCH_INVOCATION_LOGS_SUCCESS,
-    FETCH_INVOCATION_LOGS_FAILURE
+    FETCH_INVOCATION_LOGS_FAILURE,
+    FETCH_INVOCATIONS_HEATMAP_STARTED,
+    FETCH_INVOCATIONS_HEATMAP_SUCCESS,
+    FETCH_INVOCATIONS_HEATMAP_FAILURE
 } from "../constants";
 
 const initialState = {
@@ -36,6 +39,10 @@ const initialState = {
     invocationLogs: [],
     invocationLogsFetching: false,
     invocationLogsError: null,
+
+    invocationHeats: {},
+    invocationHeatsFetching: false,
+    invocationHeatsError: null,
 };
 
 export default function functionList(state = initialState, action) {
@@ -134,6 +141,25 @@ export default function functionList(state = initialState, action) {
                 ...state,
                 invocationLogsFetching: false,
                 invocationLogsError: action.payload.error
+            }
+        case FETCH_INVOCATIONS_HEATMAP_STARTED:
+            return {
+                ...state,
+                invocationHeatsFetching: true,
+                invocationHeatsError: null
+            };
+        case FETCH_INVOCATIONS_HEATMAP_SUCCESS:
+            return {
+                ...state,
+                invocationHeatsFetching: false,
+                invocationHeatsError: null,
+                invocationHeats: action.payload.invocationHeats
+            };
+        case FETCH_INVOCATIONS_HEATMAP_FAILURE:
+            return {
+                ...state,
+                invocationHeatsFetching: false,
+                invocationHeatsError: action.payload.error
             }
         default:
             return state;

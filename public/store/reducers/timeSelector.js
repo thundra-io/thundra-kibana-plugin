@@ -32,6 +32,7 @@ export const timeSelectorOptions = [
 const initialState = {
     selectedOption: timeSelectorOptions[0],
     startDate: date.getTime(),
+    endDate: d.getTime(),
     interval: 10,
     convertToMonthMultiplier: 720 // 24 hours x 30 days
 };
@@ -44,6 +45,7 @@ export default (state = initialState, action) => {
                 ...state,
                 selectedOption: action.selectedOption,
                 startDate : action.val,
+                endDate: action.valEndDate,
                 interval: action.interval,
                 convertToMonthMultiplier: action.convertToMonthMultiplier
             };

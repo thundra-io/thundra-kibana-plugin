@@ -81,7 +81,7 @@ const mapDispatchToProps = dispatch => {
             const MS_PER_MINUTE = 60000;
             let d = new Date();
             let date = new Date(d - x.value * (MS_PER_MINUTE));
-            return dispatch({ type: 'CHANGE_TIME', val: date.getTime(), interval: x.interval, convertToMonthMultiplier: x.converttomonthmultiplier, selectedOption: x });
+            return dispatch({ type: 'CHANGE_TIME', val: date.getTime(), valEndDate: d.getTime(), interval: x.interval, convertToMonthMultiplier: x.converttomonthmultiplier, selectedOption: x });
         }
     }
 };

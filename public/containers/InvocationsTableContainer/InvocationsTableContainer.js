@@ -8,8 +8,16 @@ import {
     EuiSpacer,
     EuiInMemoryTable,
     EuiLink,
-    EuiBasicTable
+    EuiBasicTable,
+    EuiFlexGroup,
+    EuiFlexItem,
+    EuiPanel,
+    EuiStat,
+    EuiIcon,
+    EuiToolTip
 } from '@elastic/eui';
+
+import { HeatMapComponent, Inject, Legend, Tooltip, Adaptor } from '@syncfusion/ej2-react-heatmap';
 
 import {
     fetchFunctionList,
@@ -53,7 +61,7 @@ class InvocationsTableContainer extends React.Component {
         const { paginationFrom, paginationSize } = this.state;
 
         this.props.fetchInvocationsByFunctionName(this.props.httpClient, startDate, interval, functionName, paginationSize, paginationFrom);
-        this.props.fetchFunctionDataByFunctionName(this.props.httpClient, startDate, functionName);
+        // this.props.fetchFunctionDataByFunctionName(this.props.httpClient, startDate, functionName);
     }
 
     onTableChange = ({ page = {} }) => {
@@ -185,17 +193,9 @@ class InvocationsTableContainer extends React.Component {
 
     render() {
         console.log("InvocationsTableContainer, render; props: ", this.props);
-        const {applicationRuntime, region, stage, invocationCount, invocationsWithColdStart, invocationsWithError} = this.props.functionMetadataByFunctionName;
 
         return (
             <div className="invocations-table-container">
-                <p>invocations table here: {this.props.match.params.functionName }</p>
-                <p>Invocation Count: {invocationCount}</p>
-                <p>Cold Start Invocation Count: {invocationsWithColdStart}</p>
-                <p>Error Invocation Count: {invocationsWithError}</p>
-                <p>Region: {region}</p>
-                <p>Stage: {stage}</p>
-                <p>Application Runtime: {applicationRuntime}</p>
 
                 {this.renderInvocationsTable()}
             </div>
@@ -209,8 +209,8 @@ const mapStateToProps = state => {
         invocationList: state.functionList.invocationsByFunctionName,
         invocationListFetching: state.functionList.invocationsByFunctionNameFetching,
 
-        functionMetadataByFunctionName: state.functionList.functionMetadataByFunctionName,
-        functionMetadataByFunctionNameFetching: state.functionList.functionMetadataByFunctionNameFetching,
+        // functionMetadataByFunctionName: state.functionList.functionMetadataByFunctionName,
+        // functionMetadataByFunctionNameFetching: state.functionList.functionMetadataByFunctionNameFetching,
 
         startDate: state.timeSelector.startDate,
         interval: state.timeSelector.interval,

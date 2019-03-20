@@ -17,31 +17,41 @@ import {
     EuiForm,
     EuiFormRow,
     EuiSelect,
-    EuiBreadcrumbs
+    EuiBreadcrumbs,
+    EuiButtonToggle,
+    EuiToggle
 } from '@elastic/eui';
 
-import { TimeSelectorContainer, InvocationsTableContainer } from "../../containers";
+import { TimeSelectorContainer, InvocationsTableContainer, InvocationsMetaInfoContainer, InvocationsHeatMapContainer } from "../../containers";
 
 class InvocationsPage extends React.Component {
 
     constructor(props) {
         super(props);
+
+        this.state = {
+            isHeatMapOn: false
+        };
+    }
+
+    onHeatMapToggleChange = (e) => {
+        this.setState({ isHeatMapOn: e.target.checked });
     }
 
     render() {
         console.log("InvocationsPage, render; props: ", this.props);
-        const {functionName} = this.props.match.params;
+        const { functionName } = this.props.match.params;
 
         const breadcrumbs = [
             {
-              text: 'Functions',
-              href: '#/functions',
+                text: 'Functions',
+                href: '#/functions',
             },
             {
-              text: `${functionName}`,
-              href: '#'
+                text: `${functionName}`,
+                href: '#'
             }
-          ];
+        ];
 
         return (
             <div className="invocations-page">
@@ -52,11 +62,35 @@ class InvocationsPage extends React.Component {
 
                 <EuiTitle size={"s"}>
                     <h5>
-                        <EuiBreadcrumbs breadcrumbs={breadcrumbs} truncate={false}/>
+                        <EuiBreadcrumbs breadcrumbs={breadcrumbs} truncate={false} />
                     </h5>
                 </EuiTitle>
 
                 <EuiSpacer />
+
+                <InvocationsMetaInfoContainer
+                    httpClient={this.props.httpClient}
+                    match={this.props.match}
+                />
+
+                <div>
+
+                    <EuiButtonToggle
+                        label={this.state.isHeatMapOn ? 'Hide HeatMap' : 'Show HeatMap'}
+                        fill={this.state.isHeatMapOn}
+                        onChange={this.onHeatMapToggleChange}
+                        isSelected={this.state.isHeatMapOn}
+                    />
+                </div>
+
+                {this.state.isHeatMapOn &&
+                    <InvocationsHeatMapContainer
+                        httpClient={this.props.httpClient}
+                        history={this.props.history}
+                        match={this.props.match}
+                    />
+                }
+
                 <EuiSpacer />
 
                 <InvocationsTableContainer
