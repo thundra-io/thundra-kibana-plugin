@@ -38,6 +38,8 @@ class InvocationsTableContainer extends React.Component {
             pageIndex: 0, // this holds the page index for pagination, default => 0
             paginationSize: 10, // 20
             paginationFrom: 0,
+            sortField: "_source.finishTimestamp",
+            sortDirection: "desc"
         }
     }
 
@@ -58,33 +60,50 @@ class InvocationsTableContainer extends React.Component {
 
     fetchData = (startDate, interval) => {
         const { functionName } = this.props.match.params;
-        const { paginationFrom, paginationSize } = this.state;
+        const { paginationFrom, paginationSize, sortField, sortDirection } = this.state;
 
-        this.props.fetchInvocationsByFunctionName(this.props.httpClient, startDate, interval, functionName, paginationSize, paginationFrom);
+        this.props.fetchInvocationsByFunctionName(this.props.httpClient, startDate, interval, functionName, paginationSize, paginationFrom, sortField, sortDirection);
         // this.props.fetchFunctionDataByFunctionName(this.props.httpClient, startDate, functionName);
     }
 
-    onTableChange = ({ page = {} }) => {
-        console.log("onTableChange; page, props, state: ", page, this.props, this.state);
+    onTableChange = ({ page = {}, sort = {} }) => {
+        console.log("invocations - onTableChange; page, props, state: ", page, sort, this.props, this.state);
 
         const { startDate, interval } = this.props;
         const { functionName } = this.props.match.params;
-        const { pageIndex, paginationSize, paginationFrom } = this.state;
+        const { pageIndex, paginationSize, paginationFrom, sortField, sortDirection } = this.state;
 
         const {
             index: newPageIndex,
             size
         } = page;
 
+        const {
+            field,
+            direction
+        } = sort;
+
         // Compute new pagination start point.
         let newPaginationFrom = newPageIndex * paginationSize;
         let newPaginationSize = size;
+
+        let newField = field || sortField;
+        let newDirection = direction || sortDirection;
+        if (direction) { // Normally above code should suffice but there is an issue about direction.
+            if (sortDirection === "asc") {
+                newDirection = "desc";
+            } else {
+                newDirection = "asc";
+            }
+        }
 
         this.setState({
             pageIndex: newPageIndex,
             paginationFrom: newPaginationFrom,
             paginationSize: newPaginationSize,
-        }, () => this.props.fetchInvocationsByFunctionName(this.props.httpClient, startDate, interval, functionName, newPaginationSize, newPaginationFrom));
+            sortField: newField,
+            sortDirection: newDirection
+        }, () => this.props.fetchInvocationsByFunctionName(this.props.httpClient, startDate, interval, functionName, newPaginationSize, newPaginationFrom, newField, newDirection));
 
     }
 
@@ -106,7 +125,7 @@ class InvocationsTableContainer extends React.Component {
 
     renderInvocationsTable = () => {
 
-        const { pageIndex, paginationSize } = this.state;
+        const { pageIndex, paginationSize, sortField, sortDirection } = this.state;
 
         const actions = [
             {
@@ -179,12 +198,18 @@ class InvocationsTableContainer extends React.Component {
             pageSizeOptions: [10, 20, 50],
         };
 
+        const sorting = {
+            field: sortField,
+            direction: sortDirection
+        };
+
         // console.log("renderInvocationsTable; invocationList, pagination: ", this.props.invocationList, pagination);
         return (
             <EuiBasicTable
                 items={this.props.invocationList.hits || []}
                 columns={columns}
                 pagination={pagination}
+                sorting={sorting}
                 loading={this.props.invocationListFetching}
                 onChange={this.onTableChange}
             />
@@ -220,8 +245,10 @@ const mapStateToProps = state => {
 const mapDispatchToProps = dispatch => {
     return {
         fetchFunctionList: (httpClient, startTime) => dispatch(fetchFunctionList(httpClient, startTime)),
-        fetchInvocationsByFunctionName: (httpClient, startTime, interval, functionName, paginationSize, paginationFrom) =>
-            dispatch(fetchInvocationsByFunctionName(httpClient, startTime, interval, functionName, paginationSize, paginationFrom)),
+
+        fetchInvocationsByFunctionName: (httpClient, startTime, interval, functionName, paginationSize, paginationFrom, sortField, sortDirection) =>
+            dispatch(fetchInvocationsByFunctionName(httpClient, startTime, interval, functionName, paginationSize, paginationFrom, sortField, sortDirection)),
+        
         fetchFunctionDataByFunctionName: (httpClient, startTime, functionName) => dispatch(fetchFunctionDataByFunctionName(httpClient, startTime, functionName))
     }
 };

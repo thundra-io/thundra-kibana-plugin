@@ -128,7 +128,7 @@ const fetchFunctionListFailure = (error) => ({
 });
 
 
-export const fetchInvocationsByFunctionName = (httpClient, startTime, interval, functionName, paginationSize, paginationFrom) => {
+export const fetchInvocationsByFunctionName = (httpClient, startTime, interval, functionName, paginationSize, paginationFrom, sortField, sortDirection) => {
     // console.log("fetchInvocationsByFunctionName; httpclient: ", httpClient);
     return dispatch => {
         dispatch(fetchInvocationsByFunctionNameStarted());
@@ -139,11 +139,12 @@ export const fetchInvocationsByFunctionName = (httpClient, startTime, interval, 
                 interval: interval,
                 functionName: functionName,
                 paginationFrom: paginationFrom,
-                paginationSize: paginationSize
+                paginationSize: paginationSize,
+                sortField,
+                sortDirection
             }
         }).then((resp) => {
-            // console.log("success - fetchInvocationsByFunctionName; resp: ", resp);
-
+            console.log("success - fetchInvocationsByFunctionName; resp: ", resp);
             dispatch(fetchInvocationsByFunctionNameSuccess(resp.data.invocations));
         })
             .catch((err) => {

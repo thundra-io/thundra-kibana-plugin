@@ -59,7 +59,7 @@ class FunctionsTableContainer extends React.Component {
                             {functionName}
                         </Link>
                     );
-                    
+
                 }
             },
             {
@@ -97,11 +97,6 @@ class FunctionsTableContainer extends React.Component {
                 name: 'Error',
                 sortable: true
             },
-            // {
-            //     field: 'monthlyCost',
-            //     name: 'Monthly Cost',
-            //     sortable: true
-            // },
             {
                 field: 'estimatedCost',
                 name: 'Estimated Cost',
@@ -153,10 +148,18 @@ class FunctionsTableContainer extends React.Component {
             },
         };
 
+        const sorting = {
+            sort: {
+                field: 'applicationName',
+                direction: 'desc',
+            }
+        };
+
         return (
             <EuiInMemoryTable
                 items={this.props.functionList}
                 pagination={true}
+                sorting={sorting}
                 loading={this.props.functionListFetching}
                 columns={columns}
                 search={search}

@@ -130,6 +130,8 @@ export default function (server) {
             path: '/api/thundra/invocations-with-function-name',
             method: 'GET',
             handler(req, reply) {
+                let trimmedSortfield = req.query.sortField.slice(8);
+
                 let query = {
                     index: 'lab-invocation-*',
                     body: {
@@ -171,8 +173,10 @@ export default function (server) {
                         },
                         sort: [
                             {
-                                finishTimestamp: {
-                                    order: 'desc'
+                                // finishTimestamp: {
+                                [trimmedSortfield]: {
+                                    // order: 'desc'
+                                    order: req.query.sortDirection
                                 }
                             }
                         ]
