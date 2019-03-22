@@ -6,10 +6,13 @@ import {
 
 import {
     EuiSpacer,
+    EuiPanel,
     EuiInMemoryTable,
     EuiLink,
     EuiBasicTable,
-    EuiLoadingKibana
+    EuiLoadingKibana,
+    EuiAccordion,
+    EuiText
 } from '@elastic/eui';
 
 import {
@@ -141,116 +144,116 @@ const theme = {
 
 
 const DBSummary = [
-        {title: "Error", prop: "error"},
-        {title: "Host", prop: "db.host"},
-        {title: "Instance", prop: "db.instance"},
-        {title: "Statement Type", prop: "db.statement.type"},
-        {title: "Statement", prop: "db.statement"}
-    ]
-;
+    { title: "Error", prop: "error" },
+    { title: "Host", prop: "db.host" },
+    { title: "Instance", prop: "db.instance" },
+    { title: "Statement Type", prop: "db.statement.type" },
+    { title: "Statement", prop: "db.statement" }
+]
+    ;
 
 
 const SpanConstants = {
     "AWS-DynamoDB": {
         backgroundColor: SERVICES_ASSETS.DynamoDB.color,
-        iconClass: {cmd: 'static', clsname: SERVICES_ASSETS.DynamoDB.iconCls},
+        iconClass: { cmd: 'static', clsname: SERVICES_ASSETS.DynamoDB.iconCls },
         summaryRenderer: 'PropRenderer',
         summary: [
-            {title: "Error", prop: "error"},
-            {title: "Operation Type", prop: "operation.type"},
-            {title: "Table Name", prop: "aws.dynamodb.table.name"},
-            {title: "Statement", prop: "db.statement"},
-            {title: "Request Name", prop: "aws.request.name"},
+            { title: "Error", prop: "error" },
+            { title: "Operation Type", prop: "operation.type" },
+            { title: "Table Name", prop: "aws.dynamodb.table.name" },
+            { title: "Statement", prop: "db.statement" },
+            { title: "Request Name", prop: "aws.request.name" },
         ]
     },
     "AWS-SQS": {
         backgroundColor: SERVICES_ASSETS.SQS.color,
-        iconClass: {cmd: 'static', clsname: SERVICES_ASSETS.SQS.iconCls},
+        iconClass: { cmd: 'static', clsname: SERVICES_ASSETS.SQS.iconCls },
         summaryRenderer: 'PropRenderer',
         summary: [
-            {title: "Error", prop: "error"},
-            {title: "Operation Type", prop: "operation.type"},
-            {title: "Queue Name", prop: "aws.sqs.queue.name"},
+            { title: "Error", prop: "error" },
+            { title: "Operation Type", prop: "operation.type" },
+            { title: "Queue Name", prop: "aws.sqs.queue.name" },
 
         ]
     },
     "AWS-SNS": {
         backgroundColor: SERVICES_ASSETS.SNS.color,
-        iconClass: {cmd: 'static', clsname: SERVICES_ASSETS.SNS.iconCls},
+        iconClass: { cmd: 'static', clsname: SERVICES_ASSETS.SNS.iconCls },
         summaryRenderer: 'PropRenderer',
         summary: [
-            {title: "Error", prop: "error"},
-            {title: "Operation Type", prop: "operation.type"},
-            {title: "Topic Name", prop: "aws.sns.topic.name"},
-            {title: "Request Name", prop: "aws.request.name"},
+            { title: "Error", prop: "error" },
+            { title: "Operation Type", prop: "operation.type" },
+            { title: "Topic Name", prop: "aws.sns.topic.name" },
+            { title: "Request Name", prop: "aws.request.name" },
         ]
 
     },
     "AWS-Kinesis": {
         backgroundColor: SERVICES_ASSETS.KINESIS.color,
-        iconClass: {cmd: 'static', clsname: SERVICES_ASSETS.KINESIS.iconCls},
+        iconClass: { cmd: 'static', clsname: SERVICES_ASSETS.KINESIS.iconCls },
         summaryRenderer: 'PropRenderer',
         summary: [
-            {title: "Error", prop: "error"},
-            {title: "Operation Type", prop: "operation.type"},
-            {title: "Stream Name", prop: "aws.kinesis.stream.name"},
+            { title: "Error", prop: "error" },
+            { title: "Operation Type", prop: "operation.type" },
+            { title: "Stream Name", prop: "aws.kinesis.stream.name" },
         ]
     },
     "AWS-Firehose": {
         backgroundColor: SERVICES_ASSETS.FIREHOSE.color,
-        iconClass: {cmd: 'static', clsname: SERVICES_ASSETS.FIREHOSE.iconCls},
+        iconClass: { cmd: 'static', clsname: SERVICES_ASSETS.FIREHOSE.iconCls },
         summaryRenderer: 'PropRenderer',
         summary: [
-            {title: "Error", prop: "error"},
-            {title: "Operation Type", prop: "operation.type"},
-            {title: "Stream Name", prop: "aws.firehose.stream.name"},
+            { title: "Error", prop: "error" },
+            { title: "Operation Type", prop: "operation.type" },
+            { title: "Stream Name", prop: "aws.firehose.stream.name" },
         ]
     },
     "AWS-S3": {
         backgroundColor: SERVICES_ASSETS.S3.color,
-        iconClass: {cmd: 'static', clsname: SERVICES_ASSETS.S3.iconCls},
+        iconClass: { cmd: 'static', clsname: SERVICES_ASSETS.S3.iconCls },
         summaryRenderer: 'PropRenderer',
         summary: [
-            {title: "Error", prop: "error"},
-            {title: "Operation Type", prop: "operation.type"},
-            {title: "Bucket Name", prop: "aws.s3.bucket.name"},
-            {title: "Object Name", prop: "aws.s3.object.name"},
+            { title: "Error", prop: "error" },
+            { title: "Operation Type", prop: "operation.type" },
+            { title: "Bucket Name", prop: "aws.s3.bucket.name" },
+            { title: "Object Name", prop: "aws.s3.object.name" },
         ]
     },
 
     "AWS-Lambda": {
         backgroundColor: SERVICES_ASSETS.LAMBDA.color,
-        iconClass: {cmd: 'static', clsname: SERVICES_ASSETS.LAMBDA.iconCls},
+        iconClass: { cmd: 'static', clsname: SERVICES_ASSETS.LAMBDA.iconCls },
         summaryRenderer: 'PropRenderer',
         summary: [
-            {title: "Error", prop: "error"},
-            {title: "Trigger Class", prop: "trigger.className"},
-            {title: "Trigger Domain", prop: "trigger.domainName"},
-            {title: "Request", prop: "aws.lambda.invocation.request"},
-            {title: "Response", prop: "aws.lambda.invocation.response"},
+            { title: "Error", prop: "error" },
+            { title: "Trigger Class", prop: "trigger.className" },
+            { title: "Trigger Domain", prop: "trigger.domainName" },
+            { title: "Request", prop: "aws.lambda.invocation.request" },
+            { title: "Response", prop: "aws.lambda.invocation.response" },
         ]
     },
     "POSTGRESQL": {
         backgroundColor: SERVICES_ASSETS.POSTGRESQL.color,
-        iconClass: {cmd: 'static', clsname: SERVICES_ASSETS.POSTGRESQL.iconCls},
+        iconClass: { cmd: 'static', clsname: SERVICES_ASSETS.POSTGRESQL.iconCls },
         summaryRenderer: 'PropRenderer',
         summary: DBSummary
     },
     "PG": {
         backgroundColor: SERVICES_ASSETS.POSTGRESQL.color,
-        iconClass: {cmd: 'static', clsname: SERVICES_ASSETS.POSTGRESQL.iconCls},
+        iconClass: { cmd: 'static', clsname: SERVICES_ASSETS.POSTGRESQL.iconCls },
         summaryRenderer: 'PropRenderer',
         summary: DBSummary
     },
     "ELASTICSEARCH": {
         backgroundColor: SERVICES_ASSETS.ELASTICSEARCH.color,
-        iconClass: {cmd: 'static', clsname: SERVICES_ASSETS.ELASTICSEARCH.iconCls},
+        iconClass: { cmd: 'static', clsname: SERVICES_ASSETS.ELASTICSEARCH.iconCls },
         summaryRenderer: 'PropRenderer',
         summary: DBSummary
     },
     "MYSQL": {
         backgroundColor: SERVICES_ASSETS.MYSQL.color,
-        iconClass: {cmd: 'static', clsname: SERVICES_ASSETS.MYSQL.iconCls},
+        iconClass: { cmd: 'static', clsname: SERVICES_ASSETS.MYSQL.iconCls },
         summaryRenderer: 'PropRenderer',
         summary: DBSummary
 
@@ -273,35 +276,35 @@ const SpanConstants = {
     },
     "Redis": {
         backgroundColor: SERVICES_ASSETS.REDIS.color,
-        iconClass: {cmd: 'static', clsname: SERVICES_ASSETS.REDIS.iconCls},
+        iconClass: { cmd: 'static', clsname: SERVICES_ASSETS.REDIS.iconCls },
         summaryRenderer: 'PropRenderer',
         summary: [
-            {title: "Error", prop: "error"},
-            {title: "Host", prop: "redis.host"},
-            {title: "Operation Type", prop: "operation.type"},
-            {title: "Command", prop: "redis.command"},
+            { title: "Error", prop: "error" },
+            { title: "Host", prop: "redis.host" },
+            { title: "Operation Type", prop: "operation.type" },
+            { title: "Command", prop: "redis.command" },
         ]
     },
     "HTTP": {
         backgroundColor: SERVICES_ASSETS.HTTP.color,
-        iconClass: {cmd: 'static', clsname: SERVICES_ASSETS.HTTP.iconCls},
+        iconClass: { cmd: 'static', clsname: SERVICES_ASSETS.HTTP.iconCls },
         summaryRenderer: 'PropRenderer',
         summary: [
-            {title: "Error", prop: "error"},
-            {title: "URL", prop: "http.url"},
-            {title: "Query Params", prop: "http.query_params"},
-            {title: "Status Code", prop: "http.status_code"},
-            {title: "Method", prop: "http.method"},
+            { title: "Error", prop: "error" },
+            { title: "URL", prop: "http.url" },
+            { title: "Query Params", prop: "http.query_params" },
+            { title: "Status Code", prop: "http.status_code" },
+            { title: "Method", prop: "http.method" },
         ]
     },
     "Func": {
         backgroundColor: SERVICES_ASSETS.FUNC.color,
-        iconClass: {cmd: 'static', clsname: SERVICES_ASSETS.FUNC.iconCls},
+        iconClass: { cmd: 'static', clsname: SERVICES_ASSETS.FUNC.iconCls },
         summaryRenderer: 'MethodRenderer',
         summary: [
-            {title: "Error", prop: "error"},
-            {title: "Return Value", prop: "method.return_value"},
-            {title: "Args", prop: "method.args"},
+            { title: "Error", prop: "error" },
+            { title: "Return Value", prop: "method.return_value" },
+            { title: "Args", prop: "method.args" },
         ]
     },
 
@@ -552,9 +555,9 @@ class InvocationTraceChartContainer extends React.Component {
 
         // If there is an object/array value, convert it to string because tags are supposed to 
         // be string key/value pairs.
-        Object.keys(tags).forEach( (key) => 
-            processedSpanTags[key] = 
-                typeof tags[key] === "object" ? JSON.stringify(tags[key]) : tags[key]
+        Object.keys(tags).forEach((key) =>
+            processedSpanTags[key] =
+            typeof tags[key] === "object" ? JSON.stringify(tags[key]) : tags[key]
         );
 
         return processedSpanTags;
@@ -601,10 +604,10 @@ class InvocationTraceChartContainer extends React.Component {
 
         // console.log("convertThundraInvocationsToTrace; transactionId, invocationSpans: ", transactionId, invocationSpans);
 
-        const thundraTrace = invocationSpans.map( (rawSpan, index) => {
+        const thundraTrace = invocationSpans.map((rawSpan, index) => {
 
             const span = rawSpan._source;
-            
+
             // console.log(`${index}: span tag: `, span.tags);
             // console.log(`${index}: span tag: `, JSON.stringify(span.tags));
 
@@ -612,7 +615,7 @@ class InvocationTraceChartContainer extends React.Component {
             const spanName = this.computeSpanName(span);
             const spanServiceName = this.computeSpanServiceName(span);
 
-            return(
+            return (
                 {
                     traceId: transactionId,
                     parentId: span.parentSpanId || "",
@@ -620,7 +623,7 @@ class InvocationTraceChartContainer extends React.Component {
                     name: spanName,
                     timestamp: span.startTimestamp * 1000,
                     duration: span.duration < 1 ? 1 : span.duration * 1000,
-                    localEndpoint: {serviceName: spanServiceName, ipv4: '0.0.0.0'},
+                    localEndpoint: { serviceName: spanServiceName, ipv4: '0.0.0.0' },
                     annotations: [ // TODO: remove annos?
                         { value: 'ws', timestamp: 1541138169337695 },
                         { value: 'wr', timestamp: 1541138169368570 },
@@ -631,6 +634,50 @@ class InvocationTraceChartContainer extends React.Component {
         });
 
         return thundraTrace;
+    }
+
+    renderErrorStacks = () => {
+
+        const {invocationSpans} = this.props;
+
+        // let errorAccordionArr = [];
+        let errorCount = 0;
+        const errorAccordionArr = invocationSpans.map( span => {
+            const {tags} = span._source;
+            if (tags.error) {
+                errorCount = errorCount + 1;
+                return (
+                    <div key={span._id}>
+                        <EuiAccordion
+                            id="accordion2"
+                            buttonContent={tags["error.kind"]}
+                            paddingSize="l"
+                        >
+                            <EuiText>
+                                <span>Error Message:</span>
+                                <p>{tags["error.message"]}</p>
+                                <span>Error Stack:</span> 
+                                <p>{tags["error.stack"]}</p>
+                            </EuiText>
+                        </EuiAccordion>
+                        {/* <EuiSpacer /> */}
+                    </div>
+                );
+            }
+        })
+
+        if (errorCount > 0) {
+            return (
+                <EuiPanel>
+                    <p>You have {errorCount} {errorCount > 1 ? "errors" : "error"} in your invocation.</p>
+                    <EuiSpacer />
+                    {errorAccordionArr}
+                </EuiPanel>
+            );
+        } else {
+            return null;
+        }
+        
     }
 
     render() {
@@ -644,12 +691,17 @@ class InvocationTraceChartContainer extends React.Component {
             const correctedMockTraceSummary = treeCorrectedForClockSkew(rawMockTraceSummary);
             console.log("ITCC; correctedMockTraceSummary: ", correctedMockTraceSummary);
             mockTraceSummary = detailedTraceSummary(correctedMockTraceSummary);
-            
+
             console.log("ITCC; mockTraceSummary: ", mockTraceSummary);
         }
 
         return (
             <div className="invocation-trace-chart-container">
+
+                {this.renderErrorStacks()}
+
+                <EuiSpacer />
+
                 {invocationSpans.length > 0 ?
                     <DetailedTraceSummary
                         isLoading={this.props.invocationSpansFetching}
@@ -658,7 +710,7 @@ class InvocationTraceChartContainer extends React.Component {
                         traceSummary={mockTraceSummary}
                     /> :
                     <EuiLoadingKibana size="xl" />
-                }   
+                }
 
                 <EuiSpacer />
                 <EuiSpacer />

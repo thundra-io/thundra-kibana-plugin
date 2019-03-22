@@ -230,6 +230,11 @@ class InvocationsHeatMapContainer extends React.Component {
         })
     }
 
+    // tooltipTemplate = (args) => {
+    //     // args.content = args.value;
+    //     return args.value;
+    // }
+
     renderHeatMap = () => {
         // if (this.props.invocationHeatsFetching) {
         //     return (
@@ -302,6 +307,8 @@ class InvocationsHeatMapContainer extends React.Component {
                 cellSelected={this.handleAreaSelected}
 
                 // showTooltip={false}
+                showTooltip={true}
+                // tooltipRender={this.tooltipTemplate}
             >
                 <Inject services={[Legend, Tooltip]} />
             </HeatMapComponent>

@@ -99,8 +99,31 @@ class TimelineSpan extends React.Component {
         onDataOpenToggle(span.spanId);
     }
 
+    renderServiceName = () => {
+        const { span } = this.props;
+
+        if (span.errorType === "none") {
+            return (
+                <span>{span.serviceName}</span>
+            );
+        } else {
+            return (
+                <span>
+                    <EuiIcon
+                        type="alert"
+                        color="danger"
+                        size="s"
+                    />
+                    {" "}
+                    {span.serviceName}
+                </span>
+            )
+        }
+    }
+
     renderServiceNameColumn() {
         const { span, hasChildren, areChildrenOpened } = this.props;
+        // console.log("TimelineSpan, renderServiceNameColumn; span: ", span);
 
         return (
             <div className="timeline-span__service-name-column">
@@ -115,18 +138,18 @@ class TimelineSpan extends React.Component {
                             >
                                 {
                                     areChildrenOpened ?
-                                    (
-                                        // <span className="fas fa-minus-square" />
-                                        <EuiIcon
-                                            type={"minusInCircle"}
-                                        />
-                                    ) :
-                                    (
-                                        // <span className="fas fa-plus-square" />
-                                        <EuiIcon
-                                            type={"plusInCircle"}
-                                        />
-                                    )
+                                        (
+                                            // <span className="fas fa-minus-square" />
+                                            <EuiIcon
+                                                type={"minusInCircle"}
+                                            />
+                                        ) :
+                                        (
+                                            // <span className="fas fa-plus-square" />
+                                            <EuiIcon
+                                                type={"plusInCircle"}
+                                            />
+                                        )
                                 }
                             </div>
                         )
@@ -144,7 +167,8 @@ class TimelineSpan extends React.Component {
                     style={{ left: `${(span.depth + 1) * 14}px` }}
                 >
                     <div className="timeline-span__service-name">
-                        {span.serviceName}
+                        {/* {span.serviceName} */}
+                        {this.renderServiceName()}
                     </div>
                 </div>
             </div>

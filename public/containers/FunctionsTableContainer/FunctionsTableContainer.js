@@ -150,7 +150,7 @@ class FunctionsTableContainer extends React.Component {
 
         const sorting = {
             sort: {
-                field: 'applicationName',
+                field: 'newestInvocationTime',
                 direction: 'desc',
             }
         };
