@@ -637,17 +637,16 @@ class InvocationTraceChartContainer extends React.Component {
     }
 
     renderErrorStacks = () => {
-
         const {invocationSpans} = this.props;
-
-        // let errorAccordionArr = [];
-        let errorCount = 0;
-        const errorAccordionArr = invocationSpans.map( span => {
-            const {tags} = span._source;
+        if (invocationSpans.length < 1) {
+            return null;
+        } else {
+            const {tags} = invocationSpans[0]._source;
             if (tags.error) {
-                errorCount = errorCount + 1;
                 return (
-                    <div key={span._id}>
+                    <EuiPanel>
+                        <p>You have error in your invocation.</p>
+                        <EuiSpacer />
                         <EuiAccordion
                             id="accordion2"
                             buttonContent={tags["error.kind"]}
@@ -660,24 +659,10 @@ class InvocationTraceChartContainer extends React.Component {
                                 <p>{tags["error.stack"]}</p>
                             </EuiText>
                         </EuiAccordion>
-                        {/* <EuiSpacer /> */}
-                    </div>
+                    </EuiPanel>
                 );
             }
-        })
-
-        if (errorCount > 0) {
-            return (
-                <EuiPanel>
-                    <p>You have {errorCount} {errorCount > 1 ? "errors" : "error"} in your invocation.</p>
-                    <EuiSpacer />
-                    {errorAccordionArr}
-                </EuiPanel>
-            );
-        } else {
-            return null;
         }
-        
     }
 
     render() {
