@@ -35,6 +35,7 @@ import { treeCorrectedForClockSkew, detailedTraceSummary } from '../../zipkin';
 
 import { connect } from "react-redux";
 import {computePercentage} from "../../utils";
+import moment from "moment";
 
 export const SERVICES_ASSETS = {
     DynamoDB: {
@@ -688,8 +689,12 @@ class InvocationTraceChartContainer extends React.Component {
             const applicationRuntime = firstSpan.applicationRuntime || "-";
             const stage = firstSpan.applicationStage || "-";
             const region = firstSpan.tags["aws.region"] || "-";
+            const coldStart = firstSpan.tags["aws.lambda.invocation.coldstart"] || false
 
-            const invocationTime = firstSpan.startTime || "-";
+            // const invocationTime = firstSpan.startTime || "-";
+            // const invocationTime = firstSpan.startTimestamp || "-";
+            // const invocationTime = moment(firstSpan.startTimestamp).format("YYYY-MM-DD HH:mm") || "-";
+            const invocationTime = moment(firstSpan.startTimestamp).format("DD/MM/YYYY HH:mm:ss") || "-";
 
             const usedMemory = invocationMemoryMetric.usedMemory || 0;
             const maxMemory = invocationMemoryMetric.maxMemory || 0;
@@ -700,8 +705,10 @@ class InvocationTraceChartContainer extends React.Component {
             return (
                 <EuiFlexGroup>
 
-                    <EuiFlexItem>
+                    <EuiFlexItem grow={false}>
                         <EuiPanel className="invocation-meta-info-tags-panel">
+                        {/* <EuiPanel> */}
+
                             <EuiToolTip
                                 position="top"
                                 content="Runtime"
@@ -728,6 +735,18 @@ class InvocationTraceChartContainer extends React.Component {
                                     {stage}
                                 </EuiBadge>
                             </EuiToolTip>
+
+                            {coldStart &&
+                                <EuiToolTip
+                                    position="top"
+                                    content="Stage"
+                                >
+                                    <EuiBadge color="primary">
+                                        cold start
+                                    </EuiBadge>
+                                </EuiToolTip>
+                            }
+
                         </EuiPanel>
                     </EuiFlexItem>
 

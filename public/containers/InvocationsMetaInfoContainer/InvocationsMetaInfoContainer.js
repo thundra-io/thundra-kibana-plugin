@@ -65,7 +65,7 @@ class InvocationsMetaInfoContainer extends React.Component {
             <EuiFlexGroup>
 
                 <EuiFlexItem>
-                    <EuiPanel>
+                    <EuiPanel className="invocation-meta-info-tags-panel">
                         <EuiToolTip
                             position="top"
                             content="Runtime"
@@ -74,7 +74,7 @@ class InvocationsMetaInfoContainer extends React.Component {
                                 {applicationRuntime}
                             </EuiBadge>
                         </EuiToolTip>
-                        <EuiSpacer />
+                        {/* <EuiSpacer /> */}
 
                         <EuiToolTip
                             position="top"
@@ -84,7 +84,7 @@ class InvocationsMetaInfoContainer extends React.Component {
                                 {region}
                             </EuiBadge>
                         </EuiToolTip>
-                        <EuiSpacer />
+                        {/* <EuiSpacer /> */}
 
                         <EuiToolTip
                             position="top"
