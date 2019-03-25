@@ -24,13 +24,13 @@ const initialState = {
     functionListFetching: false,
     functionListError: null,
 
-    invocationsByFunctionName: [],
-    invocationsByFunctionNameFetching: false,
-    invocationsByFunctionNameError: null,
-
     functionMetadataByFunctionName: {},
     functionMetadataByFunctionNameFetching: false,
     functionMetadataByFunctionNameError: null,
+
+    invocationsByFunctionName: [],
+    invocationsByFunctionNameFetching: false,
+    invocationsByFunctionNameError: null,
 
     invocationSpans: [],
     invocationSpansFetching: false,

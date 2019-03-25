@@ -12,7 +12,16 @@ import {
     EuiBasicTable,
     EuiLoadingKibana,
     EuiAccordion,
-    EuiText
+    EuiText,
+    EuiFlexGroup,
+    EuiFlexItem,
+    EuiToolTip,
+    EuiBadge,
+    EuiStat,
+    EuiIcon,
+    EuiDescriptionList,
+    EuiDescriptionListTitle,
+    EuiDescriptionListDescription
 } from '@elastic/eui';
 
 import {
@@ -637,11 +646,11 @@ class InvocationTraceChartContainer extends React.Component {
     }
 
     renderErrorStacks = () => {
-        const {invocationSpans} = this.props;
+        const { invocationSpans } = this.props;
         if (invocationSpans.length < 1) {
             return null;
         } else {
-            const {tags} = invocationSpans[0]._source;
+            const { tags } = invocationSpans[0]._source;
             if (tags.error) {
                 return (
                     <EuiPanel>
@@ -655,7 +664,7 @@ class InvocationTraceChartContainer extends React.Component {
                             <EuiText>
                                 <span>Error Message:</span>
                                 <p>{tags["error.message"]}</p>
-                                <span>Error Stack:</span> 
+                                <span>Error Stack:</span>
                                 <p>{tags["error.stack"]}</p>
                             </EuiText>
                         </EuiAccordion>
@@ -663,6 +672,153 @@ class InvocationTraceChartContainer extends React.Component {
                 );
             }
         }
+    }
+
+    renderInvocationMetaInfo = () => {
+        const { invocationSpans } = this.props;
+
+        if (invocationSpans.length > 0) {
+            const firstSpan = invocationSpans[0]._source;
+
+            const applicationRuntime = firstSpan.applicationRuntime || "-";
+            const stage = firstSpan.applicationStage || "-";
+            const region = firstSpan.tags["aws.region"] || "-";
+
+            const invocationTime = firstSpan.startTime || "-";
+
+            return (
+                <EuiFlexGroup>
+
+                    <EuiFlexItem>
+                        <EuiPanel className="invocation-meta-info-tags-panel">
+                            <EuiToolTip
+                                position="top"
+                                content="Runtime"
+                            >
+                                <EuiBadge color="danger">
+                                    {applicationRuntime}
+                                </EuiBadge>
+                            </EuiToolTip>
+
+                            <EuiToolTip
+                                position="top"
+                                content="Region"
+                            >
+                                <EuiBadge color="warning">
+                                    {region}
+                                </EuiBadge>
+                            </EuiToolTip>
+
+                            <EuiToolTip
+                                position="top"
+                                content="Stage"
+                            >
+                                <EuiBadge color="secondary">
+                                    {stage}
+                                </EuiBadge>
+                            </EuiToolTip>
+                        </EuiPanel>
+                    </EuiFlexItem>
+
+                    <EuiFlexItem>
+                        <EuiPanel>
+                            {/* <EuiStat
+                                title={invocationTime}
+                                description="Invocation Time"
+                                textAlign="right"
+                                titleColor="accent"
+                            >
+                                <EuiIcon type="visGauge" color="accent" />
+                            </EuiStat> */}
+                            <EuiDescriptionList>
+                                <EuiDescriptionListTitle>
+                                    Invocation Time
+                                </EuiDescriptionListTitle>
+                                <EuiDescriptionListDescription>
+                                    {invocationTime}
+                                </EuiDescriptionListDescription>
+                            </EuiDescriptionList>
+                        </EuiPanel>
+                    </EuiFlexItem>
+
+                    <EuiFlexItem>
+                        <EuiPanel>
+                            {/* <EuiStat
+                                title={`36mb/1024mb (3.47%)`}
+                                description="Memory Usage"
+                                textAlign="right"
+                                titleColor="accent"
+                            >
+                                <EuiIcon type="tear" color="accent" />
+                            </EuiStat> */}
+                            <EuiDescriptionList>
+                                <EuiDescriptionListTitle>
+                                    Memory Usage
+                                </EuiDescriptionListTitle>
+                                <EuiDescriptionListDescription>
+                                    36mb/1024mb (3.47%)
+                                </EuiDescriptionListDescription>
+                            </EuiDescriptionList>
+                        </EuiPanel>
+                    </EuiFlexItem>
+
+                    <EuiFlexItem>
+                        <EuiPanel>
+                            {/* <EuiStat
+                                title={`1.18%`}
+                                description="CPU Usage"
+                                titleColor="secondary"
+                                textAlign="right"
+                            >
+                                <EuiIcon type="check" color="secondary" />
+                            </EuiStat> */}
+                            <EuiDescriptionList>
+                                <EuiDescriptionListTitle>
+                                    CPU Usage
+                                </EuiDescriptionListTitle>
+                                <EuiDescriptionListDescription>
+                                    1.18%
+                                </EuiDescriptionListDescription>
+                            </EuiDescriptionList>
+                        </EuiPanel>
+                    </EuiFlexItem>
+
+                    {/* <EuiFlexItem>
+                        <EuiPanel>
+                            <EuiStat
+                                title={invocationsWithColdStart || 0}
+                                description="Cold Start"
+                                titleColor="primary"
+                                textAlign="right"
+                            >
+                                <EuiIcon type="temperature" color="primary" />
+                            </EuiStat>
+                        </EuiPanel>
+                    </EuiFlexItem>
+
+                    <EuiFlexItem>
+                        <EuiPanel>
+                            <EuiStat
+                                title={invocationsWithError || 0}
+                                description="Erroneous"
+                                titleColor="danger"
+                                textAlign="right"
+                            >
+                                <EuiIcon type="alert" color="danger" />
+                            </EuiStat>
+                        </EuiPanel>
+                    </EuiFlexItem> */}
+
+                </EuiFlexGroup>
+            )
+
+        }
+
+
+
+        return (
+            <div>invocation meta info</div>
+        );
     }
 
     render() {
@@ -682,6 +838,10 @@ class InvocationTraceChartContainer extends React.Component {
 
         return (
             <div className="invocation-trace-chart-container">
+
+                {this.renderInvocationMetaInfo()}
+
+                <EuiSpacer />
 
                 {this.renderErrorStacks()}
 

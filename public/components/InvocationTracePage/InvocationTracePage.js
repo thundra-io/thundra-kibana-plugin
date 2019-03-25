@@ -20,7 +20,7 @@ import {
     EuiBreadcrumbs
 } from '@elastic/eui';
 
-import { TimeSelectorContainer, InvocationsTableContainer, InvocationTraceChartContainer } from "../../containers";
+import { InvocationMetaInfoContainer, InvocationTraceChartContainer } from "../../containers";
 
 class InvocationTracePage extends React.Component {
 
@@ -66,6 +66,13 @@ class InvocationTracePage extends React.Component {
                 </EuiTitle>
 
                 <EuiSpacer />
+
+                {/* TODO: Deprecate below container*/}
+                {/* <InvocationMetaInfoContainer
+                    httpClient={this.props.httpClient}
+                    match={this.props.match}
+                /> */}
+
                 <EuiSpacer />
 
                 <InvocationTraceChartContainer
