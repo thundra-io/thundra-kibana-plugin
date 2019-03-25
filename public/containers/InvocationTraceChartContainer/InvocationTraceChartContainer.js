@@ -25,13 +25,16 @@ import {
 } from '@elastic/eui';
 
 import {
-    fetchInvocationSpans
+    fetchInvocationSpans,
+    fetchInvocationMemoryMetric,
+    fetchInvocationCPUMetric
 } from "../../store/actions";
 
 import DetailedTraceSummary from "../../components/DetailedTraceSummary";
 import { treeCorrectedForClockSkew, detailedTraceSummary } from '../../zipkin';
 
 import { connect } from "react-redux";
+import {computePercentage} from "../../utils";
 
 export const SERVICES_ASSETS = {
     DynamoDB: {
@@ -340,6 +343,8 @@ class InvocationTraceChartContainer extends React.Component {
         const { transactionId } = this.props.match.params;
 
         this.props.fetchInvocationSpans(this.props.httpClient, transactionId);
+        this.props.fetchInvocationMemoryMetric(this.props.httpClient, transactionId);
+        this.props.fetchInvocationCPUMetric(this.props.httpClient, transactionId);
     }
 
     sampleHttpTrace = () => {
@@ -675,7 +680,7 @@ class InvocationTraceChartContainer extends React.Component {
     }
 
     renderInvocationMetaInfo = () => {
-        const { invocationSpans } = this.props;
+        const { invocationSpans, invocationMemoryMetric, invocationCPUMetric } = this.props;
 
         if (invocationSpans.length > 0) {
             const firstSpan = invocationSpans[0]._source;
@@ -685,6 +690,12 @@ class InvocationTraceChartContainer extends React.Component {
             const region = firstSpan.tags["aws.region"] || "-";
 
             const invocationTime = firstSpan.startTime || "-";
+
+            const usedMemory = invocationMemoryMetric.usedMemory || 0;
+            const maxMemory = invocationMemoryMetric.maxMemory || 0;
+            const memoryPercentage = computePercentage(usedMemory, maxMemory);
+
+            const usedCPU = invocationCPUMetric.appCPULoad || 0;
 
             return (
                 <EuiFlexGroup>
@@ -722,14 +733,6 @@ class InvocationTraceChartContainer extends React.Component {
 
                     <EuiFlexItem>
                         <EuiPanel>
-                            {/* <EuiStat
-                                title={invocationTime}
-                                description="Invocation Time"
-                                textAlign="right"
-                                titleColor="accent"
-                            >
-                                <EuiIcon type="visGauge" color="accent" />
-                            </EuiStat> */}
                             <EuiDescriptionList>
                                 <EuiDescriptionListTitle>
                                     Invocation Time
@@ -743,20 +746,12 @@ class InvocationTraceChartContainer extends React.Component {
 
                     <EuiFlexItem>
                         <EuiPanel>
-                            {/* <EuiStat
-                                title={`36mb/1024mb (3.47%)`}
-                                description="Memory Usage"
-                                textAlign="right"
-                                titleColor="accent"
-                            >
-                                <EuiIcon type="tear" color="accent" />
-                            </EuiStat> */}
                             <EuiDescriptionList>
                                 <EuiDescriptionListTitle>
                                     Memory Usage
                                 </EuiDescriptionListTitle>
                                 <EuiDescriptionListDescription>
-                                    36mb/1024mb (3.47%)
+                                    {usedMemory}mb / {maxMemory}mb ({memoryPercentage}%)
                                 </EuiDescriptionListDescription>
                             </EuiDescriptionList>
                         </EuiPanel>
@@ -764,61 +759,22 @@ class InvocationTraceChartContainer extends React.Component {
 
                     <EuiFlexItem>
                         <EuiPanel>
-                            {/* <EuiStat
-                                title={`1.18%`}
-                                description="CPU Usage"
-                                titleColor="secondary"
-                                textAlign="right"
-                            >
-                                <EuiIcon type="check" color="secondary" />
-                            </EuiStat> */}
                             <EuiDescriptionList>
                                 <EuiDescriptionListTitle>
                                     CPU Usage
                                 </EuiDescriptionListTitle>
                                 <EuiDescriptionListDescription>
-                                    1.18%
+                                    {usedCPU}%
                                 </EuiDescriptionListDescription>
                             </EuiDescriptionList>
                         </EuiPanel>
                     </EuiFlexItem>
 
-                    {/* <EuiFlexItem>
-                        <EuiPanel>
-                            <EuiStat
-                                title={invocationsWithColdStart || 0}
-                                description="Cold Start"
-                                titleColor="primary"
-                                textAlign="right"
-                            >
-                                <EuiIcon type="temperature" color="primary" />
-                            </EuiStat>
-                        </EuiPanel>
-                    </EuiFlexItem>
-
-                    <EuiFlexItem>
-                        <EuiPanel>
-                            <EuiStat
-                                title={invocationsWithError || 0}
-                                description="Erroneous"
-                                titleColor="danger"
-                                textAlign="right"
-                            >
-                                <EuiIcon type="alert" color="danger" />
-                            </EuiStat>
-                        </EuiPanel>
-                    </EuiFlexItem> */}
-
                 </EuiFlexGroup>
             )
-
         }
 
-
-
-        return (
-            <div>invocation meta info</div>
-        );
+        return null;
     }
 
     render() {
@@ -869,12 +825,17 @@ const mapStateToProps = state => {
     return {
         invocationSpans: state.functionList.invocationSpans,
         invocationSpansFetching: state.functionList.invocationSpansFetching,
+        
+        invocationMemoryMetric: state.functionList.invocationMemoryMetric,
+        invocationCPUMetric: state.functionList.invocationCPUMetric,
     }
 };
 
 const mapDispatchToProps = dispatch => {
     return {
         fetchInvocationSpans: (httpClient, transactionId) => dispatch(fetchInvocationSpans(httpClient, transactionId)),
+        fetchInvocationMemoryMetric: (httpClient, transactionId) => dispatch(fetchInvocationMemoryMetric(httpClient, transactionId)),
+        fetchInvocationCPUMetric: (httpClient, transactionId) => dispatch(fetchInvocationCPUMetric(httpClient, transactionId)),
     }
 };
 

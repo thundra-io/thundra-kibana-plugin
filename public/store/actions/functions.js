@@ -16,8 +16,16 @@ import {
     FETCH_INVOCATION_LOGS_FAILURE,
     FETCH_INVOCATIONS_HEATMAP_STARTED,
     FETCH_INVOCATIONS_HEATMAP_SUCCESS,
-    FETCH_INVOCATIONS_HEATMAP_FAILURE
+    FETCH_INVOCATIONS_HEATMAP_FAILURE,
+    FETCH_INVOCATION_MEMORY_METRIC_STARTED,
+    FETCH_INVOCATION_MEMORY_METRIC_SUCCESS,
+    FETCH_INVOCATION_MEMORY_METRIC_FAILURE,
+    FETCH_INVOCATION_CPU_METRIC_STARTED,
+    FETCH_INVOCATION_CPU_METRIC_SUCCESS,
+    FETCH_INVOCATION_CPU_METRIC_FAILURE,
 } from "../constants";
+
+import {convertByteToMb} from "../../utils";
 
 export const fetchFunctionList = (httpClient, startTime) => {
     // console.log("fetchFunctionList; httpclient: ", httpClient);
@@ -263,10 +271,10 @@ export const fetchInvocationSpans = (httpClient, transactionId) => {
             // console.log("success - fetchInvocationSpans; resp: ", resp);
             dispatch(fetchInvocationSpansSuccess(resp.data.invocationSpansByTransactionId));
         })
-        .catch((err) => {
-            // console.log("error - fetchInvocationSpans; err: ", err);
-            dispatch(fetchInvocationSpansFailure(err))
-        });
+            .catch((err) => {
+                // console.log("error - fetchInvocationSpans; err: ", err);
+                dispatch(fetchInvocationSpansFailure(err))
+            });
 
     }
 }
@@ -284,6 +292,96 @@ const fetchInvocationSpansSuccess = (invocationSpans) => ({
 
 const fetchInvocationSpansFailure = (error) => ({
     type: FETCH_INVOCATION_SPANS_FAILURE,
+    payload: {
+        ...error
+    }
+});
+
+export const fetchInvocationMemoryMetric = (httpClient, transactionId) => {
+
+    return dispatch => {
+        dispatch(fetchInvocationMemoryMetricStarted());
+
+        httpClient.get('../api/thundra/memory-metric-by-transaction-id', {
+            params: {
+                transactionId: transactionId
+            }
+        }).then((resp) => {
+            console.log("success - fetchInvocationMemoryMetric; resp: ", resp);
+            const {metrics} = resp.data.memoryMetricByTransaction.hits.hits[0]._source;
+            const memoryMetric = {
+                usedMemory: convertByteToMb(metrics["app.usedMemory"]),
+                maxMemory: convertByteToMb(metrics["app.maxMemory"])
+            }
+
+            dispatch(fetchInvocationMemoryMetricSuccess(memoryMetric));
+        })
+        .catch((err) => {
+            console.log("error - fetchInvocationMemoryMetric; err: ", err);
+            dispatch(fetchInvocationMemoryMetricFailure(err))
+        });
+
+    }
+}
+
+const fetchInvocationMemoryMetricStarted = () => ({
+    type: FETCH_INVOCATION_MEMORY_METRIC_STARTED
+});
+
+const fetchInvocationMemoryMetricSuccess = (invocationMemoryMetric) => ({
+    type: FETCH_INVOCATION_MEMORY_METRIC_SUCCESS,
+    payload: {
+        invocationMemoryMetric: invocationMemoryMetric
+    }
+});
+
+const fetchInvocationMemoryMetricFailure = (error) => ({
+    type: FETCH_INVOCATION_MEMORY_METRIC_FAILURE,
+    payload: {
+        ...error
+    }
+});
+
+
+export const fetchInvocationCPUMetric = (httpClient, transactionId) => {
+
+    return dispatch => {
+        dispatch(fetchInvocationCPUMetricStarted());
+
+        httpClient.get('../api/thundra/cpu-metric-by-transaction-id', {
+            params: {
+                transactionId: transactionId
+            }
+        }).then((resp) => {
+            console.log("success - fetchInvocationCPUMetric; resp: ", resp);
+            const {metrics} = resp.data.cpuMetricByTransaction.hits.hits[0]._source;
+            const cpuMetric = {
+                appCPULoad: Number((metrics["app.cpuLoad"] * 100).toFixed(2)) || 0,
+            }
+
+            dispatch(fetchInvocationCPUMetricSuccess(cpuMetric));
+        })
+        .catch((err) => {
+            console.log("error - fetchInvocationCPUMetric; err: ", err);
+            dispatch(fetchInvocationCPUMetricFailure(err))
+        });
+
+    }
+}
+
+const fetchInvocationCPUMetricStarted = () => ({
+    type: FETCH_INVOCATION_CPU_METRIC_STARTED
+});
+
+const fetchInvocationCPUMetricSuccess = (invocationCPUMetric) => ({
+    type: FETCH_INVOCATION_CPU_METRIC_SUCCESS,
+    payload: {
+        invocationCPUMetric: invocationCPUMetric
+    }
+});
+
+const fetchInvocationCPUMetricFailure = (error) => ({
+    type: FETCH_INVOCATION_CPU_METRIC_FAILURE,
     payload: {
         ...error
     }
@@ -349,11 +447,11 @@ export const fetchInvocationsHeatMap = (httpClient, funcName, funcStage, funcReg
             }
         }).then((resp) => {
             const minMaxDuration = resp.data.invocationsMinMaxDuration;
-            
+
             // Here compute bucket size in terms of duration
             const diff = minMaxDuration.maxDuration.value - minMaxDuration.minDuration.value;
             const bucketSize = (diff < DURATION_BUCKET_COUNT) ? 1 : Math.round(diff / DURATION_BUCKET_COUNT);
-            
+
             // Here compute time diff (x axes) in terms of millis
             const timeDiff = endTime - startTime;
             const intervalMillis = (timeDiff < TIME_BUCKET_COUNT) ? TIME_BUCKET_COUNT : Math.round(timeDiff / TIME_BUCKET_COUNT);
@@ -416,8 +514,8 @@ export const fetchInvocationHeats = (httpClient, funcName, funcStage, funcRegion
             functionHeatMap.heatMapDurationGap = bucketSize;
 
             // Use these times if there is no buckets.
-            functionHeatMap.heatMapEndTime = Math.round(endTime/1000) * 1000;
-            functionHeatMap.heatMapStartTime = Math.round(startTime/1000) * 1000;
+            functionHeatMap.heatMapEndTime = Math.round(endTime / 1000) * 1000;
+            functionHeatMap.heatMapStartTime = Math.round(startTime / 1000) * 1000;
             functionHeatMap.heatMapTimeGap = intervalMillis;
 
             // Align start/end times according to last bucket's time.
@@ -459,10 +557,10 @@ export const fetchInvocationHeats = (httpClient, funcName, funcStage, funcRegion
             dispatch(fetchInvocationHeatsSuccess(functionHeatMap));
             console.log("success - fetchInvocationHeats; resp, functionHeatMap: ", resp, functionHeatMap);
         })
-        .catch((err) => {
-            console.log("error - fetchInvocationHeats; err: ", err);
-            dispatch(fetchInvocationHeatsFailure(err))
-        });
+            .catch((err) => {
+                console.log("error - fetchInvocationHeats; err: ", err);
+                dispatch(fetchInvocationHeatsFailure(err))
+            });
 
     }
 }

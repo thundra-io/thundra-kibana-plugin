@@ -16,7 +16,13 @@ import {
     FETCH_INVOCATION_LOGS_FAILURE,
     FETCH_INVOCATIONS_HEATMAP_STARTED,
     FETCH_INVOCATIONS_HEATMAP_SUCCESS,
-    FETCH_INVOCATIONS_HEATMAP_FAILURE
+    FETCH_INVOCATIONS_HEATMAP_FAILURE,
+    FETCH_INVOCATION_MEMORY_METRIC_STARTED,
+    FETCH_INVOCATION_MEMORY_METRIC_SUCCESS,
+    FETCH_INVOCATION_MEMORY_METRIC_FAILURE,
+    FETCH_INVOCATION_CPU_METRIC_STARTED,
+    FETCH_INVOCATION_CPU_METRIC_SUCCESS,
+    FETCH_INVOCATION_CPU_METRIC_FAILURE,
 } from "../constants";
 
 const initialState = {
@@ -35,6 +41,14 @@ const initialState = {
     invocationSpans: [],
     invocationSpansFetching: false,
     invocationSpansError: null,
+
+    invocationMemoryMetric: {},
+    invocationMemoryMetricFetching: false,
+    invocationMemoryMetricError: null,
+
+    invocationCPUMetric: {},
+    invocationCPUMetricFetching: false,
+    invocationCPUMetricError: null,
 
     invocationLogs: [],
     invocationLogsFetching: false,
@@ -122,6 +136,44 @@ export default function functionList(state = initialState, action) {
                 ...state,
                 invocationSpansFetching: false,
                 invocationSpansError: action.payload.error
+            }
+        case FETCH_INVOCATION_MEMORY_METRIC_STARTED:
+            return {
+                ...state,
+                invocationMemoryMetricFetching: true,
+                invocationMemoryMetricError: null
+            };
+        case FETCH_INVOCATION_MEMORY_METRIC_SUCCESS:
+            return {
+                ...state,
+                invocationMemoryMetricFetching: false,
+                invocationMemoryMetricError: null,
+                invocationMemoryMetric: action.payload.invocationMemoryMetric
+            };
+        case FETCH_INVOCATION_MEMORY_METRIC_FAILURE:
+            return {
+                ...state,
+                invocationMemoryMetricFetching: false,
+                invocationMemoryMetricError: action.payload.error
+            }
+        case FETCH_INVOCATION_CPU_METRIC_STARTED:
+            return {
+                ...state,
+                invocationCPUMetricFetching: true,
+                invocationCPUMetricError: null
+            };
+        case FETCH_INVOCATION_CPU_METRIC_SUCCESS:
+            return {
+                ...state,
+                invocationCPUMetricFetching: false,
+                invocationCPUMetricError: null,
+                invocationCPUMetric: action.payload.invocationCPUMetric
+            };
+        case FETCH_INVOCATION_CPU_METRIC_FAILURE:
+            return {
+                ...state,
+                invocationCPUMetricFetching: false,
+                invocationCPUMetricError: action.payload.error
             }
         case FETCH_INVOCATION_LOGS_STARTED:
             return {

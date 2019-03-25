@@ -2,6 +2,86 @@ export default function (server) {
     const { callWithRequest } = server.plugins.elasticsearch.getCluster('data');
     const { callWithInternalUser } = server.plugins.elasticsearch.getCluster('data');
     const ONE_MINUTE_IN_MILIS = 60000;
+
+    server.route(
+        {
+            path: '/api/thundra/memory-metric-by-transaction-id',
+            method: 'GET',
+            handler(req, reply) {
+                let query = {
+                    index: 'lab-metric-*',
+                    body: {
+                        query: {
+                            bool: {
+                                must: [
+                                    {
+                                        term: {
+                                            transactionId: {
+                                                value: req.query.transactionId,
+                                                boost: 1
+                                            }
+                                        }
+                                    },
+                                    {
+                                        term: {
+                                            metricName: {
+                                                value: 'MemoryMetric',
+                                                boost: 1
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                };
+                callWithInternalUser('search', query).then(response => {
+                    reply({ memoryMetricByTransaction: response });
+                });
+            }
+        }
+    );
+
+    server.route(
+        {
+            path: '/api/thundra/cpu-metric-by-transaction-id',
+            method: 'GET',
+            handler(req, reply) {
+                let query = {
+                    index: 'lab-metric-*',
+                    body: {
+                        query: {
+                            bool: {
+                                must: [
+                                    {
+                                        term: {
+                                            transactionId: {
+                                                value: req.query.transactionId,
+                                                boost: 1
+                                            }
+                                        }
+                                    },
+                                    {
+                                        term: {
+                                            metricName: {
+                                                value: 'CPUMetric',
+                                                boost: 1
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                };
+                callWithInternalUser('search', query).then(response => {
+                    reply({ cpuMetricByTransaction: response });
+                });
+            }
+        }
+    );
+
+
     server.route(
         {
             path: '/api/thundra/memory-metrics',
