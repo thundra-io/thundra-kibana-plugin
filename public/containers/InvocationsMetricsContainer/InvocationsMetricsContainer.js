@@ -22,6 +22,9 @@ import {
 } from '@elastic/eui';
 
 import {
+    fetchMetricsPageGraphs,
+    fetchInvocationCountsPerHourByName,
+    fetchInvocationDurationsPerHourByName,
     fetchFunctionCPUMetricGraphData,
     fetchFunctionList,
     fetchInvocationsByFunctionName,
@@ -48,11 +51,11 @@ class InvocationsMetricsContainer extends React.Component {
     }
 
     componentWillReceiveProps(nextProps) {
-        console.log("cwrp; props, nextProps: ", this.props, nextProps);
+        // console.log("cwrp; props, nextProps: ", this.props, nextProps);
         // When start date is changed by global time selector, fetch data again.
-        if (this.props.startDate !== nextProps.startDate ) {
+        if (this.props.startDate !== nextProps.startDate) {
             // this.fetchData(nextProps.startDate, nextProps.interval);
-            console.log("cwrp, fetchData; this.props, nextProps: ", this.props, nextProps);
+            // console.log("cwrp, fetchData; this.props, nextProps: ", this.props, nextProps);
             this.fetchData(nextProps.startDate, nextProps.endDate, nextProps.interval);
         }
     }
@@ -60,35 +63,100 @@ class InvocationsMetricsContainer extends React.Component {
     // fetchData = (startDate, interval) => {
     fetchData = (startDate, endDate, interval) => {
         const { functionName } = this.props.match.params;
-        // const { applicationRuntime, region, stage } = this.props.functionMetadataByFunctionName;
 
-        // const { paginationFrom, paginationSize, sortField, sortDirection } = this.state;
-        // this.props.fetchInvocationsByFunctionName(this.props.httpClient, startDate, interval, functionName, paginationSize, paginationFrom, sortField, sortDirection);
-        
-        // this.props.fetchFunctionDataByFunctionName(this.props.httpClient, startDate, functionName);
-        
-        // if (this.props.functionMetadataByFunctionName !== {}) {
-        // if (this.props.functionMetadataByFunctionName.applicationName) {
-        //     console.log("FETCH: ", functionName, applicationRuntime, stage, region, this.props.functionMetadataByFunctionName);
-        //     this.props.fetchFunctionCPUMetricGraphData(this.props.httpClient, startDate, endDate, functionName, applicationRuntime, stage, region);
-        // }
+        this.props.fetchMetricsPageGraphs(this.props.httpClient, functionName, startDate, endDate);
+    }
 
-        this.props.fetchFunctionCPUMetricGraphData(this.props.httpClient, functionName, startDate, endDate);
-        // this.props.fetchFunctionCPUMetricGraphData(this.props.httpClient, startDate, endDate, functionName, applicationRuntime, stage, region);
+    renderInvocationCountsMetricChart = () => {
+        const {functionInvocationCountMetricByMetadata} = this.props;
+
+        const invocations = functionInvocationCountMetricByMetadata.map(data => {
+            return {
+                x: data.timestamp,
+                y: data.invocationCount
+            }
+        });
+
+        const errors = functionInvocationCountMetricByMetadata.map(data => {
+            return {
+                x: data.timestamp,
+                y: data.errorCount
+            }
+        });
+
+        const coldStarts = functionInvocationCountMetricByMetadata.map(data => {
+            return {
+                x: data.timestamp,
+                y: data.coldStartCount
+            }
+        });
+
+        return (
+            <EuiSeriesChart height={250} >
+                <EuiLineSeries name="invocation count" data={invocations} />
+                <EuiLineSeries name="error count" data={errors} />
+                <EuiLineSeries name="cold start count" data={coldStarts} />
+                {/* <EuiLineSeries name="Total ROM" data={DATA_B} /> */}
+            </EuiSeriesChart>
+        )
+    }
+
+    renderInvocationDurationsMetricChart = () => {
+        const {functionInvocationDurationsMetricByMetadata} = this.props;
+
+        const invocationDurations = functionInvocationDurationsMetricByMetadata.map(data => {
+            return {
+                x: data.timestamp,
+                y: data.avgInvocationDuration
+            }
+        });
+
+        const errorDurations = functionInvocationDurationsMetricByMetadata.map(data => {
+            return {
+                x: data.timestamp,
+                y: data.avgErrorDuration
+            }
+        });
+
+        const coldStartDurations = functionInvocationDurationsMetricByMetadata.map(data => {
+            return {
+                x: data.timestamp,
+                y: data.avgColdStartDuration
+            }
+        });
+
+        return (
+            <EuiSeriesChart height={250} >
+                <EuiLineSeries name="invocation durations" data={invocationDurations} />
+                <EuiLineSeries name="error durations" data={errorDurations} />
+                <EuiLineSeries name="cold start durations" data={coldStartDurations} />
+                {/* <EuiLineSeries name="Total ROM" data={DATA_B} /> */}
+            </EuiSeriesChart>
+        )
     }
 
     renderMemoryMetricChart = () => {
+        const { functionMemoryMetricByMetadata } = this.props;
+
+        const memoryData = functionMemoryMetricByMetadata.map(data => {
+            return {
+                x: data.timestamp,
+                y: data.usedMemory
+            };
+        })
+
         return (
-            <div>
-                memory metric chart container
-            </div>
+            <EuiSeriesChart height={250} >
+                <EuiLineSeries name="Used Memory (MB)" data={memoryData} />
+                {/* <EuiLineSeries name="Total ROM" data={DATA_B} /> */}
+            </EuiSeriesChart>
         )
     }
 
     renderCPUMetricChart = () => {
-        const {functionCPUMetricByMetadata} = this.props;
+        const { functionCPUMetricByMetadata } = this.props;
 
-        const cpuData = functionCPUMetricByMetadata.map( data => {
+        const cpuData = functionCPUMetricByMetadata.map(data => {
             return {
                 x: data.timestamp,
                 y: data.cpuloadPercentage
@@ -111,7 +179,7 @@ class InvocationsMetricsContainer extends React.Component {
 
         return (
             <div className="invocations-metrics-container">
-                {this.renderMemoryMetricChart()}
+                {/* {this.renderMemoryMetricChart()} */}
                 {/* {this.renderCPUMetricChart()} */}
 
                 <EuiFlexGrid columns={2}>
@@ -120,10 +188,11 @@ class InvocationsMetricsContainer extends React.Component {
                             <p>Counts</p>
                         </EuiText>
                         {/* <EuiSeriesChart height={250} xType={SCALE.TIME}> */}
-                        <EuiSeriesChart height={250} >
+                        {/* <EuiSeriesChart height={250} >
                             <EuiLineSeries name="Total RAM" data={DATA_A} />
                             <EuiLineSeries name="Total ROM" data={DATA_B} />
-                        </EuiSeriesChart>
+                        </EuiSeriesChart> */}
+                        {this.renderInvocationCountsMetricChart()}
                     </EuiFlexItem>
 
                     <EuiFlexItem>
@@ -131,10 +200,11 @@ class InvocationsMetricsContainer extends React.Component {
                             <p>Duration</p>
                         </EuiText>
                         {/* <EuiSeriesChart height={250} xType={SCALE.TIME}> */}
-                        <EuiSeriesChart height={250} >
+                        {/* <EuiSeriesChart height={250} >
                             <EuiLineSeries name="Total RAM" data={DATA_A} />
                             <EuiLineSeries name="Total ROM" data={DATA_B} />
-                        </EuiSeriesChart>
+                        </EuiSeriesChart> */}
+                        {this.renderInvocationDurationsMetricChart()}                        
                     </EuiFlexItem>
 
                 </EuiFlexGrid>
@@ -142,18 +212,19 @@ class InvocationsMetricsContainer extends React.Component {
                 <EuiFlexGrid columns={2}>
                     <EuiFlexItem>
                         <EuiText grow={false}>
-                            <p>Memory</p>
+                            <p>Memory (MB)</p>
                         </EuiText>
                         {/* <EuiSeriesChart height={250} xType={SCALE.TIME}> */}
-                        <EuiSeriesChart height={250} >
+                        {/* <EuiSeriesChart height={250} >
                             <EuiLineSeries name="Total RAM" data={DATA_A} />
                             <EuiLineSeries name="Total ROM" data={DATA_B} />
-                        </EuiSeriesChart>
+                        </EuiSeriesChart> */}
+                        {this.renderMemoryMetricChart()}
                     </EuiFlexItem>
 
                     <EuiFlexItem>
                         <EuiText grow={false}>
-                            <p>CPU</p>
+                            <p>CPU (%)</p>
                         </EuiText>
                         {/* <EuiSeriesChart height={250} xType={SCALE.TIME}> */}
                         {/* <EuiSeriesChart height={250} >
@@ -172,13 +243,11 @@ class InvocationsMetricsContainer extends React.Component {
 
 const mapStateToProps = state => {
     return {
-        // invocationList: state.functionList.invocationsByFunctionName,
-        // invocationListFetching: state.functionList.invocationsByFunctionNameFetching,
+        functionInvocationCountMetricByMetadata: state.functionList.functionInvocationCountMetricByMetadata,
+        functionInvocationDurationsMetricByMetadata: state.functionList.functionInvocationDurationsMetricByMetadata,
 
         functionCPUMetricByMetadata: state.functionList.functionCPUMetricByMetadata,
-        
-        functionMetadataByFunctionName: state.functionList.functionMetadataByFunctionName,
-        functionMetadataByFunctionNameFetching: state.functionList.functionMetadataByFunctionNameFetching,
+        functionMemoryMetricByMetadata: state.functionList.functionMemoryMetricByMetadata,
 
         startDate: state.timeSelector.startDate,
         endDate: state.timeSelector.endDate,
@@ -188,16 +257,7 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => {
     return {
-        fetchFunctionCPUMetricGraphData: (httpClient, functionName, startTime, endTime) => dispatch(fetchFunctionCPUMetricGraphData(httpClient, functionName, startTime, endTime)),
-        // fetchFunctionCPUMetricGraphData: (httpClient, startTime, endTime, functionName, applicationRuntime, stage, region) => 
-        //     dispatch(fetchFunctionCPUMetricGraphData(httpClient, startTime, endTime, functionName, applicationRuntime, stage, region)),
-
-        // fetchFunctionList: (httpClient, startTime) => dispatch(fetchFunctionList(httpClient, startTime)),
-
-        // fetchInvocationsByFunctionName: (httpClient, startTime, interval, functionName, paginationSize, paginationFrom, sortField, sortDirection) =>
-        //     dispatch(fetchInvocationsByFunctionName(httpClient, startTime, interval, functionName, paginationSize, paginationFrom, sortField, sortDirection)),
-        
-        fetchFunctionDataByFunctionName: (httpClient, startTime, functionName) => dispatch(fetchFunctionDataByFunctionName(httpClient, startTime, functionName))
+        fetchMetricsPageGraphs: (httpClient, functionName, startTime, endTime) => dispatch(fetchMetricsPageGraphs(httpClient, functionName, startTime, endTime)),
     }
 };
 

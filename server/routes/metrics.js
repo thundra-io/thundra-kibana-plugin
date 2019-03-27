@@ -87,7 +87,7 @@ export default function (server) {
             path: '/api/thundra/cpu-metric-by-function-meta-info',
             method: 'GET',
             handler(req, reply) {
-                console.log("==> ", req.query);
+                // console.log("==> ", req.query);
                 let query = {
                     index: 'lab-metric-*',
                     body: {
@@ -196,6 +196,145 @@ export default function (server) {
                 };
                 callWithInternalUser('search', query).then(response => {
                     reply({ cpuMetricByFunctionMetaInfo: response });
+                });
+            }
+        }
+    );
+
+
+    server.route(
+        {
+            path: '/api/thundra/memory-metric-by-function-meta-info',
+            method: 'GET',
+            handler(req, reply) {
+                // console.log("==> ", req.query);
+                let query = {
+                    index: 'lab-metric-*',
+                    body: {
+                        query: {
+                            bool: {
+                                must: [
+                                    {
+                                        term: {
+                                            metricName: {
+                                                value: 'MemoryMetric',
+                                                boost: 1
+                                            }
+                                        }
+                                    },
+                                    {
+                                        term: {
+                                            applicationRuntime: {
+                                                value: req.query.runtime,
+                                                // value: "python",
+                                                boost: 1
+                                            }
+                                        }
+                                    },
+                                    {
+                                        term: {
+                                            applicationName: {
+                                                value: req.query.functionName,
+                                                // value: "list-todo-lambda-python-lab",
+                                                boost: 1
+                                            }
+                                        }
+                                    },
+                                    {
+                                        range: {
+                                            metricTime: {
+                                                // from: '2019-03-26 14:40:00.000 +0300',
+                                                from: req.query.startTime,
+                                                // from: new Date(req.query.startTime * 1000).toString(),
+                                                to: null,
+                                                include_lower: true,
+                                                include_upper: true,
+                                                boost: 1
+                                            }
+                                        }
+                                    },
+                                    {
+                                        range: {
+                                            metricTime: {
+                                                from: null,
+                                                // to: '2019-03-26 15:40:00.000 +0300',
+                                                to: req.query.endTime,
+                                                include_lower: true,
+                                                include_upper: true,
+                                                boost: 1
+                                            }
+                                        }
+                                    },
+                                    {
+                                        terms: {
+                                            applicationStage: [
+                                                req.query.stage,
+                                                // 'lab',
+                                                ''
+                                            ],
+                                            boost: 1
+                                        }
+                                    },
+                                    {
+                                        term: {
+                                            tags_s_aws_region: {
+                                                value: req.query.region,
+                                                // value: "eu-west-1",
+                                                boost: 1
+                                            }
+                                        }
+                                    }
+                                ],
+                                adjust_pure_negative: true,
+                                boost: 1
+                            }
+                        },
+                        aggregations: {
+                            timeSeriesByMetricTime: {
+                                date_histogram: {
+                                    field: 'metricTime',
+                                    // interval: 120000,
+                                    interval: Number(req.query.interval),
+                                    offset: 0,
+                                    order: {
+                                        _key: 'asc'
+                                    },
+                                    keyed: false,
+                                    min_doc_count: 0
+                                },
+                                aggregations: {
+                                    memoryPercentiles: {
+                                        percentiles: {
+                                            field: 'metrics_l_metrics_app_usedMemory',
+                                            percents: [
+                                                50,
+                                                90,
+                                                95,
+                                                99
+                                            ],
+                                            keyed: true,
+                                            tdigest: {
+                                                compression: 100
+                                            }
+                                        }
+                                    },
+                                    metrics_l_app_usedMemory: {
+                                        avg: {
+                                            field: 'metrics_l_app_usedMemory'
+                                        }
+                                    },
+                                    metrics_l_app_maxMemory: {
+                                        avg: {
+                                            field: 'metrics_l_app_maxMemory'
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                };
+                callWithInternalUser('search', query).then(response => {
+                    reply({ memoryMetricByFunctionMetaInfo: response });
                 });
             }
         }

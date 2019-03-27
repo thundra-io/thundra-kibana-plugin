@@ -966,4 +966,265 @@ export default function (server) {
         }
     );
 
+
+    // function invocation counts by function meta info
+    server.route(
+        {
+            path: '/api/thundra/invocation-count-by-function-meta-info',
+            method: 'GET',
+            handler(req, reply) {
+                // console.log("==> ", req.query);
+                let query = {
+                    index: 'lab-invocation-*',
+                    body: {
+                        query: {
+                            bool: {
+                                must: [
+                                    {
+                                        term: {
+                                            applicationName: {
+                                                // value: 'user-get-lambda-java-lab',
+                                                value: req.query.functionName,
+                                                boost: 1
+                                            }
+                                        }
+                                    },
+                                    {
+                                        range: {
+                                            startTime: {
+                                                // from: '2019-03-27 14:10:00.000 +0300',
+                                                from: req.query.startTime,
+                                                // to: '2019-03-27 15:10:00.000 +0300',
+                                                to: req.query.endTime,
+                                                include_lower: true,
+                                                include_upper: true,
+                                                boost: 1
+                                            }
+                                        }
+                                    },
+                                    {
+                                        term: {
+                                            applicationStage: {
+                                                // value: 'lab',
+                                                value: req.query.stage,
+                                                boost: 1
+                                            }
+                                        }
+                                    },
+                                    {
+                                        term: {
+                                            functionRegion: {
+                                                // value: 'eu-west-1',
+                                                value: req.query.region,
+                                                boost: 1
+                                            }
+                                        }
+                                    },
+                                    {
+                                        term: {
+                                            applicationRuntime: {
+                                                // value: 'java',
+                                                value: req.query.runtime,
+                                                boost: 1
+                                            }
+                                        }
+                                    }
+                                ],
+                                adjust_pure_negative: true,
+                                boost: 1
+                            }
+                        },
+                        aggregations: {
+                            timeSeriesByStartTime: {
+                                date_histogram: {
+                                    field: 'startTime',
+                                    interval: Number(req.query.interval),
+                                    offset: 0,
+                                    order: {
+                                        _key: 'asc'
+                                    },
+                                    keyed: false,
+                                    min_doc_count: 0
+                                },
+                                aggregations: {
+                                    coldStartCount: {
+                                        filter: {
+                                            term: {
+                                                coldStart: {
+                                                    value: true,
+                                                    boost: 1
+                                                }
+                                            }
+                                        }
+                                    },
+                                    errorCount: {
+                                        filter: {
+                                            term: {
+                                                erroneous: {
+                                                    value: true,
+                                                    boost: 1
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                };
+                callWithInternalUser('search', query).then(response => {
+                    reply({ invocationCountByFunctionMetaInfo: response });
+                });
+            }
+        }
+    );
+
+
+
+    // function invocation durations by function meta info
+    server.route(
+        {
+            path: '/api/thundra/invocation-duration-by-function-meta-info',
+            method: 'GET',
+            handler(req, reply) {
+                // console.log("==> ", req.query);
+                let query = {
+                    index: 'lab-invocation-*',
+                    body: {
+                        query: {
+                            bool: {
+                                must: [
+                                    {
+                                        term: {
+                                            applicationName: {
+                                                // value: 'user-get-lambda-java-lab',
+                                                value: req.query.functionName,
+                                                boost: 1
+                                            }
+                                        }
+                                    },
+                                    {
+                                        range: {
+                                            startTime: {
+                                                // from: '2019-03-27 14:10:00.000 +0300',
+                                                from: req.query.startTime,
+                                                // to: '2019-03-27 15:10:00.000 +0300',
+                                                to: req.query.endTime,
+                                                include_lower: true,
+                                                include_upper: true,
+                                                boost: 1
+                                            }
+                                        }
+                                    },
+                                    {
+                                        term: {
+                                            applicationStage: {
+                                                // value: 'lab',
+                                                value: req.query.stage,
+                                                boost: 1
+                                            }
+                                        }
+                                    },
+                                    {
+                                        term: {
+                                            functionRegion: {
+                                                // value: 'eu-west-1',
+                                                value: req.query.region,
+                                                boost: 1
+                                            }
+                                        }
+                                    },
+                                    {
+                                        term: {
+                                            applicationRuntime: {
+                                                // value: 'java',
+                                                value: req.query.runtime,
+                                                boost: 1
+                                            }
+                                        }
+                                    }
+                                ],
+                                adjust_pure_negative: true,
+                                boost: 1
+                            }
+                        },
+                        aggregations: {
+                            timeSeriesByStartTime: {
+                                date_histogram: {
+                                    field: 'startTime',
+                                    interval: Number(req.query.interval),
+                                    offset: 0,
+                                    order: {
+                                        _key: 'asc'
+                                    },
+                                    keyed: false,
+                                    min_doc_count: 0
+                                },
+                                aggregations: {
+                                    durationPercentiles: {
+                                        percentiles: {
+                                            field: 'duration',
+                                            percents: [
+                                                50,
+                                                90,
+                                                95,
+                                                99
+                                            ],
+                                            keyed: true,
+                                            tdigest: {
+                                                compression: 100
+                                            }
+                                        }
+                                    },
+                                    avgDuration: {
+                                        avg: {
+                                            field: 'duration'
+                                        }
+                                    },
+                                    coldStartDuration: {
+                                        filter: {
+                                            term: {
+                                                coldStart: {
+                                                    value: true,
+                                                    boost: 1
+                                                }
+                                            }
+                                        },
+                                        aggregations: {
+                                            avgOfDuration: {
+                                                avg: {
+                                                    field: 'duration'
+                                                }
+                                            }
+                                        }
+                                    },
+                                    errorDuration: {
+                                        filter: {
+                                            term: {
+                                                erroneous: {
+                                                    value: true,
+                                                    boost: 1
+                                                }
+                                            }
+                                        },
+                                        aggregations: {
+                                            avgOfDuration: {
+                                                avg: {
+                                                    field: 'duration'
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                };
+                callWithInternalUser('search', query).then(response => {
+                    reply({ invocationDurationsByFunctionMetaInfo: response });
+                });
+            }
+        }
+    );
+
 }

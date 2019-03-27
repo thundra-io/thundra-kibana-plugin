@@ -11,6 +11,15 @@ import {
     FETCH_FUNCTION_CPU_METRIC_STARTED,
     FETCH_FUNCTION_CPU_METRIC_SUCCESS,
     FETCH_FUNCTION_CPU_METRIC_FAILURE,
+    FETCH_FUNCTION_MEMORY_METRIC_STARTED,
+    FETCH_FUNCTION_MEMORY_METRIC_SUCCESS,
+    FETCH_FUNCTION_MEMORY_METRIC_FAILURE,
+    FETCH_FUNCTION_INVOCATION_COUNT_METRIC_STARTED,
+    FETCH_FUNCTION_INVOCATION_COUNT_METRIC_SUCCESS,
+    FETCH_FUNCTION_INVOCATION_COUNT_METRIC_FAILURE,
+    FETCH_FUNCTION_INVOCATION_DURATIONS_METRIC_STARTED,
+    FETCH_FUNCTION_INVOCATION_DURATIONS_METRIC_SUCCESS,
+    FETCH_FUNCTION_INVOCATION_DURATIONS_METRIC_FAILURE,
     FETCH_INVOCATION_SPANS_STARTED,
     FETCH_INVOCATION_SPANS_SUCCESS,
     FETCH_INVOCATION_SPANS_FAILURE,
@@ -40,6 +49,18 @@ const initialState = {
     functionCPUMetricByMetadata: [],
     functionCPUMetricByMetadataFetching: false,
     functionCPUMetricByMetadataError: null,
+
+    functionMemoryMetricByMetadata: [],
+    functionMemoryMetricByMetadataFetching: false,
+    functionMemoryMetricByMetadataError: null,
+
+    functionInvocationCountMetricByMetadata: [],
+    functionInvocationCountMetricByMetadataFetching: false,
+    functionInvocationCountMetricByMetadataError: null,
+
+    functionInvocationDurationsMetricByMetadata: [],
+    functionInvocationDurationsMetricByMetadataFetching: false,
+    functionInvocationDurationsMetricByMetadataError: null,
 
     invocationsByFunctionName: [],
     invocationsByFunctionNameFetching: false,
@@ -143,6 +164,63 @@ export default function functionList(state = initialState, action) {
                 ...state,
                 functionCPUMetricByMetadataFetching: false,
                 functionCPUMetricByMetadataError: action.payload.error
+            }
+        case FETCH_FUNCTION_MEMORY_METRIC_STARTED:
+            return {
+                ...state,
+                functionMemoryMetricByMetadataFetching: true,
+                functionMemoryMetricByMetadataError: null
+            };
+        case FETCH_FUNCTION_MEMORY_METRIC_SUCCESS:
+            return {
+                ...state,
+                functionMemoryMetricByMetadataFetching: false,
+                functionMemoryMetricByMetadataError: null,
+                functionMemoryMetricByMetadata: action.payload.functionMemoryMetricByMetadata
+            };
+        case FETCH_FUNCTION_MEMORY_METRIC_FAILURE:
+            return {
+                ...state,
+                functionMemoryMetricByMetadataFetching: false,
+                functionMemoryMetricByMetadataError: action.payload.error
+            }
+        case FETCH_FUNCTION_INVOCATION_COUNT_METRIC_STARTED:
+            return {
+                ...state,
+                functionInvocationCountMetricByMetadataFetching: true,
+                functionInvocationCountMetricByMetadataError: null
+            };
+        case FETCH_FUNCTION_INVOCATION_COUNT_METRIC_SUCCESS:
+            return {
+                ...state,
+                functionInvocationCountMetricByMetadataFetching: false,
+                functionInvocationCountMetricByMetadataError: null,
+                functionInvocationCountMetricByMetadata: action.payload.functionInvocationCountMetricByMetadata
+            };
+        case FETCH_FUNCTION_INVOCATION_COUNT_METRIC_FAILURE:
+            return {
+                ...state,
+                functionInvocationCountMetricByMetadataFetching: false,
+                functionInvocationCountMetricByMetadataError: action.payload.error
+            }
+        case FETCH_FUNCTION_INVOCATION_DURATIONS_METRIC_STARTED:
+            return {
+                ...state,
+                functionInvocationDurationsMetricByMetadataFetching: true,
+                functionInvocationDurationsMetricByMetadataError: null
+            };
+        case FETCH_FUNCTION_INVOCATION_DURATIONS_METRIC_SUCCESS:
+            return {
+                ...state,
+                functionInvocationDurationsMetricByMetadataFetching: false,
+                functionInvocationDurationsMetricByMetadataError: null,
+                functionInvocationDurationsMetricByMetadata: action.payload.functionInvocationDurationsMetricByMetadata
+            };
+        case FETCH_FUNCTION_INVOCATION_DURATIONS_METRIC_FAILURE:
+            return {
+                ...state,
+                functionInvocationDurationsMetricByMetadataFetching: false,
+                functionInvocationDurationsMetricByMetadataError: action.payload.error
             }
         case FETCH_INVOCATION_SPANS_STARTED:
             return {

@@ -11,6 +11,15 @@ import {
     FETCH_FUNCTION_CPU_METRIC_STARTED,
     FETCH_FUNCTION_CPU_METRIC_SUCCESS,
     FETCH_FUNCTION_CPU_METRIC_FAILURE,
+    FETCH_FUNCTION_MEMORY_METRIC_STARTED,
+    FETCH_FUNCTION_MEMORY_METRIC_SUCCESS,
+    FETCH_FUNCTION_MEMORY_METRIC_FAILURE,
+    FETCH_FUNCTION_INVOCATION_COUNT_METRIC_STARTED,
+    FETCH_FUNCTION_INVOCATION_COUNT_METRIC_SUCCESS,
+    FETCH_FUNCTION_INVOCATION_COUNT_METRIC_FAILURE,
+    FETCH_FUNCTION_INVOCATION_DURATIONS_METRIC_STARTED,
+    FETCH_FUNCTION_INVOCATION_DURATIONS_METRIC_SUCCESS,
+    FETCH_FUNCTION_INVOCATION_DURATIONS_METRIC_FAILURE,
     FETCH_INVOCATION_SPANS_STARTED,
     FETCH_INVOCATION_SPANS_SUCCESS,
     FETCH_INVOCATION_SPANS_FAILURE,
@@ -389,16 +398,9 @@ const fetchInvocationCPUMetricFailure = (error) => ({
     }
 });
 
-// export const fetchMetricsPageGraphs = (httpClient, functionName, startTimestamp, endTimestamp) => {
-
-// }
-
-// export const fetchFunctionCPUMetricGraphData = (httpClient, transactionId) => {
-export const fetchFunctionCPUMetricGraphData = (httpClient, functionName, startTimestamp, endTimestamp) => {
-// export const fetchFunctionCPUMetricGraphData = (httpClient, startTimestamp, endTimestamp, functionName, applicationRuntime, stage, region) => {
-
+export const fetchMetricsPageGraphs = (httpClient, functionName, startTimestamp, endTimestamp) => {
     return dispatch => {
-        dispatch(fetchFunctionCPUMetricGraphDataStarted());
+        // dispatch(fetchFunctionCPUMetricGraphDataStarted());
 
 
         httpClient.get('../api/thundra/invocations-v2-by-function-name', {
@@ -407,7 +409,7 @@ export const fetchFunctionCPUMetricGraphData = (httpClient, functionName, startT
                 functionName: functionName,
             }
         }).then((resp) => {
-            // console.log("success - fetchFunctionDataByFunctionName; resp: ", resp);
+            // console.log("success - fetchMetricsPageGraphs/fetchFunctionDataByFunctionName; resp: ", resp);
 
             const funcMeta = resp.data.invocations[0];
 
@@ -422,50 +424,71 @@ export const fetchFunctionCPUMetricGraphData = (httpClient, functionName, startT
             const funcRuntime = funcRegion.groupByApplicationRuntime.buckets[0];
             func.applicationRuntime = funcRuntime.key;
 
+            // console.log("success - fetchMetricsPageGraphs/fetchFunctionDataByFunctionName; func: ", func);
+            dispatch(
+                fetchFunctionCPUMetricGraphData(httpClient, functionName, startTimestamp, endTimestamp, func.applicationRuntime, func.stage, func.region)
+            );
+
+            dispatch(
+                fetchFunctionMemoryMetricGraphData(httpClient, functionName, startTimestamp, endTimestamp, func.applicationRuntime, func.stage, func.region)
+            );
+
+            dispatch(
+                fetchFunctionInvocationCountGraphData(httpClient, functionName, startTimestamp, endTimestamp, func.applicationRuntime, func.stage, func.region)
+            );
             
-            // dispatch(fetchFunctionDataByFunctionNameSuccess(func));
+            dispatch(
+                fetchFunctionInvocationDurationsGraphData(httpClient, functionName, startTimestamp, endTimestamp, func.applicationRuntime, func.stage, func.region)
+            );
 
-            const TIME_INTERVAL = 20;
-            const interval = (endTimestamp - startTimestamp) / TIME_INTERVAL;
-
-            console.log("CPU metric; func", func);
-
-            httpClient.get('../api/thundra/cpu-metric-by-function-meta-info', {
-                params: {
-                    // transactionId: transactionId,
-                    // startTime: startTime,
-                    startTime: moment(startTimestamp).format("YYYY-MM-DD HH:mm:ss.SSS ZZ"),
-                    // endTime: endTime
-                    endTime: moment(endTimestamp).format("YYYY-MM-DD HH:mm:ss.SSS ZZ"),
-                    interval: interval,
-                    functionName: func.applicationName,
-                    runtime: func.applicationRuntime,
-                    stage: func.stage,
-                    region: func.region
-                }
-            }).then((resp) => {
-                console.log("success - fetchFunctionCPUMetricGraphData; resp: ", resp);
-                const {buckets} = resp.data.cpuMetricByFunctionMetaInfo.aggregations.timeSeriesByMetricTime;
-                const cpuMetric = buckets.map( bucket => {
-                    const cpuload = bucket.metrics_d_app_cpuLoad.value || 0
-                    return {
-                        timestamp: bucket.key,
-                        cpuload: cpuload,
-                        cpuloadPercentage: Math.round(cpuload * 100)
-                    };
-                });
-
-                dispatch(fetchFunctionCPUMetricGraphDataSuccess(cpuMetric));
-            })
-            .catch((err) => {
-                console.log("error - fetchFunctionCPUMetricGraphData; err: ", err);
-                dispatch(fetchFunctionCPUMetricGraphDataFailure(err))
-            });
+            
 
         })
         .catch((err) => {
             console.log("error - fetchFunctionCPUMetricGraphData/fetchFunctionDataByFunctionName; err: ", err);
             // dispatch(fetchFunctionDataByFunctionNameFailure(err))
+        });
+
+    }
+}
+
+// export const fetchFunctionCPUMetricGraphData = (httpClient, transactionId) => {
+// export const fetchFunctionCPUMetricGraphData = (httpClient, functionName, startTimestamp, endTimestamp) => {
+export const fetchFunctionCPUMetricGraphData = (httpClient, functionName, startTimestamp, endTimestamp, applicationRuntime, stage, region) => {
+
+    return dispatch => {
+        dispatch(fetchFunctionCPUMetricGraphDataStarted());
+
+        const TIME_INTERVAL = 30;
+        const interval = (endTimestamp - startTimestamp) / TIME_INTERVAL;
+
+        httpClient.get('../api/thundra/cpu-metric-by-function-meta-info', {
+            params: {
+                startTime: moment(startTimestamp).format("YYYY-MM-DD HH:mm:ss.SSS ZZ"),
+                endTime: moment(endTimestamp).format("YYYY-MM-DD HH:mm:ss.SSS ZZ"),
+                interval: interval,
+                functionName: functionName,
+                runtime: applicationRuntime,
+                stage: stage,
+                region: region
+            }
+        }).then((resp) => {
+            // console.log("success - fetchFunctionCPUMetricGraphData; resp: ", resp);
+            const {buckets} = resp.data.cpuMetricByFunctionMetaInfo.aggregations.timeSeriesByMetricTime;
+            const cpuMetric = buckets.map( bucket => {
+                const cpuload = bucket.metrics_d_app_cpuLoad.value || 0
+                return {
+                    timestamp: bucket.key,
+                    cpuload: cpuload,
+                    cpuloadPercentage: Math.round(cpuload * 100)
+                };
+            });
+
+            dispatch(fetchFunctionCPUMetricGraphDataSuccess(cpuMetric));
+        })
+        .catch((err) => {
+            console.log("error - fetchFunctionCPUMetricGraphData; err: ", err);
+            dispatch(fetchFunctionCPUMetricGraphDataFailure(err))
         });
 
     }
@@ -484,6 +507,192 @@ const fetchFunctionCPUMetricGraphDataSuccess = (functionCPUMetric) => ({
 
 const fetchFunctionCPUMetricGraphDataFailure = (error) => ({
     type: FETCH_FUNCTION_CPU_METRIC_FAILURE,
+    payload: {
+        ...error
+    }
+});
+
+
+export const fetchFunctionMemoryMetricGraphData = (httpClient, functionName, startTimestamp, endTimestamp, applicationRuntime, stage, region) => {
+
+    return dispatch => {
+        dispatch(fetchFunctionMemoryMetricGraphDataStarted());
+
+        const TIME_INTERVAL = 30;
+        const interval = (endTimestamp - startTimestamp) / TIME_INTERVAL;
+
+        httpClient.get('../api/thundra/memory-metric-by-function-meta-info', {
+            params: {
+                startTime: moment(startTimestamp).format("YYYY-MM-DD HH:mm:ss.SSS ZZ"),
+                endTime: moment(endTimestamp).format("YYYY-MM-DD HH:mm:ss.SSS ZZ"),
+                interval: interval,
+                functionName: functionName,
+                runtime: applicationRuntime,
+                stage: stage,
+                region: region
+            }
+        }).then((resp) => {
+            // console.log("success - fetchFunctionMemoryMetricGraphData; resp: ", resp);
+            
+            const {buckets} = resp.data.memoryMetricByFunctionMetaInfo.aggregations.timeSeriesByMetricTime;
+            const memoryMetric = buckets.map( bucket => {
+                const memory = convertByteToMb(bucket.metrics_l_app_usedMemory.value || 0)
+                return {
+                    timestamp: bucket.key,
+                    usedMemory: Math.round(memory),
+                };
+            });
+
+            dispatch(fetchFunctionMemoryMetricGraphDataSuccess(memoryMetric));
+        })
+        .catch((err) => {
+            console.log("error - fetchFunctionMemoryMetricGraphData; err: ", err);
+            dispatch(fetchFunctionMemoryMetricGraphDataFailure(err))
+        });
+
+    }
+}
+
+const fetchFunctionMemoryMetricGraphDataStarted = () => ({
+    type: FETCH_FUNCTION_MEMORY_METRIC_STARTED
+});
+
+const fetchFunctionMemoryMetricGraphDataSuccess = (functionMemoryMetric) => ({
+    type: FETCH_FUNCTION_MEMORY_METRIC_SUCCESS,
+    payload: {
+        functionMemoryMetricByMetadata: functionMemoryMetric
+    }
+});
+
+const fetchFunctionMemoryMetricGraphDataFailure = (error) => ({
+    type: FETCH_FUNCTION_MEMORY_METRIC_FAILURE,
+    payload: {
+        ...error
+    }
+});
+
+
+export const fetchFunctionInvocationCountGraphData = (httpClient, functionName, startTimestamp, endTimestamp, applicationRuntime, stage, region) => {
+
+    return dispatch => {
+        dispatch(fetchFunctionInvocationCountGraphDataStarted());
+
+        const TIME_INTERVAL = 30;
+        const interval = (endTimestamp - startTimestamp) / TIME_INTERVAL;
+
+        httpClient.get('../api/thundra/invocation-count-by-function-meta-info', {
+            params: {
+                startTime: moment(startTimestamp).format("YYYY-MM-DD HH:mm:ss.SSS ZZ"),
+                endTime: moment(endTimestamp).format("YYYY-MM-DD HH:mm:ss.SSS ZZ"),
+                interval: interval,
+                functionName: functionName,
+                runtime: applicationRuntime,
+                stage: stage,
+                region: region
+            }
+        }).then((resp) => {
+            // console.log("success - fetchFunctionInvocationCountGraphData; resp: ", resp);
+            
+            const {buckets} = resp.data.invocationCountByFunctionMetaInfo.aggregations.timeSeriesByStartTime;
+            const invocationCounts = buckets.map( bucket => {
+                const invocationCount = bucket.doc_count;
+                const coldStartCount = bucket.coldStartCount.doc_count;
+                const errorCount = bucket.errorCount.doc_count;
+                return {
+                    timestamp: bucket.key,
+                    invocationCount,
+                    coldStartCount,
+                    errorCount
+                };
+            });
+
+            dispatch(fetchFunctionInvocationCountGraphDataSuccess(invocationCounts));
+        })
+        .catch((err) => {
+            // console.log("error - fetchFunctionInvocationCountGraphData; err: ", err);
+            dispatch(fetchFunctionInvocationCountGraphDataFailure(err))
+        });
+
+    }
+}
+
+const fetchFunctionInvocationCountGraphDataStarted = () => ({
+    type: FETCH_FUNCTION_INVOCATION_COUNT_METRIC_STARTED
+});
+
+const fetchFunctionInvocationCountGraphDataSuccess = (functionInvocationCount) => ({
+    type: FETCH_FUNCTION_INVOCATION_COUNT_METRIC_SUCCESS,
+    payload: {
+        functionInvocationCountMetricByMetadata: functionInvocationCount
+    }
+});
+
+const fetchFunctionInvocationCountGraphDataFailure = (error) => ({
+    type: FETCH_FUNCTION_INVOCATION_COUNT_METRIC_FAILURE,
+    payload: {
+        ...error
+    }
+});
+
+
+export const fetchFunctionInvocationDurationsGraphData = (httpClient, functionName, startTimestamp, endTimestamp, applicationRuntime, stage, region) => {
+
+    return dispatch => {
+        dispatch(fetchFunctionInvocationDurationsGraphDataStarted());
+
+        const TIME_INTERVAL = 30;
+        const interval = (endTimestamp - startTimestamp) / TIME_INTERVAL;
+
+        httpClient.get('../api/thundra/invocation-duration-by-function-meta-info', {
+            params: {
+                startTime: moment(startTimestamp).format("YYYY-MM-DD HH:mm:ss.SSS ZZ"),
+                endTime: moment(endTimestamp).format("YYYY-MM-DD HH:mm:ss.SSS ZZ"),
+                interval: interval,
+                functionName: functionName,
+                runtime: applicationRuntime,
+                stage: stage,
+                region: region
+            }
+        }).then((resp) => {
+            console.log("success - fetchFunctionInvocationDurationsGraphData; resp: ", resp);
+            
+            const {buckets} = resp.data.invocationDurationsByFunctionMetaInfo.aggregations.timeSeriesByStartTime;
+            const invocationDurations = buckets.map( bucket => {
+                const avgInvocationDuration = Math.round(bucket.avgDuration.value || 0);
+                const avgColdStartDuration = Math.round(bucket.coldStartDuration.avgOfDuration.value || 0);
+                const avgErrorDuration = Math.round(bucket.errorDuration.avgOfDuration.value || 0);
+
+                return {
+                    timestamp: bucket.key,
+                    avgInvocationDuration,
+                    avgColdStartDuration,
+                    avgErrorDuration
+                };
+            });
+
+            dispatch(fetchFunctionInvocationDurationsGraphDataSuccess(invocationDurations));
+        })
+        .catch((err) => {
+            console.log("error - fetchFunctionInvocationDurationsGraphData; err: ", err);
+            dispatch(fetchFunctionInvocationDurationsGraphDataFailure(err))
+        });
+
+    }
+}
+
+const fetchFunctionInvocationDurationsGraphDataStarted = () => ({
+    type: FETCH_FUNCTION_INVOCATION_DURATIONS_METRIC_STARTED
+});
+
+const fetchFunctionInvocationDurationsGraphDataSuccess = (functionInvocationDurations) => ({
+    type: FETCH_FUNCTION_INVOCATION_DURATIONS_METRIC_SUCCESS,
+    payload: {
+        functionInvocationDurationsMetricByMetadata: functionInvocationDurations
+    }
+});
+
+const fetchFunctionInvocationDurationsGraphDataFailure = (error) => ({
+    type: FETCH_FUNCTION_INVOCATION_DURATIONS_METRIC_FAILURE,
     payload: {
         ...error
     }
