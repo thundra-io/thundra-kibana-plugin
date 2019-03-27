@@ -8,6 +8,9 @@ import {
     FETCH_FUNCTION_METADATA_BY_FUNCTION_NAME_STARTED,
     FETCH_FUNCTION_METADATA_BY_FUNCTION_NAME_SUCCESS,
     FETCH_FUNCTION_METADATA_BY_FUNCTION_NAME_FAILURE,
+    FETCH_FUNCTION_CPU_METRIC_STARTED,
+    FETCH_FUNCTION_CPU_METRIC_SUCCESS,
+    FETCH_FUNCTION_CPU_METRIC_FAILURE,
     FETCH_INVOCATION_SPANS_STARTED,
     FETCH_INVOCATION_SPANS_SUCCESS,
     FETCH_INVOCATION_SPANS_FAILURE,
@@ -26,6 +29,7 @@ import {
 } from "../constants";
 
 import {convertByteToMb} from "../../utils";
+import moment from "moment";
 
 export const fetchFunctionList = (httpClient, startTime) => {
     // console.log("fetchFunctionList; httpclient: ", httpClient);
@@ -192,7 +196,7 @@ export const fetchFunctionDataByFunctionName = (httpClient, startTime, functionN
                 functionName: functionName,
             }
         }).then((resp) => {
-            console.log("success - fetchFunctionDataByFunctionName; resp: ", resp);
+            // console.log("success - fetchFunctionDataByFunctionName; resp: ", resp);
 
             const funcMeta = resp.data.invocations[0];
 
@@ -230,11 +234,10 @@ export const fetchFunctionDataByFunctionName = (httpClient, startTime, functionN
             // const endTime = new Date().getTime(); // current time as timestamp
             // dispatch(fetchInvocationsHeatMap(httpClient, functionName, func.stage, funcRegion.key, funcRuntime.key, startTime, endTime));
         })
-            .catch((err) => {
-                console.log("error - fetchFunctionDataByFunctionName; err: ", err);
-                dispatch(fetchFunctionDataByFunctionNameFailure(err))
-            });
-
+        .catch((err) => {
+            // console.log("error - fetchFunctionDataByFunctionName; err: ", err);
+            dispatch(fetchFunctionDataByFunctionNameFailure(err))
+        });
     }
 }
 
@@ -255,7 +258,6 @@ const fetchFunctionDataByFunctionNameFailure = (error) => ({
         ...error
     }
 });
-
 
 
 export const fetchInvocationSpans = (httpClient, transactionId) => {
@@ -382,6 +384,106 @@ const fetchInvocationCPUMetricSuccess = (invocationCPUMetric) => ({
 
 const fetchInvocationCPUMetricFailure = (error) => ({
     type: FETCH_INVOCATION_CPU_METRIC_FAILURE,
+    payload: {
+        ...error
+    }
+});
+
+// export const fetchMetricsPageGraphs = (httpClient, functionName, startTimestamp, endTimestamp) => {
+
+// }
+
+// export const fetchFunctionCPUMetricGraphData = (httpClient, transactionId) => {
+export const fetchFunctionCPUMetricGraphData = (httpClient, functionName, startTimestamp, endTimestamp) => {
+// export const fetchFunctionCPUMetricGraphData = (httpClient, startTimestamp, endTimestamp, functionName, applicationRuntime, stage, region) => {
+
+    return dispatch => {
+        dispatch(fetchFunctionCPUMetricGraphDataStarted());
+
+
+        httpClient.get('../api/thundra/invocations-v2-by-function-name', {
+            params: {
+                startTimeStamp: startTimestamp,
+                functionName: functionName,
+            }
+        }).then((resp) => {
+            // console.log("success - fetchFunctionDataByFunctionName; resp: ", resp);
+
+            const funcMeta = resp.data.invocations[0];
+
+            let func = {};
+            func.applicationName = functionName;
+
+            func.stage = funcMeta.key;
+
+            const funcRegion = funcMeta.groupByRegion.buckets[0];
+            func.region = funcRegion.key;
+
+            const funcRuntime = funcRegion.groupByApplicationRuntime.buckets[0];
+            func.applicationRuntime = funcRuntime.key;
+
+            
+            // dispatch(fetchFunctionDataByFunctionNameSuccess(func));
+
+            const TIME_INTERVAL = 20;
+            const interval = (endTimestamp - startTimestamp) / TIME_INTERVAL;
+
+            console.log("CPU metric; func", func);
+
+            httpClient.get('../api/thundra/cpu-metric-by-function-meta-info', {
+                params: {
+                    // transactionId: transactionId,
+                    // startTime: startTime,
+                    startTime: moment(startTimestamp).format("YYYY-MM-DD HH:mm:ss.SSS ZZ"),
+                    // endTime: endTime
+                    endTime: moment(endTimestamp).format("YYYY-MM-DD HH:mm:ss.SSS ZZ"),
+                    interval: interval,
+                    functionName: func.applicationName,
+                    runtime: func.applicationRuntime,
+                    stage: func.stage,
+                    region: func.region
+                }
+            }).then((resp) => {
+                console.log("success - fetchFunctionCPUMetricGraphData; resp: ", resp);
+                const {buckets} = resp.data.cpuMetricByFunctionMetaInfo.aggregations.timeSeriesByMetricTime;
+                const cpuMetric = buckets.map( bucket => {
+                    const cpuload = bucket.metrics_d_app_cpuLoad.value || 0
+                    return {
+                        timestamp: bucket.key,
+                        cpuload: cpuload,
+                        cpuloadPercentage: Math.round(cpuload * 100)
+                    };
+                });
+
+                dispatch(fetchFunctionCPUMetricGraphDataSuccess(cpuMetric));
+            })
+            .catch((err) => {
+                console.log("error - fetchFunctionCPUMetricGraphData; err: ", err);
+                dispatch(fetchFunctionCPUMetricGraphDataFailure(err))
+            });
+
+        })
+        .catch((err) => {
+            console.log("error - fetchFunctionCPUMetricGraphData/fetchFunctionDataByFunctionName; err: ", err);
+            // dispatch(fetchFunctionDataByFunctionNameFailure(err))
+        });
+
+    }
+}
+
+const fetchFunctionCPUMetricGraphDataStarted = () => ({
+    type: FETCH_FUNCTION_CPU_METRIC_STARTED
+});
+
+const fetchFunctionCPUMetricGraphDataSuccess = (functionCPUMetric) => ({
+    type: FETCH_FUNCTION_CPU_METRIC_SUCCESS,
+    payload: {
+        functionCPUMetricByMetadata: functionCPUMetric
+    }
+});
+
+const fetchFunctionCPUMetricGraphDataFailure = (error) => ({
+    type: FETCH_FUNCTION_CPU_METRIC_FAILURE,
     payload: {
         ...error
     }

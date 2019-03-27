@@ -67,6 +67,16 @@ class InvocationsPage extends React.Component {
                 </EuiTitle>
 
                 <EuiSpacer />
+                <EuiButton
+                    fill
+                    onClick={() => {
+                        console.log("metric button clicked");
+                        this.props.history.push(`/functions/${functionName}/metrics`);                
+                    }}
+                >
+                    Metrics page
+                </EuiButton>
+                {/* <EuiSpacer /> */}
 
                 <InvocationsMetaInfoContainer
                     httpClient={this.props.httpClient}

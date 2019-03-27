@@ -8,6 +8,9 @@ import {
     FETCH_FUNCTION_METADATA_BY_FUNCTION_NAME_STARTED,
     FETCH_FUNCTION_METADATA_BY_FUNCTION_NAME_SUCCESS,
     FETCH_FUNCTION_METADATA_BY_FUNCTION_NAME_FAILURE,
+    FETCH_FUNCTION_CPU_METRIC_STARTED,
+    FETCH_FUNCTION_CPU_METRIC_SUCCESS,
+    FETCH_FUNCTION_CPU_METRIC_FAILURE,
     FETCH_INVOCATION_SPANS_STARTED,
     FETCH_INVOCATION_SPANS_SUCCESS,
     FETCH_INVOCATION_SPANS_FAILURE,
@@ -33,6 +36,10 @@ const initialState = {
     functionMetadataByFunctionName: {},
     functionMetadataByFunctionNameFetching: false,
     functionMetadataByFunctionNameError: null,
+
+    functionCPUMetricByMetadata: [],
+    functionCPUMetricByMetadataFetching: false,
+    functionCPUMetricByMetadataError: null,
 
     invocationsByFunctionName: [],
     invocationsByFunctionNameFetching: false,
@@ -117,6 +124,25 @@ export default function functionList(state = initialState, action) {
                 ...state,
                 functionMetadataByFunctionNameFetching: false,
                 functionMetadataByFunctionNameError: action.payload.error
+            }
+        case FETCH_FUNCTION_CPU_METRIC_STARTED:
+            return {
+                ...state,
+                functionCPUMetricByMetadataFetching: true,
+                functionCPUMetricByMetadataError: null
+            };
+        case FETCH_FUNCTION_CPU_METRIC_SUCCESS:
+            return {
+                ...state,
+                functionCPUMetricByMetadataFetching: false,
+                functionCPUMetricByMetadataError: null,
+                functionCPUMetricByMetadata: action.payload.functionCPUMetricByMetadata
+            };
+        case FETCH_FUNCTION_CPU_METRIC_FAILURE:
+            return {
+                ...state,
+                functionCPUMetricByMetadataFetching: false,
+                functionCPUMetricByMetadataError: action.payload.error
             }
         case FETCH_INVOCATION_SPANS_STARTED:
             return {
