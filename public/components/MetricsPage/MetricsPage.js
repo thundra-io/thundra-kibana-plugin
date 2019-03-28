@@ -88,8 +88,6 @@ class MetricsPage extends React.Component {
                     match={this.props.match}
                 />
 
-                <div>metrics graphs here.</div>
-
             </div>
         );
     }

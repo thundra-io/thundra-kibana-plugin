@@ -87,9 +87,9 @@ class InvocationsMetricsContainer extends React.Component {
             <LineChart 
                 data={invocationCountsData}
                 syncId="metricChart"
-                width={400} 
+                width={450} 
                 height={250} 
-                margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+                // margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
             >
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="x" />
@@ -121,9 +121,9 @@ class InvocationsMetricsContainer extends React.Component {
             <LineChart 
                 data={invocationDurationsData}
                 syncId="metricChart"
-                width={400} 
+                width={450} 
                 height={250} 
-                margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+                // margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
             >
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="x" />
@@ -153,9 +153,9 @@ class InvocationsMetricsContainer extends React.Component {
             <LineChart 
                 data={memoryData}
                 syncId="metricChart"
-                width={400} 
+                width={450} 
                 height={250} 
-                margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+                // margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
             >
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="x" />
@@ -183,9 +183,9 @@ class InvocationsMetricsContainer extends React.Component {
             <LineChart 
                 data={cpuData}
                 syncId="metricChart"
-                width={400} 
+                width={450} 
                 height={250} 
-                margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+                // margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
             >
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="x" />
