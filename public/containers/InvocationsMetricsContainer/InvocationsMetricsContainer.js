@@ -42,6 +42,7 @@ import {
     Legend,
     Line
 } from 'recharts';
+import moment from "moment";
 
 
 
@@ -104,7 +105,7 @@ class InvocationsMetricsContainer extends React.Component {
 
         const invocationCountsData = functionInvocationCountMetricByMetadata.map(data => {
             return {
-                x: data.timestamp,
+                x: moment(data.timestamp).format("HH:mm"),
                 invocationCount: data.invocationCount,
                 errorCount: data.errorCount,
                 coldStartCount: data.coldStartCount
@@ -121,8 +122,13 @@ class InvocationsMetricsContainer extends React.Component {
         // )
 
         return (
-            <LineChart width={400} height={250} data={invocationCountsData}
-                margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+            <LineChart 
+                data={invocationCountsData}
+                syncId="metricChart"
+                width={400} 
+                height={250} 
+                margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+            >
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="x" />
                 <YAxis />
@@ -163,7 +169,7 @@ class InvocationsMetricsContainer extends React.Component {
 
         const invocationDurationsData = functionInvocationDurationsMetricByMetadata.map(data => {
             return {
-                x: data.timestamp,
+                x: moment(data.timestamp).format("HH:mm"),
                 invocationDuration: data.avgInvocationDuration,
                 errorDuration: data.avgErrorDuration,
                 coldStartDuration: data.avgColdStartDuration
@@ -180,8 +186,13 @@ class InvocationsMetricsContainer extends React.Component {
         // )
 
         return (
-            <LineChart width={400} height={250} data={invocationDurationsData}
-                margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+            <LineChart 
+                data={invocationDurationsData}
+                syncId="metricChart"
+                width={400} 
+                height={250} 
+                margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+            >
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="x" />
                 <YAxis />
@@ -201,8 +212,8 @@ class InvocationsMetricsContainer extends React.Component {
 
         const memoryData = functionMemoryMetricByMetadata.map(data => {
             return {
-                x: data.timestamp,
-                y: data.usedMemory
+                x: moment(data.timestamp).format("HH:mm"),
+                usedMemory: data.usedMemory
             };
         })
 
@@ -214,15 +225,20 @@ class InvocationsMetricsContainer extends React.Component {
         // )
 
         return (
-            <LineChart width={400} height={250} data={memoryData}
-                margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+            <LineChart 
+                data={memoryData}
+                syncId="metricChart"
+                width={400} 
+                height={250} 
+                margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+            >
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="x" />
                 <YAxis />
                 <Tooltip />
                 <Legend />
 
-                <Line type="monotone" dataKey="y" stroke="#37DC94" />
+                <Line type="monotone" dataKey="usedMemory" stroke="#37DC94" />
 
             </LineChart>
         )
@@ -233,8 +249,9 @@ class InvocationsMetricsContainer extends React.Component {
 
         const cpuData = functionCPUMetricByMetadata.map(data => {
             return {
-                x: data.timestamp,
-                y: data.cpuloadPercentage
+                // x: data.timestamp,
+                x: moment(data.timestamp).format("HH:mm"),
+                cpuPercentage: data.cpuloadPercentage
             };
         })
 
@@ -246,15 +263,20 @@ class InvocationsMetricsContainer extends React.Component {
         // )
 
         return (
-            <LineChart width={400} height={250} data={cpuData}
-                margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+            <LineChart 
+                data={cpuData}
+                syncId="metricChart"
+                width={400} 
+                height={250} 
+                margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+            >
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="x" />
                 <YAxis />
                 <Tooltip />
                 <Legend />
 
-                <Line type="monotone" dataKey="y" stroke="#37DC94" />
+                <Line type="monotone" dataKey="cpuPercentage" stroke="#37DC94" />
 
             </LineChart>
         )
@@ -262,9 +284,6 @@ class InvocationsMetricsContainer extends React.Component {
 
     render() {
         console.log("InvocationsMetricsContainer, render; props: ", this.props);
-
-        const DATA_A = [{ x: 0, y: 1 }, { x: 1.5, y: 1 }, { x: 2, y: 2 }, { x: 3, y: -1 }, { x: 5, y: 2 }];
-        const DATA_B = [{ x: 0, y: 3 }, { x: 1, y: 4 }, { x: 2, y: 1 }, { x: 3, y: 2 }, { x: 5, y: 5 }];
 
         return (
             <div className="invocations-metrics-container">
@@ -302,19 +321,6 @@ class InvocationsMetricsContainer extends React.Component {
                     </EuiFlexItem>
 
                 </EuiFlexGrid>
-
-                
-                {/* <LineChart width={730} height={250} data={DATA_A}
-                    margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="x" />
-                    <YAxis />
-                    <Tooltip />
-                    <Legend />
-                    <Line type="monotone" dataKey="pv" stroke="#8884d8" />
-                    <Line type="monotone" dataKey="y" stroke="#8884d8" />
-                    <Line type="monotone" dataKey="uv" stroke="#82ca9d" />
-                </LineChart> */}
 
             </div>
         )
