@@ -7,14 +7,14 @@ export default function (server) {
             method: 'GET',
             handler(req, reply) {
                 let query = {
-                    index: 'lab-invocation-*',
+                    index: 'thundra-invocation-*',
                     body: {
                         query: {
                             bool: {
                                 must: [
                                     {
                                         range: {
-                                            collectedTimestamp: {
+                                            startTimestamp: {
                                                 gte: req.query.startTimeStamp
                                             }
                                         }
@@ -188,14 +188,14 @@ export default function (server) {
             method: 'GET',
             handler(req, reply) {
                 let query = {
-                    index: 'lab-invocation-*',
+                    index: 'thundra-invocation-*',
                     body: {
                         query: {
                             bool: {
                                 must: [
                                     {
                                         range: {
-                                            collectedTimestamp: {
+                                            startTimestamp: {
                                                 gte: req.query.startTimeStamp
                                             }
                                         }
@@ -361,7 +361,7 @@ export default function (server) {
             method: 'GET',
             handler(req, reply) {
                 let query = {
-                    index: 'lab-invocation-*',
+                    index: 'thundra-invocation-*',
                     size: 0,
                     body: {
                         query: {
@@ -670,7 +670,7 @@ export default function (server) {
             method: 'GET',
             handler(req, reply) {
                 let query = {
-                    index: 'lab-span-*',
+                    index: 'thundra-span-*',
                     body: {
                         size: 9999,
                         query: {
@@ -720,7 +720,7 @@ export default function (server) {
             method: 'GET',
             handler(req, reply) {
                 let query = {
-                    index: 'lab-log-*',
+                    index: 'thundra-log-*',
                     body: {
                         size: 9999,
                         query: {
@@ -742,11 +742,6 @@ export default function (server) {
                         sort: [
                             {
                                 logTimestamp: {
-                                    order: 'desc'
-                                }
-                            },
-                            {
-                                collectedTimestamp: {
                                     order: 'desc'
                                 }
                             }
@@ -771,7 +766,7 @@ export default function (server) {
                 // console.log("min-max; req: ", req);
 
                 let query = {
-                    index: 'lab-invocation-*',
+                    index: 'thundra-invocation-*',
                     body: {
                         size: 9999,
                         query: {
@@ -860,7 +855,7 @@ export default function (server) {
                 // console.log("heats; req: ", req);
 
                 let query = {
-                    index: 'lab-invocation-*',
+                    index: 'thundra-invocation-*',
                     body: {
                         size: 9999,
                         query: {

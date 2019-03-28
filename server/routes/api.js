@@ -8,11 +8,11 @@ export default function (server) {
             method: 'GET',
             handler(req, reply) {
                 let invocationCount = {
-                    index: 'lab-invocation-*',
+                    index: 'thundra-invocation-*',
                     body: {
                         query: {
                             range: {
-                                collectedTimestamp: {
+                                startTimestamp: {
                                     gte: req.query.startTimeStamp
                                 }
                             }
@@ -31,7 +31,7 @@ export default function (server) {
             method: 'GET',
             handler(req, reply) {
                 let query = {
-                    index: 'lab-invocation-*',
+                    index: 'thundra-invocation-*',
                     body: {
                         size: 0,
                         query: {
@@ -39,7 +39,7 @@ export default function (server) {
                                 must: [
                                     {
                                         range: {
-                                            collectedTimestamp: {
+                                            startTimestamp: {
                                                 gte: req.query.startTimeStamp
                                             }
                                         }
@@ -57,7 +57,7 @@ export default function (server) {
                         aggregations: {
                             histogram: {
                                 date_histogram: {
-                                    field: "collectedTimestamp",
+                                    field: "startTimestamp",
                                     interval: req.query.interval * ONE_MINUTE_IN_MILIS,
                                 }
                             }
@@ -77,7 +77,7 @@ export default function (server) {
             method: 'GET',
             handler(req, reply) {
                 let query = {
-                    index: 'lab-invocation-*',
+                    index: 'thundra-invocation-*',
                     body: {
                         size: 0,
                         query: {
@@ -85,7 +85,7 @@ export default function (server) {
                                 must: [
                                     {
                                         range: {
-                                            collectedTimestamp: {
+                                            startTimestamp: {
                                                 gte: req.query.startTimeStamp
                                             }
                                         }
@@ -103,7 +103,7 @@ export default function (server) {
                         aggs: {
                             sumOfDurations: {
                                 date_histogram: {
-                                    field: "collectedTimestamp",
+                                    field: "startTimestamp",
                                     interval: req.query.interval * ONE_MINUTE_IN_MILIS,
                                 },
                                 aggs: {
@@ -133,7 +133,7 @@ export default function (server) {
                 let trimmedSortfield = req.query.sortField.slice(8);
 
                 let query = {
-                    index: 'lab-invocation-*',
+                    index: 'thundra-invocation-*',
                     body: {
                         from: req.query.paginationFrom,
                         size: req.query.paginationSize,
@@ -142,7 +142,7 @@ export default function (server) {
                                 must: [
                                     {
                                         range: {
-                                            collectedTimestamp: {
+                                            startTimestamp: {
                                                 gte: req.query.startTimeStamp
                                             }
                                         }
@@ -196,7 +196,7 @@ export default function (server) {
             method: 'GET',
             handler(req, reply) {
                 let invocationCount = {
-                    index: 'lab-invocation-*',
+                    index: 'thundra-invocation-*',
                     body: {
                         size: 0,
                         query: {
@@ -209,7 +209,7 @@ export default function (server) {
                                 must: [
                                     {
                                         range: {
-                                            collectedTimestamp: {
+                                            startTimestamp: {
                                                 gte: req.query.startTimeStamp
                                             }
                                         }
@@ -231,7 +231,7 @@ export default function (server) {
             method: 'GET',
             handler(req, reply) {
                 let invocationCount = {
-                    index: 'lab-invocation-*',
+                    index: 'thundra-invocation-*',
                     body: {
                         size: 0,
                         query: {
@@ -244,7 +244,7 @@ export default function (server) {
                                 must: [
                                     {
                                         range: {
-                                            collectedTimestamp: {
+                                            startTimestamp: {
                                                 gte: req.query.startTimeStamp
                                             }
                                         }
@@ -273,7 +273,7 @@ export default function (server) {
             method: 'GET',
             handler(req, reply) {
                 let coldStartQuery = {
-                    index: 'lab-invocation-*',
+                    index: 'thundra-invocation-*',
                     body: {
                         size: 0,
                         query: {
@@ -286,7 +286,7 @@ export default function (server) {
                                 must: [
                                     {
                                         range: {
-                                            collectedTimestamp: {
+                                            startTimestamp: {
                                                 gte: req.query.startTimeStamp
                                             }
                                         }
@@ -308,7 +308,7 @@ export default function (server) {
             method: 'GET',
             handler(req, reply) {
                 let invocationCount = {
-                    index: 'lab-invocation-*',
+                    index: 'thundra-invocation-*',
                     body: {
                         size: 0,
                         query: {
@@ -321,7 +321,7 @@ export default function (server) {
                                 must: [
                                     {
                                         range: {
-                                            collectedTimestamp: {
+                                            startTimestamp: {
                                                 gte: req.query.startTimeStamp
                                             }
                                         }
@@ -350,12 +350,12 @@ export default function (server) {
             method: 'GET',
             handler(req, reply) {
                 let billedCostQuery = {
-                    index: 'lab-invocation-*',
+                    index: 'thundra-invocation-*',
                     body: {
                         size: 0,
                         query: {
                             range: {
-                                collectedTimestamp: {
+                                startTimestamp: {
                                     gte: req.query.startTimeStamp
                                 }
                             }
@@ -381,12 +381,12 @@ export default function (server) {
             method: 'GET',
             handler(req, reply) {
                 let appNameQuery = {
-                    index: 'lab-invocation-*',
+                    index: 'thundra-invocation-*',
                     body: {
                         size: 1000,
                         query: {
                             range: {
-                                collectedTimestamp: {
+                                startTimestamp: {
                                     gte: req.query.startTimeStamp
                                 }
                             }
@@ -413,12 +413,12 @@ export default function (server) {
             method: 'GET',
             handler(req, reply) {
                 let query = {
-                    index: 'lab-invocation-*',
+                    index: 'thundra-invocation-*',
                     body: {
                         size: 0,
                         query: {
                             range: {
-                                collectedTimestamp: {
+                                startTimestamp: {
                                     gte: req.query.startTimeStamp
                                 }
                             }
@@ -426,7 +426,7 @@ export default function (server) {
                         aggregations: {
                             histogram: {
                                 date_histogram: {
-                                    field: "collectedTimestamp",
+                                    field: "startTimestamp",
                                     interval: req.query.interval * ONE_MINUTE_IN_MILIS,
                                 }
                             }
@@ -446,12 +446,12 @@ export default function (server) {
             method: 'GET',
             handler(req, reply) {
                 let query = {
-                    index: 'lab-invocation-*',
+                    index: 'thundra-invocation-*',
                     body: {
                         size: 0,
                         query: {
                             range: {
-                                collectedTimestamp: {
+                                startTimestamp: {
                                     gte: req.query.startTimeStamp
                                 }
                             }
@@ -459,7 +459,7 @@ export default function (server) {
                         aggs: {
                             sumOfDurations: {
                                 date_histogram: {
-                                    field: "collectedTimestamp",
+                                    field: "startTimestamp",
                                     interval: req.query.interval * ONE_MINUTE_IN_MILIS,
                                 },
                                 aggs: {
