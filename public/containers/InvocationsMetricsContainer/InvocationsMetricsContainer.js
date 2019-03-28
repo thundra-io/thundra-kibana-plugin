@@ -33,6 +33,17 @@ import {
 
 import { connect } from "react-redux";
 
+import {
+    LineChart,
+    CartesianGrid,
+    XAxis,
+    YAxis,
+    Tooltip,
+    Legend,
+    Line
+} from 'recharts';
+
+
 
 class InvocationsMetricsContainer extends React.Component {
 
@@ -68,7 +79,7 @@ class InvocationsMetricsContainer extends React.Component {
     }
 
     renderInvocationCountsMetricChart = () => {
-        const {functionInvocationCountMetricByMetadata} = this.props;
+        const { functionInvocationCountMetricByMetadata } = this.props;
 
         const invocations = functionInvocationCountMetricByMetadata.map(data => {
             return {
@@ -91,18 +102,43 @@ class InvocationsMetricsContainer extends React.Component {
             }
         });
 
+        const invocationCountsData = functionInvocationCountMetricByMetadata.map(data => {
+            return {
+                x: data.timestamp,
+                invocationCount: data.invocationCount,
+                errorCount: data.errorCount,
+                coldStartCount: data.coldStartCount
+            }
+        })
+
+        // return (
+        //     <EuiSeriesChart height={250} >
+        //         <EuiLineSeries name="invocation count" data={invocations} />
+        //         <EuiLineSeries name="error count" data={errors} />
+        //         <EuiLineSeries name="cold start count" data={coldStarts} />
+        //         {/* <EuiLineSeries name="Total ROM" data={DATA_B} /> */}
+        //     </EuiSeriesChart>
+        // )
+
         return (
-            <EuiSeriesChart height={250} >
-                <EuiLineSeries name="invocation count" data={invocations} />
-                <EuiLineSeries name="error count" data={errors} />
-                <EuiLineSeries name="cold start count" data={coldStarts} />
-                {/* <EuiLineSeries name="Total ROM" data={DATA_B} /> */}
-            </EuiSeriesChart>
-        )
+            <LineChart width={400} height={250} data={invocationCountsData}
+                margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="x" />
+                <YAxis />
+                <Tooltip />
+                <Legend />
+
+                <Line type="monotone" dataKey="invocationCount" stroke="#37DC94" />
+                <Line type="monotone" dataKey="errorCount" stroke="#FF5126" />
+                <Line type="monotone" dataKey="coldStartCount" stroke="#162C9B" />
+
+            </LineChart>
+        );
     }
 
     renderInvocationDurationsMetricChart = () => {
-        const {functionInvocationDurationsMetricByMetadata} = this.props;
+        const { functionInvocationDurationsMetricByMetadata } = this.props;
 
         const invocationDurations = functionInvocationDurationsMetricByMetadata.map(data => {
             return {
@@ -125,13 +161,38 @@ class InvocationsMetricsContainer extends React.Component {
             }
         });
 
+        const invocationDurationsData = functionInvocationDurationsMetricByMetadata.map(data => {
+            return {
+                x: data.timestamp,
+                invocationDuration: data.avgInvocationDuration,
+                errorDuration: data.avgErrorDuration,
+                coldStartDuration: data.avgColdStartDuration
+            }
+        })
+
+        // return (
+        //     <EuiSeriesChart height={250} >
+        //         <EuiLineSeries name="invocation durations" data={invocationDurations} />
+        //         <EuiLineSeries name="error durations" data={errorDurations} />
+        //         <EuiLineSeries name="cold start durations" data={coldStartDurations} />
+        //         {/* <EuiLineSeries name="Total ROM" data={DATA_B} /> */}
+        //     </EuiSeriesChart>
+        // )
+
         return (
-            <EuiSeriesChart height={250} >
-                <EuiLineSeries name="invocation durations" data={invocationDurations} />
-                <EuiLineSeries name="error durations" data={errorDurations} />
-                <EuiLineSeries name="cold start durations" data={coldStartDurations} />
-                {/* <EuiLineSeries name="Total ROM" data={DATA_B} /> */}
-            </EuiSeriesChart>
+            <LineChart width={400} height={250} data={invocationDurationsData}
+                margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="x" />
+                <YAxis />
+                <Tooltip />
+                <Legend />
+
+                <Line type="monotone" dataKey="invocationDuration" stroke="#37DC94" />
+                <Line type="monotone" dataKey="errorDuration" stroke="#FF5126" />
+                <Line type="monotone" dataKey="coldStartDuration" stroke="#162C9B" />
+
+            </LineChart>
         )
     }
 
@@ -145,11 +206,25 @@ class InvocationsMetricsContainer extends React.Component {
             };
         })
 
+        // return (
+        //     <EuiSeriesChart height={250} >
+        //         <EuiLineSeries name="Used Memory (MB)" data={memoryData} />
+        //         {/* <EuiLineSeries name="Total ROM" data={DATA_B} /> */}
+        //     </EuiSeriesChart>
+        // )
+
         return (
-            <EuiSeriesChart height={250} >
-                <EuiLineSeries name="Used Memory (MB)" data={memoryData} />
-                {/* <EuiLineSeries name="Total ROM" data={DATA_B} /> */}
-            </EuiSeriesChart>
+            <LineChart width={400} height={250} data={memoryData}
+                margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="x" />
+                <YAxis />
+                <Tooltip />
+                <Legend />
+
+                <Line type="monotone" dataKey="y" stroke="#37DC94" />
+
+            </LineChart>
         )
     }
 
@@ -163,11 +238,25 @@ class InvocationsMetricsContainer extends React.Component {
             };
         })
 
+        // return (
+        //     <EuiSeriesChart height={250} >
+        //         <EuiLineSeries name="CPU Load (%)" data={cpuData} />
+        //         {/* <EuiLineSeries name="Total ROM" data={DATA_B} /> */}
+        //     </EuiSeriesChart>
+        // )
+
         return (
-            <EuiSeriesChart height={250} >
-                <EuiLineSeries name="CPU Load (%)" data={cpuData} />
-                {/* <EuiLineSeries name="Total ROM" data={DATA_B} /> */}
-            </EuiSeriesChart>
+            <LineChart width={400} height={250} data={cpuData}
+                margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="x" />
+                <YAxis />
+                <Tooltip />
+                <Legend />
+
+                <Line type="monotone" dataKey="y" stroke="#37DC94" />
+
+            </LineChart>
         )
     }
 
@@ -179,19 +268,12 @@ class InvocationsMetricsContainer extends React.Component {
 
         return (
             <div className="invocations-metrics-container">
-                {/* {this.renderMemoryMetricChart()} */}
-                {/* {this.renderCPUMetricChart()} */}
 
                 <EuiFlexGrid columns={2}>
                     <EuiFlexItem>
                         <EuiText grow={false}>
                             <p>Counts</p>
                         </EuiText>
-                        {/* <EuiSeriesChart height={250} xType={SCALE.TIME}> */}
-                        {/* <EuiSeriesChart height={250} >
-                            <EuiLineSeries name="Total RAM" data={DATA_A} />
-                            <EuiLineSeries name="Total ROM" data={DATA_B} />
-                        </EuiSeriesChart> */}
                         {this.renderInvocationCountsMetricChart()}
                     </EuiFlexItem>
 
@@ -199,12 +281,7 @@ class InvocationsMetricsContainer extends React.Component {
                         <EuiText grow={false}>
                             <p>Duration</p>
                         </EuiText>
-                        {/* <EuiSeriesChart height={250} xType={SCALE.TIME}> */}
-                        {/* <EuiSeriesChart height={250} >
-                            <EuiLineSeries name="Total RAM" data={DATA_A} />
-                            <EuiLineSeries name="Total ROM" data={DATA_B} />
-                        </EuiSeriesChart> */}
-                        {this.renderInvocationDurationsMetricChart()}                        
+                        {this.renderInvocationDurationsMetricChart()}
                     </EuiFlexItem>
 
                 </EuiFlexGrid>
@@ -214,11 +291,6 @@ class InvocationsMetricsContainer extends React.Component {
                         <EuiText grow={false}>
                             <p>Memory (MB)</p>
                         </EuiText>
-                        {/* <EuiSeriesChart height={250} xType={SCALE.TIME}> */}
-                        {/* <EuiSeriesChart height={250} >
-                            <EuiLineSeries name="Total RAM" data={DATA_A} />
-                            <EuiLineSeries name="Total ROM" data={DATA_B} />
-                        </EuiSeriesChart> */}
                         {this.renderMemoryMetricChart()}
                     </EuiFlexItem>
 
@@ -226,15 +298,24 @@ class InvocationsMetricsContainer extends React.Component {
                         <EuiText grow={false}>
                             <p>CPU (%)</p>
                         </EuiText>
-                        {/* <EuiSeriesChart height={250} xType={SCALE.TIME}> */}
-                        {/* <EuiSeriesChart height={250} >
-                            <EuiLineSeries name="Total RAM" data={DATA_A} />
-                            <EuiLineSeries name="Total ROM" data={DATA_B} />
-                        </EuiSeriesChart> */}
                         {this.renderCPUMetricChart()}
                     </EuiFlexItem>
 
                 </EuiFlexGrid>
+
+                
+                {/* <LineChart width={730} height={250} data={DATA_A}
+                    margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="x" />
+                    <YAxis />
+                    <Tooltip />
+                    <Legend />
+                    <Line type="monotone" dataKey="pv" stroke="#8884d8" />
+                    <Line type="monotone" dataKey="y" stroke="#8884d8" />
+                    <Line type="monotone" dataKey="uv" stroke="#82ca9d" />
+                </LineChart> */}
+
             </div>
         )
     }
