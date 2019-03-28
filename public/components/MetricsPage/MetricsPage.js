@@ -1,25 +1,9 @@
 import React from 'react';
 
 import {
-    EuiBasicTable,
-    EuiLink,
-    EuiHealth,
     EuiSpacer,
-    EuiSwitch,
-    EuiCode,
-    EuiButton,
-    EuiComboBox,
-    EuiFlexGrid,
-    EuiFlexItem,
-    EuiText,
-    EuiTextColor,
     EuiTitle,
-    EuiForm,
-    EuiFormRow,
-    EuiSelect,
     EuiBreadcrumbs,
-    EuiButtonToggle,
-    EuiToggle
 } from '@elastic/eui';
 
 import { 
@@ -45,7 +29,6 @@ class MetricsPage extends React.Component {
             },
             {
                 text: `${functionName}`,
-                // href: '#'
                 href: `#/functions/${functionName}`
             },
             {
@@ -75,12 +58,6 @@ class MetricsPage extends React.Component {
                 />
 
                 <EuiSpacer />
-
-                {/* <InvocationsTableContainer
-                    httpClient={this.props.httpClient}
-                    history={this.props.history}
-                    match={this.props.match}
-                /> */}
 
                 <InvocationsMetricsContainer
                     httpClient={this.props.httpClient}

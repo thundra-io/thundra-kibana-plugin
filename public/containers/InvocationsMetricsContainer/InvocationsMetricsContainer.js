@@ -5,30 +5,13 @@ import {
 } from 'react-router-dom';
 
 import {
-    EuiSpacer,
-    EuiInMemoryTable,
-    EuiLink,
     EuiText,
-    EuiBasicTable,
-    EuiFlexGroup,
     EuiFlexGrid,
     EuiFlexItem,
-    EuiSeriesChart,
-    EuiLineSeries,
-    EuiPanel,
-    EuiStat,
-    EuiIcon,
-    EuiToolTip
 } from '@elastic/eui';
 
 import {
     fetchMetricsPageGraphs,
-    fetchInvocationCountsPerHourByName,
-    fetchInvocationDurationsPerHourByName,
-    fetchFunctionCPUMetricGraphData,
-    fetchFunctionList,
-    fetchInvocationsByFunctionName,
-    fetchFunctionDataByFunctionName
 } from "../../store/actions";
 
 import { connect } from "react-redux";
