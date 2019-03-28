@@ -53,26 +53,18 @@ class InvocationsMetricsContainer extends React.Component {
     }
 
     componentDidMount() {
-        // const { startDate, interval } = this.props;
         const { startDate, endDate, interval } = this.props;
-        // const { paginationFrom, paginationSize } = this.state;
 
-        // this.fetchData(startDate, interval);
         this.fetchData(startDate, endDate, interval);
-
     }
 
     componentWillReceiveProps(nextProps) {
-        // console.log("cwrp; props, nextProps: ", this.props, nextProps);
         // When start date is changed by global time selector, fetch data again.
         if (this.props.startDate !== nextProps.startDate) {
-            // this.fetchData(nextProps.startDate, nextProps.interval);
-            // console.log("cwrp, fetchData; this.props, nextProps: ", this.props, nextProps);
             this.fetchData(nextProps.startDate, nextProps.endDate, nextProps.interval);
         }
     }
 
-    // fetchData = (startDate, interval) => {
     fetchData = (startDate, endDate, interval) => {
         const { functionName } = this.props.match.params;
 
@@ -82,27 +74,6 @@ class InvocationsMetricsContainer extends React.Component {
     renderInvocationCountsMetricChart = () => {
         const { functionInvocationCountMetricByMetadata } = this.props;
 
-        const invocations = functionInvocationCountMetricByMetadata.map(data => {
-            return {
-                x: data.timestamp,
-                y: data.invocationCount
-            }
-        });
-
-        const errors = functionInvocationCountMetricByMetadata.map(data => {
-            return {
-                x: data.timestamp,
-                y: data.errorCount
-            }
-        });
-
-        const coldStarts = functionInvocationCountMetricByMetadata.map(data => {
-            return {
-                x: data.timestamp,
-                y: data.coldStartCount
-            }
-        });
-
         const invocationCountsData = functionInvocationCountMetricByMetadata.map(data => {
             return {
                 x: moment(data.timestamp).format("HH:mm"),
@@ -111,15 +82,6 @@ class InvocationsMetricsContainer extends React.Component {
                 coldStartCount: data.coldStartCount
             }
         })
-
-        // return (
-        //     <EuiSeriesChart height={250} >
-        //         <EuiLineSeries name="invocation count" data={invocations} />
-        //         <EuiLineSeries name="error count" data={errors} />
-        //         <EuiLineSeries name="cold start count" data={coldStarts} />
-        //         {/* <EuiLineSeries name="Total ROM" data={DATA_B} /> */}
-        //     </EuiSeriesChart>
-        // )
 
         return (
             <LineChart 
@@ -146,27 +108,6 @@ class InvocationsMetricsContainer extends React.Component {
     renderInvocationDurationsMetricChart = () => {
         const { functionInvocationDurationsMetricByMetadata } = this.props;
 
-        const invocationDurations = functionInvocationDurationsMetricByMetadata.map(data => {
-            return {
-                x: data.timestamp,
-                y: data.avgInvocationDuration
-            }
-        });
-
-        const errorDurations = functionInvocationDurationsMetricByMetadata.map(data => {
-            return {
-                x: data.timestamp,
-                y: data.avgErrorDuration
-            }
-        });
-
-        const coldStartDurations = functionInvocationDurationsMetricByMetadata.map(data => {
-            return {
-                x: data.timestamp,
-                y: data.avgColdStartDuration
-            }
-        });
-
         const invocationDurationsData = functionInvocationDurationsMetricByMetadata.map(data => {
             return {
                 x: moment(data.timestamp).format("HH:mm"),
@@ -175,15 +116,6 @@ class InvocationsMetricsContainer extends React.Component {
                 coldStartDuration: data.avgColdStartDuration
             }
         })
-
-        // return (
-        //     <EuiSeriesChart height={250} >
-        //         <EuiLineSeries name="invocation durations" data={invocationDurations} />
-        //         <EuiLineSeries name="error durations" data={errorDurations} />
-        //         <EuiLineSeries name="cold start durations" data={coldStartDurations} />
-        //         {/* <EuiLineSeries name="Total ROM" data={DATA_B} /> */}
-        //     </EuiSeriesChart>
-        // )
 
         return (
             <LineChart 
@@ -217,13 +149,6 @@ class InvocationsMetricsContainer extends React.Component {
             };
         })
 
-        // return (
-        //     <EuiSeriesChart height={250} >
-        //         <EuiLineSeries name="Used Memory (MB)" data={memoryData} />
-        //         {/* <EuiLineSeries name="Total ROM" data={DATA_B} /> */}
-        //     </EuiSeriesChart>
-        // )
-
         return (
             <LineChart 
                 data={memoryData}
@@ -249,18 +174,10 @@ class InvocationsMetricsContainer extends React.Component {
 
         const cpuData = functionCPUMetricByMetadata.map(data => {
             return {
-                // x: data.timestamp,
                 x: moment(data.timestamp).format("HH:mm"),
                 cpuPercentage: data.cpuloadPercentage
             };
         })
-
-        // return (
-        //     <EuiSeriesChart height={250} >
-        //         <EuiLineSeries name="CPU Load (%)" data={cpuData} />
-        //         {/* <EuiLineSeries name="Total ROM" data={DATA_B} /> */}
-        //     </EuiSeriesChart>
-        // )
 
         return (
             <LineChart 
