@@ -95,8 +95,8 @@ class InvocationsMetricsContainer extends React.Component {
             return {
                 x: moment(data.timestamp).format("HH:mm"),
                 invocationDuration: data.avgInvocationDuration,
-                errorDuration: data.avgErrorDuration,
-                coldStartDuration: data.avgColdStartDuration
+                invocationDuration99th: data.avgInvocationDuration99th,
+                invocationDuration95th: data.avgInvocationDuration95th,
             }
         })
 
@@ -115,8 +115,8 @@ class InvocationsMetricsContainer extends React.Component {
                 <Legend />
 
                 <Line type="monotone" dataKey="invocationDuration" stroke="#37DC94" />
-                <Line type="monotone" dataKey="errorDuration" stroke="#FF5126" />
-                <Line type="monotone" dataKey="coldStartDuration" stroke="#162C9B" />
+                <Line type="monotone" dataKey="invocationDuration99th" stroke="#FF5126" />
+                <Line type="monotone" dataKey="invocationDuration95th" stroke="#162C9B" />
 
             </LineChart>
         )

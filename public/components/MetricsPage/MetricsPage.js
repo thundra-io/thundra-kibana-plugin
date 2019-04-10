@@ -6,6 +6,7 @@ import {
     EuiBreadcrumbs,
 } from '@elastic/eui';
 
+import { FunctionDetailsTab } from '../../components';
 import { 
     TimeSelectorContainer, 
     InvocationsMetaInfoContainer, 
@@ -19,7 +20,7 @@ class MetricsPage extends React.Component {
     }
 
     render() {
-        console.log("MetricsPage, render; props: ", this.props);
+        // console.log("MetricsPage, render; props: ", this.props);
         const { functionName } = this.props.match.params;
 
         const breadcrumbs = [
@@ -51,6 +52,11 @@ class MetricsPage extends React.Component {
                 </EuiTitle>
 
                 <EuiSpacer />
+
+                <FunctionDetailsTab 
+                    history={this.props.history} 
+                    match={this.props.match}
+                />
 
                 <InvocationsMetaInfoContainer
                     httpClient={this.props.httpClient}

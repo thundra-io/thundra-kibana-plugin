@@ -113,12 +113,16 @@ class InvocationsMetaInfoContainer extends React.Component {
                 <EuiFlexItem>
                     <EuiPanel>
                         <EuiStat
+                            className="health-color"
                             title={`${health} %`}
                             description="Health"
                             textAlign="right"
-                            titleColor="accent"
+                            // titleColor="accent"
                         >
-                            <EuiIcon type="tear" color="accent" />
+                            <EuiIcon 
+                                type="tear" 
+                                // color="accent" 
+                            />
                         </EuiStat>
                     </EuiPanel>
                 </EuiFlexItem>
@@ -168,7 +172,7 @@ class InvocationsMetaInfoContainer extends React.Component {
 
 
     render() {
-        console.log("InvocationsMetaInfoContainer, render; props: ", this.props);
+        // console.log("InvocationsMetaInfoContainer, render; props: ", this.props);
 
         return (
             <div className="invocations-meta-info-container">

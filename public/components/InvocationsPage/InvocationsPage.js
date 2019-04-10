@@ -22,7 +22,9 @@ import {
     EuiToggle
 } from '@elastic/eui';
 
+import { FunctionDetailsTab } from '../../components';
 import { TimeSelectorContainer, InvocationsTableContainer, InvocationsMetaInfoContainer, InvocationsHeatMapContainer } from "../../containers";
+import "./InvocationsPage.less";
 
 class InvocationsPage extends React.Component {
 
@@ -67,24 +69,19 @@ class InvocationsPage extends React.Component {
                 </EuiTitle>
 
                 <EuiSpacer />
-                <EuiButton
-                    fill
-                    onClick={() => {
-                        console.log("metric button clicked");
-                        this.props.history.push(`/functions/${functionName}/metrics`);                
-                    }}
-                >
-                    Metrics page
-                </EuiButton>
-                {/* <EuiSpacer /> */}
+
+                <FunctionDetailsTab 
+                    history={this.props.history} 
+                    match={this.props.match}
+                />
 
                 <InvocationsMetaInfoContainer
                     httpClient={this.props.httpClient}
                     match={this.props.match}
                 />
 
-                <div>
-
+                {/* heatmap is removed from the page */}
+                {/* <div>
                     <EuiButtonToggle
                         label={this.state.isHeatMapOn ? 'Hide HeatMap' : 'Show HeatMap'}
                         fill={this.state.isHeatMapOn}
@@ -99,13 +96,7 @@ class InvocationsPage extends React.Component {
                         history={this.props.history}
                         match={this.props.match}
                     />
-                }
-
-                {/* <InvocationsHeatMapContainer
-                    httpClient={this.props.httpClient}
-                    history={this.props.history}
-                    match={this.props.match}
-                /> */}
+                } */}
 
                 <EuiSpacer />
 

@@ -37,7 +37,7 @@ import {
     FETCH_INVOCATION_CPU_METRIC_FAILURE,
 } from "../constants";
 
-import {convertByteToMb} from "../../utils";
+import { convertByteToMb } from "../../utils";
 import moment from "moment";
 
 export const fetchFunctionList = (httpClient, startTime) => {
@@ -121,11 +121,10 @@ export const fetchFunctionList = (httpClient, startTime) => {
             }
 
             dispatch(fetchFunctionListSuccess(funcs));
-        })
-            .catch((err) => {
-                // console.log("error - fetchFunctionList; err: ", err);
-                dispatch(fetchFunctionListFailure(err))
-            });
+        }).catch((err) => {
+            // console.log("error - fetchFunctionList; err: ", err);
+            dispatch(fetchFunctionListFailure(err))
+        });
 
     }
 }
@@ -167,11 +166,10 @@ export const fetchInvocationsByFunctionName = (httpClient, startTime, interval, 
         }).then((resp) => {
             console.log("success - fetchInvocationsByFunctionName; resp: ", resp);
             dispatch(fetchInvocationsByFunctionNameSuccess(resp.data.invocations));
-        })
-            .catch((err) => {
-                // console.log("error - fetchFunctionList; err: ", err);
-                dispatch(fetchInvocationsByFunctionNameFailure(err))
-            });
+        }).catch((err) => {
+            // console.log("error - fetchFunctionList; err: ", err);
+            dispatch(fetchInvocationsByFunctionNameFailure(err))
+        });
 
     }
 }
@@ -242,8 +240,7 @@ export const fetchFunctionDataByFunctionName = (httpClient, startTime, functionN
 
             // const endTime = new Date().getTime(); // current time as timestamp
             // dispatch(fetchInvocationsHeatMap(httpClient, functionName, func.stage, funcRegion.key, funcRuntime.key, startTime, endTime));
-        })
-        .catch((err) => {
+        }).catch((err) => {
             // console.log("error - fetchFunctionDataByFunctionName; err: ", err);
             dispatch(fetchFunctionDataByFunctionNameFailure(err))
         });
@@ -281,11 +278,10 @@ export const fetchInvocationSpans = (httpClient, transactionId) => {
         }).then((resp) => {
             // console.log("success - fetchInvocationSpans; resp: ", resp);
             dispatch(fetchInvocationSpansSuccess(resp.data.invocationSpansByTransactionId));
-        })
-            .catch((err) => {
-                // console.log("error - fetchInvocationSpans; err: ", err);
-                dispatch(fetchInvocationSpansFailure(err))
-            });
+        }).catch((err) => {
+            // console.log("error - fetchInvocationSpans; err: ", err);
+            dispatch(fetchInvocationSpansFailure(err))
+        });
 
     }
 }
@@ -319,15 +315,14 @@ export const fetchInvocationMemoryMetric = (httpClient, transactionId) => {
             }
         }).then((resp) => {
             console.log("success - fetchInvocationMemoryMetric; resp: ", resp);
-            const {metrics} = resp.data.memoryMetricByTransaction.hits.hits[0]._source;
+            const { metrics } = resp.data.memoryMetricByTransaction.hits.hits[0]._source;
             const memoryMetric = {
                 usedMemory: convertByteToMb(metrics["app.usedMemory"]),
                 maxMemory: convertByteToMb(metrics["app.maxMemory"])
             }
 
             dispatch(fetchInvocationMemoryMetricSuccess(memoryMetric));
-        })
-        .catch((err) => {
+        }).catch((err) => {
             console.log("error - fetchInvocationMemoryMetric; err: ", err);
             dispatch(fetchInvocationMemoryMetricFailure(err))
         });
@@ -365,14 +360,13 @@ export const fetchInvocationCPUMetric = (httpClient, transactionId) => {
             }
         }).then((resp) => {
             console.log("success - fetchInvocationCPUMetric; resp: ", resp);
-            const {metrics} = resp.data.cpuMetricByTransaction.hits.hits[0]._source;
+            const { metrics } = resp.data.cpuMetricByTransaction.hits.hits[0]._source;
             const cpuMetric = {
                 appCPULoad: Number((metrics["app.cpuLoad"] * 100).toFixed(2)) || 0,
             }
 
             dispatch(fetchInvocationCPUMetricSuccess(cpuMetric));
-        })
-        .catch((err) => {
+        }).catch((err) => {
             console.log("error - fetchInvocationCPUMetric; err: ", err);
             dispatch(fetchInvocationCPUMetricFailure(err))
         });
@@ -409,7 +403,7 @@ export const fetchMetricsPageGraphs = (httpClient, functionName, startTimestamp,
                 functionName: functionName,
             }
         }).then((resp) => {
-            // console.log("success - fetchMetricsPageGraphs/fetchFunctionDataByFunctionName; resp: ", resp);
+            console.log("success - fetchMetricsPageGraphs/fetchFunctionDataByFunctionName; resp: ", resp);
 
             const funcMeta = resp.data.invocations[0];
 
@@ -436,15 +430,14 @@ export const fetchMetricsPageGraphs = (httpClient, functionName, startTimestamp,
             dispatch(
                 fetchFunctionInvocationCountGraphData(httpClient, functionName, startTimestamp, endTimestamp, func.applicationRuntime, func.stage, func.region)
             );
-            
+
             dispatch(
                 fetchFunctionInvocationDurationsGraphData(httpClient, functionName, startTimestamp, endTimestamp, func.applicationRuntime, func.stage, func.region)
             );
 
-            
 
-        })
-        .catch((err) => {
+
+        }).catch((err) => {
             console.log("error - fetchFunctionCPUMetricGraphData/fetchFunctionDataByFunctionName; err: ", err);
             // dispatch(fetchFunctionDataByFunctionNameFailure(err))
         });
@@ -474,8 +467,8 @@ export const fetchFunctionCPUMetricGraphData = (httpClient, functionName, startT
             }
         }).then((resp) => {
             // console.log("success - fetchFunctionCPUMetricGraphData; resp: ", resp);
-            const {buckets} = resp.data.cpuMetricByFunctionMetaInfo.aggregations.timeSeriesByMetricTime;
-            const cpuMetric = buckets.map( bucket => {
+            const { buckets } = resp.data.cpuMetricByFunctionMetaInfo.aggregations.timeSeriesByMetricTime;
+            const cpuMetric = buckets.map(bucket => {
                 const cpuload = bucket.metrics_d_app_cpuLoad.value || 0
                 return {
                     timestamp: bucket.key,
@@ -485,8 +478,7 @@ export const fetchFunctionCPUMetricGraphData = (httpClient, functionName, startT
             });
 
             dispatch(fetchFunctionCPUMetricGraphDataSuccess(cpuMetric));
-        })
-        .catch((err) => {
+        }).catch((err) => {
             console.log("error - fetchFunctionCPUMetricGraphData; err: ", err);
             dispatch(fetchFunctionCPUMetricGraphDataFailure(err))
         });
@@ -533,9 +525,9 @@ export const fetchFunctionMemoryMetricGraphData = (httpClient, functionName, sta
             }
         }).then((resp) => {
             // console.log("success - fetchFunctionMemoryMetricGraphData; resp: ", resp);
-            
-            const {buckets} = resp.data.memoryMetricByFunctionMetaInfo.aggregations.timeSeriesByMetricTime;
-            const memoryMetric = buckets.map( bucket => {
+
+            const { buckets } = resp.data.memoryMetricByFunctionMetaInfo.aggregations.timeSeriesByMetricTime;
+            const memoryMetric = buckets.map(bucket => {
                 const memory = convertByteToMb(bucket.metrics_l_app_usedMemory.value || 0)
                 return {
                     timestamp: bucket.key,
@@ -544,8 +536,7 @@ export const fetchFunctionMemoryMetricGraphData = (httpClient, functionName, sta
             });
 
             dispatch(fetchFunctionMemoryMetricGraphDataSuccess(memoryMetric));
-        })
-        .catch((err) => {
+        }).catch((err) => {
             console.log("error - fetchFunctionMemoryMetricGraphData; err: ", err);
             dispatch(fetchFunctionMemoryMetricGraphDataFailure(err))
         });
@@ -591,10 +582,10 @@ export const fetchFunctionInvocationCountGraphData = (httpClient, functionName, 
                 region: region
             }
         }).then((resp) => {
-            // console.log("success - fetchFunctionInvocationCountGraphData; resp: ", resp);
-            
-            const {buckets} = resp.data.invocationCountByFunctionMetaInfo.aggregations.timeSeriesByStartTime;
-            const invocationCounts = buckets.map( bucket => {
+            console.log("success - fetchFunctionInvocationCountGraphData; resp: ", resp);
+
+            const { buckets } = resp.data.invocationCountByFunctionMetaInfo.aggregations.timeSeriesByStartTime;
+            const invocationCounts = buckets.map(bucket => {
                 const invocationCount = bucket.doc_count;
                 const coldStartCount = bucket.coldStartCount.doc_count;
                 const errorCount = bucket.errorCount.doc_count;
@@ -607,8 +598,7 @@ export const fetchFunctionInvocationCountGraphData = (httpClient, functionName, 
             });
 
             dispatch(fetchFunctionInvocationCountGraphDataSuccess(invocationCounts));
-        })
-        .catch((err) => {
+        }).catch((err) => {
             // console.log("error - fetchFunctionInvocationCountGraphData; err: ", err);
             dispatch(fetchFunctionInvocationCountGraphDataFailure(err))
         });
@@ -655,24 +645,29 @@ export const fetchFunctionInvocationDurationsGraphData = (httpClient, functionNa
             }
         }).then((resp) => {
             console.log("success - fetchFunctionInvocationDurationsGraphData; resp: ", resp);
-            
-            const {buckets} = resp.data.invocationDurationsByFunctionMetaInfo.aggregations.timeSeriesByStartTime;
-            const invocationDurations = buckets.map( bucket => {
+
+            const { buckets } = resp.data.invocationDurationsByFunctionMetaInfo.aggregations.timeSeriesByStartTime;
+            const invocationDurations = buckets.map(bucket => {
                 const avgInvocationDuration = Math.round(bucket.avgDuration.value || 0);
+                const avgInv99th = bucket.durationPercentiles.values["99.0"] === "NaN" ? 0 : bucket.durationPercentiles.values["99.0"]
+                const avgInvocationDuration99th = Math.round(avgInv99th);
+                const avgInv95th = bucket.durationPercentiles.values["95.0"] === "NaN" ? 0 : bucket.durationPercentiles.values["95.0"]
+                const avgInvocationDuration95th = Math.round(avgInv95th);
                 const avgColdStartDuration = Math.round(bucket.coldStartDuration.avgOfDuration.value || 0);
                 const avgErrorDuration = Math.round(bucket.errorDuration.avgOfDuration.value || 0);
 
                 return {
                     timestamp: bucket.key,
                     avgInvocationDuration,
-                    avgColdStartDuration,
-                    avgErrorDuration
+                    avgInvocationDuration99th,
+                    avgInvocationDuration95th,
+                    avgColdStartDuration, // not used anymore
+                    avgErrorDuration // ot used anymore
                 };
             });
 
             dispatch(fetchFunctionInvocationDurationsGraphDataSuccess(invocationDurations));
-        })
-        .catch((err) => {
+        }).catch((err) => {
             console.log("error - fetchFunctionInvocationDurationsGraphData; err: ", err);
             dispatch(fetchFunctionInvocationDurationsGraphDataFailure(err))
         });
@@ -711,11 +706,10 @@ export const fetchInvocationLogs = (httpClient, transactionId) => {
         }).then((resp) => {
             // console.log("success - fetchInvocationLogs; resp: ", resp);
             dispatch(fetchInvocationLogsSuccess(resp.data.invocationLogsByTransactionId));
-        })
-            .catch((err) => {
-                // console.log("error - fetchInvocationLogs; err: ", err);
-                dispatch(fetchInvocationLogsFailure(err))
-            });
+        }).catch((err) => {
+            // console.log("error - fetchInvocationLogs; err: ", err);
+            dispatch(fetchInvocationLogsFailure(err))
+        });
 
     }
 }
@@ -770,11 +764,10 @@ export const fetchInvocationsHeatMap = (httpClient, funcName, funcStage, funcReg
             console.log("success - min/max - fetchInvocationsHeatMap; resp: ", resp, bucketSize, intervalMillis);
             dispatch(fetchInvocationHeats(httpClient, funcName, funcStage, funcRegion, funcRuntime, startTime, endTime, intervalMillis, bucketSize, minMaxDuration))
 
-        })
-            .catch((err) => {
-                console.log("error - min/max - fetchInvocationsHeatMap; err: ", err);
-                // dispatch(fetchInvocationsHeatMapFailure(err))
-            });
+        }).catch((err) => {
+            console.log("error - min/max - fetchInvocationsHeatMap; err: ", err);
+            // dispatch(fetchInvocationsHeatMapFailure(err))
+        });
 
     }
 }
@@ -867,11 +860,10 @@ export const fetchInvocationHeats = (httpClient, funcName, funcStage, funcRegion
             // dispatch(fetchInvocationHeatsSuccess(resp.data.invocationHeatsRaw.buckets));
             dispatch(fetchInvocationHeatsSuccess(functionHeatMap));
             console.log("success - fetchInvocationHeats; resp, functionHeatMap: ", resp, functionHeatMap);
-        })
-            .catch((err) => {
-                console.log("error - fetchInvocationHeats; err: ", err);
-                dispatch(fetchInvocationHeatsFailure(err))
-            });
+        }).catch((err) => {
+            console.log("error - fetchInvocationHeats; err: ", err);
+            dispatch(fetchInvocationHeatsFailure(err))
+        });
 
     }
 }
