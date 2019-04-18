@@ -54,7 +54,7 @@ class InvocationsMetaInfoContainer extends React.Component {
     }
 
     renderFunctionMetaInfo = () => {
-        const { applicationRuntime, region, stage, invocationCount, invocationsWithColdStart, invocationsWithError, averageDuration } = this.props.functionMetadataByFunctionName;
+        const { applicationRuntime, region, stage, invocationCount, invocationsWithColdStart, invocationsWithError, averageDuration, estimatedCost } = this.props.functionMetadataByFunctionName;
         let health = 0;
         if (typeof invocationCount == "number" && typeof invocationsWithError == "number" && invocationCount > 0) {
             health = (((invocationCount - invocationsWithError) / invocationCount) * 100).toFixed(2);
@@ -166,13 +166,29 @@ class InvocationsMetaInfoContainer extends React.Component {
                     </EuiPanel>
                 </EuiFlexItem>
 
+                <EuiFlexItem>
+                    <EuiPanel>
+                        <EuiStat
+                            title={estimatedCost ? `$ ${estimatedCost}` : `$ 0`}
+                            description="Est. Cost"
+                            // titleColor="danger"
+                            textAlign="right"
+                        >
+                            <EuiIcon 
+                                type="starEmpty" 
+                                // color="danger" 
+                            />
+                        </EuiStat>
+                    </EuiPanel>
+                </EuiFlexItem>
+
             </EuiFlexGroup>
         )
     }
 
 
     render() {
-        // console.log("InvocationsMetaInfoContainer, render; props: ", this.props);
+        console.log("InvocationsMetaInfoContainer, render; props: ", this.props);
 
         return (
             <div className="invocations-meta-info-container">

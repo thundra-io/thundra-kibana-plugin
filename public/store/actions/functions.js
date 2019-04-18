@@ -203,7 +203,7 @@ export const fetchFunctionDataByFunctionName = (httpClient, startTime, functionN
                 functionName: functionName,
             }
         }).then((resp) => {
-            // console.log("success - fetchFunctionDataByFunctionName; resp: ", resp);
+            console.log("success - fetchFunctionDataByFunctionName; resp: ", resp);
 
             const funcMeta = resp.data.invocations[0];
 
