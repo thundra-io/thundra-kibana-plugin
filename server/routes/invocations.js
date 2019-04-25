@@ -1,3 +1,8 @@
+const thundraIndex = "thundra-invocation-*";
+const labIndex = "lab-invocation-*";
+
+const elkIndex = thundraIndex;
+
 export default function (server) {
     const { callWithRequest } = server.plugins.elasticsearch.getCluster('data');
     const { callWithInternalUser } = server.plugins.elasticsearch.getCluster('data');
@@ -7,7 +12,8 @@ export default function (server) {
             method: 'GET',
             handler(req, reply) {
                 let query = {
-                    index: 'thundra-invocation-*',
+                    // index: 'thundra-invocation-*',
+                    index: elkIndex,
                     body: {
                         query: {
                             bool: {
@@ -188,7 +194,8 @@ export default function (server) {
             method: 'GET',
             handler(req, reply) {
                 let query = {
-                    index: 'thundra-invocation-*',
+                    // index: 'thundra-invocation-*',
+                    index: elkIndex,
                     body: {
                         query: {
                             bool: {
@@ -352,16 +359,280 @@ export default function (server) {
         }
     );
 
-
-
-    // This is to compare function metadata in given timeframe.
+    // Compare function metadata by function name
     server.route(
         {
             path: '/api/thundra/invocations-by-function-name-comparison-basic-data',
             method: 'GET',
             handler(req, reply) {
                 let query = {
-                    index: 'thundra-invocation-*',
+                    // index: 'thundra-invocation-*',
+                    index: elkIndex,
+                    size: 0,
+                    body: {
+                        query: {
+                            bool: {
+                                must: [
+                                    {
+                                        range: {
+                                            // startTime: {
+                                            startTimestamp: {
+                                                from: req.query.startTimestamp2,
+                                                // from: 'now-1h',
+                                                to: req.query.endTimestamp,
+                                                // to: 'now',
+                                                include_lower: true,
+                                                include_upper: true,
+                                                boost: 1
+                                            }
+                                        }
+                                    },
+                                    {
+                                        term: {
+                                            applicationName: {
+                                                // value: 'user-get-lambda-java-es',
+                                                value: req.query.functionName,
+                                                boost: 1
+                                            }
+                                        }
+                                    },
+                                    {
+                                        terms: {
+                                            applicationStage: [
+                                                'es',
+                                                ''
+                                            ],
+                                            boost: 1
+                                        }
+                                    },
+                                    {
+                                        term: {
+                                            functionRegion: {
+                                                value: 'eu-west-1',
+                                                boost: 1
+                                            }
+                                        }
+                                    },
+                                    {
+                                        term: {
+                                            applicationRuntime: {
+                                                value: 'java',
+                                                boost: 1
+                                            }
+                                        }
+                                    }
+                                ],
+                                adjust_pure_negative: true,
+                                boost: 1
+                            }
+                        },
+                        aggregations: {
+                            groupByApplicationName: {
+                                terms: {
+                                    field: 'applicationName',
+                                    size: 9999,
+                                    min_doc_count: 1,
+                                    shard_min_doc_count: 0,
+                                    show_term_doc_count_error: false,
+                                    order: [
+                                        {
+                                            _count: 'desc'
+                                        },
+                                        {
+                                            _key: 'asc'
+                                        }
+                                    ]
+                                },
+                                aggregations: {
+                                    timeBucket: {
+                                        date_range: {
+                                            // field: 'startTime',
+                                            field: 'startTimestamp',
+                                            ranges: [
+                                                {
+                                                    // from: 'now-1h',
+                                                    from: req.query.startTimestamp,
+                                                    // to: 'now'
+                                                    to: req.query.endTimestamp
+                                                },
+                                                {
+                                                    // from: 'now-2h',
+                                                    from: req.query.startTimestamp2,
+                                                    // to: 'now-1h'
+                                                    to: req.query.startTimestamp
+                                                }
+                                            ],
+                                            keyed: false
+                                        },
+                                        aggregations: {
+                                            durationPercentiles: {
+                                                percentiles: {
+                                                    field: 'duration',
+                                                    percents: [
+                                                        50,
+                                                        90,
+                                                        95,
+                                                        99
+                                                    ],
+                                                    keyed: true,
+                                                    tdigest: {
+                                                        compression: 100
+                                                    }
+                                                }
+                                            },
+                                            applicationStage: {
+                                                terms: {
+                                                    field: 'applicationStage',
+                                                    size: 10,
+                                                    min_doc_count: 1,
+                                                    shard_min_doc_count: 0,
+                                                    show_term_doc_count_error: false,
+                                                    order: [
+                                                        {
+                                                            _count: 'desc'
+                                                        },
+                                                        {
+                                                            _key: 'asc'
+                                                        }
+                                                    ]
+                                                }
+                                            },
+                                            applicationRuntime: {
+                                                terms: {
+                                                    field: 'applicationRuntime',
+                                                    size: 10,
+                                                    min_doc_count: 1,
+                                                    shard_min_doc_count: 0,
+                                                    show_term_doc_count_error: false,
+                                                    order: [
+                                                        {
+                                                            _count: 'desc'
+                                                        },
+                                                        {
+                                                            _key: 'asc'
+                                                        }
+                                                    ]
+                                                }
+                                            },
+                                            functionRegion: {
+                                                terms: {
+                                                    field: 'functionRegion',
+                                                    size: 10,
+                                                    min_doc_count: 1,
+                                                    shard_min_doc_count: 0,
+                                                    show_term_doc_count_error: false,
+                                                    order: [
+                                                        {
+                                                            _count: 'desc'
+                                                        },
+                                                        {
+                                                            _key: 'asc'
+                                                        }
+                                                    ]
+                                                }
+                                            },
+                                            averageDuration: {
+                                                avg: {
+                                                    field: 'duration'
+                                                }
+                                            },
+                                            minDuration: {
+                                                min: {
+                                                    field: 'duration'
+                                                }
+                                            },
+                                            maxDuration: {
+                                                max: {
+                                                    field: 'duration'
+                                                }
+                                            },
+                                            totalDuration: {
+                                                sum: {
+                                                    field: 'duration'
+                                                }
+                                            },
+                                            invocationsWithError: {
+                                                filter: {
+                                                    term: {
+                                                        erroneous: {
+                                                            value: true,
+                                                            boost: 1
+                                                        }
+                                                    }
+                                                }
+                                            },
+                                            invocationsWithColdStart: {
+                                                filter: {
+                                                    term: {
+                                                        coldStart: {
+                                                            value: true,
+                                                            boost: 1
+                                                        }
+                                                    }
+                                                }
+                                            },
+                                            invocationsWithTimeout: {
+                                                filter: {
+                                                    term: {
+                                                        timeout: {
+                                                            value: true,
+                                                            boost: 1
+                                                        }
+                                                    }
+                                                }
+                                            },
+                                            oldestInvocationTime: {
+                                                min: {
+                                                    field: 'startTimestamp'
+                                                }
+                                            },
+                                            newestInvocationTime: {
+                                                max: {
+                                                    field: 'startTimestamp'
+                                                }
+                                            },
+                                            estimatedTotalBilledCost: {
+                                                sum: {
+                                                    field: 'billedCost'
+                                                }
+                                            },
+                                            monthlyEstimatedTotalBilledCost: {
+                                                bucket_script: {
+                                                    buckets_path: {
+                                                        monthlyCost: 'estimatedTotalBilledCost'
+                                                    },
+                                                    script: {
+                                                        source: 'params.monthlyCost * 720.0',
+                                                        lang: 'painless'
+                                                    },
+                                                    gap_policy: 'skip'
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                };
+                callWithInternalUser('search', query).then(response => {
+                    reply({ invocations: (response.aggregations.groupByApplicationName.buckets) });
+                });
+            }
+        }
+    );
+
+
+    // This is to compare function metadata in given timeframe.
+    server.route(
+        {
+            path: '/api/thundra/invocations-by-function-name-comparison-basic-data-v2',
+            method: 'GET',
+            handler(req, reply) {
+                let query = {
+                    // index: 'thundra-invocation-*',
+                    index: elkIndex,
                     size: 0,
                     body: {
                         query: {
@@ -381,7 +652,7 @@ export default function (server) {
                                     {
                                         term: {
                                             applicationName: {
-                                                value: "user-notification-dispatcher-lambda-java-lab",
+                                                value: "team-notification-sender-lambda-java-es",
                                                 boost: 1
                                             }
                                         }
@@ -389,7 +660,7 @@ export default function (server) {
                                     {
                                         terms: {
                                             applicationStage: [
-                                                "lab",
+                                                "es",
                                                 ""
                                             ],
                                             boost: 1
@@ -671,6 +942,7 @@ export default function (server) {
             handler(req, reply) {
                 let query = {
                     index: 'thundra-span-*',
+                    // index: elkIndex,
                     body: {
                         size: 9999,
                         query: {
@@ -720,7 +992,8 @@ export default function (server) {
             method: 'GET',
             handler(req, reply) {
                 let query = {
-                    index: 'thundra-log-*',
+                    // index: 'thundra-log-*',
+                    index: elkIndex,
                     body: {
                         size: 9999,
                         query: {
@@ -766,7 +1039,8 @@ export default function (server) {
                 // console.log("min-max; req: ", req);
 
                 let query = {
-                    index: 'thundra-invocation-*',
+                    // index: 'thundra-invocation-*',
+                    index: elkIndex,
                     body: {
                         size: 9999,
                         query: {
@@ -855,7 +1129,8 @@ export default function (server) {
                 // console.log("heats; req: ", req);
 
                 let query = {
-                    index: 'thundra-invocation-*',
+                    // index: 'thundra-invocation-*',
+                    index: elkIndex,
                     body: {
                         size: 9999,
                         query: {
@@ -970,7 +1245,8 @@ export default function (server) {
             handler(req, reply) {
                 // console.log("==> ", req.query);
                 let query = {
-                    index: 'lab-invocation-*',
+                    // index: 'lab-invocation-*',
+                    index: elkIndex,
                     body: {
                         query: {
                             bool: {
@@ -1084,7 +1360,8 @@ export default function (server) {
             handler(req, reply) {
                 // console.log("==> ", req.query);
                 let query = {
-                    index: 'lab-invocation-*',
+                    // index: 'lab-invocation-*',
+                    index: elkIndex,
                     body: {
                         query: {
                             bool: {
@@ -1222,4 +1499,171 @@ export default function (server) {
         }
     );
 
+
+    server.route(
+        {
+            path: '/api/thundra/invocations-by-function-name',
+            method: 'GET',
+            handler(req, reply) {
+                let query = {
+                    // index: 'thundra-invocation-*',
+                    index: elkIndex,
+                    size: 0,
+                    body: {
+                        query: {
+                            bool: {
+                                must: [
+                                    {
+                                        range: {
+                                            startTimestamp: {
+                                                gte: req.query.startTimeStamp
+                                            }
+                                        }
+                                    },
+                                    {
+                                        term: {
+                                            applicationName: {
+                                                value: req.query.functionName
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        aggregations: {
+                            timeSeriesByStartTime: {
+                                date_histogram: {
+                                    field: "startTime",
+                                    interval: "hour",
+                                    offset: 0,
+                                    order: {
+                                        _key: "asc"
+                                    },
+                                    keyed: false,
+                                    min_doc_count: 0
+                                },
+                                aggregations: {
+                                    coldStartCount: {
+                                        filter: {
+                                            term: {
+                                                coldStart: {
+                                                    value: true,
+                                                    boost: 1
+                                                }
+                                            }
+                                        }
+                                    },
+                                    errorCount: {
+                                        filter: {
+                                            term: {
+                                                erroneous: {
+                                                    value: true,
+                                                    boost: 1
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                };
+                callWithInternalUser('search', query).then(response => {
+                    reply({ invocations: (response.aggregations.timeSeriesByStartTime.buckets) });
+                });
+            }
+        }
+    );
+    
+    server.route(
+        {
+            path: '/api/thundra/invocation-durations-by-function-name',
+            method: 'GET',
+            handler(req, reply) {
+                let query = {
+                    // index: 'thundra-invocation-*',
+                    index: elkIndex,
+                    size: 0,
+                    body: {
+                        query: {
+                            bool: {
+                                must: [
+                                    {
+                                        range: {
+                                            startTimestamp: {
+                                                gte: req.query.startTimeStamp
+                                            }
+                                        }
+                                    },
+                                    {
+                                        term: {
+                                            applicationName: {
+                                                value: req.query.functionName
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        aggregations: {
+                            timeSeriesByStartTime: {
+                                date_histogram: {
+                                    field: "startTime",
+                                    interval: req.query.interval * ONE_MINUTE_IN_MILIS,
+                                    offset: 0,
+                                    order: {
+                                        _key: "asc"
+                                    },
+                                    keyed: false,
+                                    min_doc_count: 0
+                                },
+                                aggregations: {
+                                    avgDuration: {
+                                        avg: {
+                                            field: "duration"
+                                        }
+                                    },
+                                    coldStartDuration: {
+                                        filter: {
+                                            term: {
+                                                coldStart: {
+                                                    value: true
+                                                }
+                                            }
+                                        },
+                                        aggregations: {
+                                            avgOfDuration: {
+                                                avg: {
+                                                    field: "duration"
+                                                }
+                                            }
+                                        }
+                                    },
+                                    errorDuration: {
+                                        filter: {
+                                            term: {
+                                                erroneous: {
+                                                    value: true
+                                                }
+                                            }
+                                        },
+                                        aggregations: {
+                                            avgOfDuration: {
+                                                avg: {
+                                                    field: "duration"
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                };
+                callWithInternalUser('search', query).then(response => {
+                    reply({ invocations: (response.aggregations.timeSeriesByStartTime.buckets) });
+                });
+            }
+        }
+    );
 }

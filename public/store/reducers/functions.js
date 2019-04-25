@@ -8,6 +8,9 @@ import {
     FETCH_FUNCTION_METADATA_BY_FUNCTION_NAME_STARTED,
     FETCH_FUNCTION_METADATA_BY_FUNCTION_NAME_SUCCESS,
     FETCH_FUNCTION_METADATA_BY_FUNCTION_NAME_FAILURE,
+    FETCH_FUNCTION_METADATA_COMPARISON_BY_FUNCTION_NAME_STARTED,
+    FETCH_FUNCTION_METADATA_COMPARISON_BY_FUNCTION_NAME_SUCCESS,
+    FETCH_FUNCTION_METADATA_COMPARISON_BY_FUNCTION_NAME_FAILURE,
     FETCH_FUNCTION_CPU_METRIC_STARTED,
     FETCH_FUNCTION_CPU_METRIC_SUCCESS,
     FETCH_FUNCTION_CPU_METRIC_FAILURE,
@@ -45,6 +48,10 @@ const initialState = {
     functionMetadataByFunctionName: {},
     functionMetadataByFunctionNameFetching: false,
     functionMetadataByFunctionNameError: null,
+
+    functionMetadataComparisonByFunctionName: {},
+    functionMetadataComparisonByFunctionNameFetching: false,
+    functionMetadataComparisonByFunctionNameError: null,
 
     functionCPUMetricByMetadata: [],
     functionCPUMetricByMetadataFetching: false,
@@ -145,6 +152,25 @@ export default function functionList(state = initialState, action) {
                 ...state,
                 functionMetadataByFunctionNameFetching: false,
                 functionMetadataByFunctionNameError: action.payload.error
+            }
+        case FETCH_FUNCTION_METADATA_COMPARISON_BY_FUNCTION_NAME_STARTED:
+            return {
+                ...state,
+                functionMetadataComparisonByFunctionNameFetching: true,
+                functionMetadataComparisonByFunctionNameError: null
+            };
+        case FETCH_FUNCTION_METADATA_COMPARISON_BY_FUNCTION_NAME_SUCCESS:
+            return {
+                ...state,
+                functionMetadataComparisonByFunctionNameFetching: false,
+                functionMetadataComparisonByFunctionNameError: null,
+                functionMetadataComparisonByFunctionName: action.payload.functionMetadataComparisonByFunctionName
+            };
+        case FETCH_FUNCTION_METADATA_COMPARISON_BY_FUNCTION_NAME_FAILURE:
+            return {
+                ...state,
+                functionMetadataComparisonByFunctionNameFetching: false,
+                functionMetadataComparisonByFunctionNameError: action.payload.error
             }
         case FETCH_FUNCTION_CPU_METRIC_STARTED:
             return {

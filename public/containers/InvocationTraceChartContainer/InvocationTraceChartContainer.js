@@ -739,7 +739,7 @@ class InvocationTraceChartContainer extends React.Component {
                             {coldStart &&
                                 <EuiToolTip
                                     position="top"
-                                    content="Stage"
+                                    content="Cold Start happened!"
                                 >
                                     <EuiBadge color="primary">
                                         cold start

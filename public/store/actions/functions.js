@@ -8,6 +8,9 @@ import {
     FETCH_FUNCTION_METADATA_BY_FUNCTION_NAME_STARTED,
     FETCH_FUNCTION_METADATA_BY_FUNCTION_NAME_SUCCESS,
     FETCH_FUNCTION_METADATA_BY_FUNCTION_NAME_FAILURE,
+    FETCH_FUNCTION_METADATA_COMPARISON_BY_FUNCTION_NAME_STARTED,
+    FETCH_FUNCTION_METADATA_COMPARISON_BY_FUNCTION_NAME_SUCCESS,
+    FETCH_FUNCTION_METADATA_COMPARISON_BY_FUNCTION_NAME_FAILURE,
     FETCH_FUNCTION_CPU_METRIC_STARTED,
     FETCH_FUNCTION_CPU_METRIC_SUCCESS,
     FETCH_FUNCTION_CPU_METRIC_FAILURE,
@@ -51,38 +54,6 @@ export const fetchFunctionList = (httpClient, startTime) => {
             }
         }).then((resp) => {
             console.log("success - fetchFunctionList; resp: ", resp);
-            // let funcs = [];
-            // for (let key in resp.data.invocations) {
-            //     let invocation={};
-            //     let obj = resp.data.invocations[key];
-
-            //     invocation.applicationName = obj.key;
-            //     let groupByApplicationRuntime = obj['groupByApplicationRuntime'];
-            //     let buckets = groupByApplicationRuntime['buckets'];
-
-            //     for (let i in buckets ){
-            //         let bucket = buckets[i];
-            //         invocation.applicationRuntime = bucket.key;
-            //         invocation.totalDuration = bucket.totalDuration['value'];
-            //         invocation.minDuration = bucket.minDuration['value'];
-            //         invocation.maxDuration = bucket.maxDuration['value'];
-            //         invocation.averageDuration = bucket.averageDuration['value'].toFixed(2);
-
-            //         invocation.invocationsWithColdStart = bucket.invocationsWithColdStart['doc_count'];
-            //         invocation.invocationsWithError = bucket.invocationsWithError['doc_count'];
-            //         invocation.invocationsWithoutError = bucket.invocationsWithoutError['doc_count'];
-            //         invocation.invocationCount = invocation.invocationsWithoutError + invocation.invocationsWithError;
-            //         invocation.health = Number((invocation.invocationsWithoutError / invocation.invocationCount * 100).toFixed(2));
-
-            //         invocation.estimatedCost = Number(bucket.estimatedTotalBilledCost.value.toFixed(3));
-            //         // invocation.monthlyCost = Number((invocation.estimatedCost * convertToMonthMultiplier).toFixed(2));
-
-            //         invocation.newestInvocationTime = new Date(bucket.newestInvocationTime['value']);
-            //         invocation.oldestInvocationTime = new Date(bucket.oldestInvocationTime['value']);
-
-            //     }
-            //     funcs.push(invocation);
-            // }
 
             let funcs = [];
             for (let funcMeta of resp.data.invocations) {
@@ -260,6 +231,107 @@ const fetchFunctionDataByFunctionNameSuccess = (functionMetadataByFunctionName) 
 
 const fetchFunctionDataByFunctionNameFailure = (error) => ({
     type: FETCH_FUNCTION_METADATA_BY_FUNCTION_NAME_FAILURE,
+    payload: {
+        ...error
+    }
+});
+
+const compareDataResult = (oldData, newData) => {
+    if (oldData === 0) {
+        return undefined;
+    } else if (typeof oldData !== "number" || typeof newData !== "number") {
+        return undefined;
+    } else {
+        // if newData is bigger returns positive result otherwise returns negative.
+        return  Math.round(((newData - oldData) / oldData) * 100);
+    }
+}
+
+// Fetch function data with comparison
+// export const fetchFunctionDataByFunctionName = (httpClient, startTime, functionName) => {
+export const fetchFunctionDataComparisonByFunctionName = (httpClient, startTimestamp, endTimestamp, functionName) => {
+// export const fetchFunctionDataComparisonByFunctionName = (httpClient) => {
+
+    return dispatch => {
+        dispatch(fetchFunctionDataComparisonByFunctionNameStarted());
+
+        let startTimestmap2 = startTimestamp - (endTimestamp - startTimestamp);
+
+        httpClient.get('../api/thundra/invocations-by-function-name-comparison-basic-data', {
+            params: {
+                startTimestamp: startTimestamp,
+                endTimestamp: endTimestamp,
+                startTimestamp2: startTimestmap2,
+                functionName: functionName,
+            }
+        }).then((resp) => {
+            console.log("success - fetchFunctionDataComparisonByFunctionName; resp: ", resp);
+
+            const funcMeta = resp.data.invocations[0];
+            const funcOldBucket = funcMeta.timeBucket.buckets[0];
+            const funcNewBucket = funcMeta.timeBucket.buckets[1];
+
+            let func = {};
+            func.applicationName = functionName;
+            func.stage = funcOldBucket.applicationStage.buckets[0].key;
+            func.applicationRuntime = funcOldBucket.applicationRuntime.buckets[0].key;
+            func.region = funcOldBucket.functionRegion.buckets[0].key;
+
+            func.averageDuration = Math.round(funcNewBucket.averageDuration['value']);
+            func.averageDurationComparison = compareDataResult(funcOldBucket.averageDuration.value, funcNewBucket.averageDuration.value);
+
+            func.invocationCount = funcNewBucket["doc_count"];
+            func.invocationCountComparison = compareDataResult(funcOldBucket["doc_count"], funcNewBucket["doc_count"]);
+
+            func.invocationsWithColdStart = funcNewBucket.invocationsWithColdStart["doc_count"];
+            func.invocationsWithColdStartComparison = compareDataResult(funcOldBucket.invocationsWithColdStart["doc_count"], funcNewBucket.invocationsWithColdStart["doc_count"]);
+
+            func.invocationsWithError = funcNewBucket.invocationsWithError["doc_count"];
+            func.invocationsWithErrorComparison = compareDataResult(funcOldBucket.invocationsWithError["doc_count"],funcNewBucket.invocationsWithError["doc_count"]);
+
+            func.invocationsWithTimeout = funcNewBucket.invocationsWithTimeout["doc_count"];
+            func.invocationsWithTimeoutComparison = compareDataResult(funcOldBucket.invocationsWithTimeout["doc_count"], funcNewBucket.invocationsWithTimeout["doc_count"]);
+
+            func.health = 0;
+            func.healthComparison = undefined;
+            if (typeof func.invocationCount === "number" && func.invocationCount > 0) {
+                func.health = Number( (((func.invocationCount - func.invocationsWithError) / func.invocationCount) * 100).toFixed(2) );
+                // func.health = Number( ((3/51) * 100).toFixed(2) );
+                const invocationCountOld = funcOldBucket["doc_count"];
+                const invocationsWithErrorOld = funcOldBucket.invocationsWithError["doc_count"];
+
+                let healthOld = 0;
+                if (typeof invocationCountOld === "number" && invocationCountOld > 0) {
+                    healthOld = Number( (((invocationCountOld - invocationsWithErrorOld) / invocationCountOld) * 100).toFixed(2) );
+                }
+
+                func.healthComparison = compareDataResult(healthOld, func.health);
+            }
+
+            func.percentile99th = Math.round(funcNewBucket.durationPercentiles.values["99.0"]);
+            func.percentile99thComparison = compareDataResult(funcOldBucket.durationPercentiles.values["99.0"], funcNewBucket.durationPercentiles.values["99.0"]);
+
+            dispatch(fetchFunctionDataComparisonByFunctionNameSuccess(func));
+        }).catch((err) => {
+            console.log("error - fetchFunctionDataComparisonByFunctionName; err: ", err);
+            dispatch(fetchFunctionDataComparisonByFunctionNameFailure(err))
+        });
+    }
+}
+
+const fetchFunctionDataComparisonByFunctionNameStarted = () => ({
+    type: FETCH_FUNCTION_METADATA_COMPARISON_BY_FUNCTION_NAME_STARTED
+});
+
+const fetchFunctionDataComparisonByFunctionNameSuccess = (functionMetadataComparisonByFunctionName) => ({
+    type: FETCH_FUNCTION_METADATA_COMPARISON_BY_FUNCTION_NAME_SUCCESS,
+    payload: {
+        functionMetadataComparisonByFunctionName: functionMetadataComparisonByFunctionName
+    }
+});
+
+const fetchFunctionDataComparisonByFunctionNameFailure = (error) => ({
+    type: FETCH_FUNCTION_METADATA_COMPARISON_BY_FUNCTION_NAME_FAILURE,
     payload: {
         ...error
     }
@@ -466,7 +538,7 @@ export const fetchFunctionCPUMetricGraphData = (httpClient, functionName, startT
                 region: region
             }
         }).then((resp) => {
-            // console.log("success - fetchFunctionCPUMetricGraphData; resp: ", resp);
+            console.log("AA success - fetchFunctionCPUMetricGraphData; resp: ", resp);
             const { buckets } = resp.data.cpuMetricByFunctionMetaInfo.aggregations.timeSeriesByMetricTime;
             const cpuMetric = buckets.map(bucket => {
                 const cpuload = bucket.metrics_d_app_cpuLoad.value || 0

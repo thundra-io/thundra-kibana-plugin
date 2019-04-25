@@ -1,3 +1,8 @@
+const thundraIndex = "thundra-metric-*";
+const labIndex = "lab-metric-*";
+
+const elkIndex = thundraIndex;
+
 export default function (server) {
     const { callWithRequest } = server.plugins.elasticsearch.getCluster('data');
     const { callWithInternalUser } = server.plugins.elasticsearch.getCluster('data');
@@ -9,7 +14,8 @@ export default function (server) {
             method: 'GET',
             handler(req, reply) {
                 let query = {
-                    index: 'thundra-metric-*',
+                    // index: 'thundra-metric-*',
+                    index: elkIndex,
                     body: {
                         query: {
                             bool: {
@@ -48,7 +54,8 @@ export default function (server) {
             method: 'GET',
             handler(req, reply) {
                 let query = {
-                    index: 'thundra-metric-*',
+                    // index: 'thundra-metric-*',
+                    index: elkIndex,
                     body: {
                         query: {
                             bool: {
@@ -89,7 +96,8 @@ export default function (server) {
             handler(req, reply) {
                 // console.log("==> ", req.query);
                 let query = {
-                    index: 'lab-metric-*',
+                    // index: 'lab-metric-*',
+                    index: elkIndex,
                     body: {
                         query: {
                             bool: {
@@ -209,7 +217,8 @@ export default function (server) {
             handler(req, reply) {
                 // console.log("==> ", req.query);
                 let query = {
-                    index: 'lab-metric-*',
+                    // index: 'lab-metric-*',
+                    index: elkIndex,
                     body: {
                         query: {
                             bool: {
@@ -347,7 +356,8 @@ export default function (server) {
             method: 'GET',
             handler(req, reply) {
                 let query = {
-                    index: 'thundra-metric-*',
+                    // index: 'thundra-metric-*',
+                    index: elkIndex,
                     body: {
                         query: {
                             bool: {
@@ -417,7 +427,8 @@ export default function (server) {
             method: 'GET',
             handler(req, reply) {
                 let query = {
-                    index: 'thundra-metric-*',
+                    // index: 'thundra-metric-*',
+                    index: elkIndex,
                     body: {
                         size: 10,
                         query: {
@@ -472,170 +483,6 @@ export default function (server) {
                 };
                 callWithInternalUser('search', query).then(response => {
                     reply({ cpuMetrics: response.aggregations.timeSeriesByMetricTime.buckets });
-                });
-            }
-        }
-    );
-
-    server.route(
-        {
-            path: '/api/thundra/invocations-by-function-name',
-            method: 'GET',
-            handler(req, reply) {
-                let query = {
-                    index: 'thundra-invocation-*',
-                    size: 0,
-                    body: {
-                        query: {
-                            bool: {
-                                must: [
-                                    {
-                                        range: {
-                                            startTimestamp: {
-                                                gte: req.query.startTimeStamp
-                                            }
-                                        }
-                                    },
-                                    {
-                                        term: {
-                                            applicationName: {
-                                                value: req.query.functionName
-                                            }
-                                        }
-                                    }
-                                ]
-                            }
-                        },
-                        aggregations: {
-                            timeSeriesByStartTime: {
-                                date_histogram: {
-                                    field: "startTime",
-                                    interval: "hour",
-                                    offset: 0,
-                                    order: {
-                                        _key: "asc"
-                                    },
-                                    keyed: false,
-                                    min_doc_count: 0
-                                },
-                                aggregations: {
-                                    coldStartCount: {
-                                        filter: {
-                                            term: {
-                                                coldStart: {
-                                                    value: true,
-                                                    boost: 1
-                                                }
-                                            }
-                                        }
-                                    },
-                                    errorCount: {
-                                        filter: {
-                                            term: {
-                                                erroneous: {
-                                                    value: true,
-                                                    boost: 1
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                };
-                callWithInternalUser('search', query).then(response => {
-                    reply({ invocations: (response.aggregations.timeSeriesByStartTime.buckets) });
-                });
-            }
-        }
-    );
-    server.route(
-        {
-            path: '/api/thundra/invocation-durations-by-function-name',
-            method: 'GET',
-            handler(req, reply) {
-                let query = {
-                    index: 'thundra-invocation-*',
-                    size: 0,
-                    body: {
-                        query: {
-                            bool: {
-                                must: [
-                                    {
-                                        range: {
-                                            startTimestamp: {
-                                                gte: req.query.startTimeStamp
-                                            }
-                                        }
-                                    },
-                                    {
-                                        term: {
-                                            applicationName: {
-                                                value: req.query.functionName
-                                            }
-                                        }
-                                    }
-                                ]
-                            }
-                        },
-                        aggregations: {
-                            timeSeriesByStartTime: {
-                                date_histogram: {
-                                    field: "startTime",
-                                    interval: req.query.interval * ONE_MINUTE_IN_MILIS,
-                                    offset: 0,
-                                    order: {
-                                        _key: "asc"
-                                    },
-                                    keyed: false,
-                                    min_doc_count: 0
-                                },
-                                aggregations: {
-                                    avgDuration: {
-                                        avg: {
-                                            field: "duration"
-                                        }
-                                    },
-                                    coldStartDuration: {
-                                        filter: {
-                                            term: {
-                                                coldStart: {
-                                                    value: true
-                                                }
-                                            }
-                                        },
-                                        aggregations: {
-                                            avgOfDuration: {
-                                                avg: {
-                                                    field: "duration"
-                                                }
-                                            }
-                                        }
-                                    },
-                                    errorDuration: {
-                                        filter: {
-                                            term: {
-                                                erroneous: {
-                                                    value: true
-                                                }
-                                            }
-                                        },
-                                        aggregations: {
-                                            avgOfDuration: {
-                                                avg: {
-                                                    field: "duration"
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                };
-                callWithInternalUser('search', query).then(response => {
-                    reply({ invocations: (response.aggregations.timeSeriesByStartTime.buckets) });
                 });
             }
         }
