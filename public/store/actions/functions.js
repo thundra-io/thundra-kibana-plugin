@@ -273,9 +273,9 @@ export const fetchFunctionDataComparisonByFunctionName = (httpClient, startTimes
 
             let func = {};
             func.applicationName = functionName;
-            func.stage = funcOldBucket.applicationStage.buckets[0].key;
-            func.applicationRuntime = funcOldBucket.applicationRuntime.buckets[0].key;
-            func.region = funcOldBucket.functionRegion.buckets[0].key;
+            func.stage = funcNewBucket.applicationStage.buckets[0].key;
+            func.applicationRuntime = funcNewBucket.applicationRuntime.buckets[0].key;
+            func.region = funcNewBucket.functionRegion.buckets[0].key;
 
             func.averageDuration = Math.round(funcNewBucket.averageDuration['value']);
             func.averageDurationComparison = compareDataResult(funcOldBucket.averageDuration.value, funcNewBucket.averageDuration.value);
@@ -387,7 +387,14 @@ export const fetchInvocationMemoryMetric = (httpClient, transactionId) => {
             }
         }).then((resp) => {
             console.log("success - fetchInvocationMemoryMetric; resp: ", resp);
-            const { metrics } = resp.data.memoryMetricByTransaction.hits.hits[0]._source;
+            let metrics = {
+                "app.usedMemory": 0,
+                "app.maxMemory": 0
+            };
+            if (resp.data.memoryMetricByTransaction.hits.hits[0]) {
+                metrics = resp.data.memoryMetricByTransaction.hits.hits[0]._source.metrics;
+            }
+
             const memoryMetric = {
                 usedMemory: convertByteToMb(metrics["app.usedMemory"]),
                 maxMemory: convertByteToMb(metrics["app.maxMemory"])
@@ -432,7 +439,13 @@ export const fetchInvocationCPUMetric = (httpClient, transactionId) => {
             }
         }).then((resp) => {
             console.log("success - fetchInvocationCPUMetric; resp: ", resp);
-            const { metrics } = resp.data.cpuMetricByTransaction.hits.hits[0]._source;
+            let metrics = {
+                "app.cpuLoad": 0
+            };
+            if (resp.data.cpuMetricByTransaction.hits.hits[0]) {
+                metrics = resp.data.cpuMetricByTransaction.hits.hits[0]._source.metrics;
+            }
+
             const cpuMetric = {
                 appCPULoad: Number((metrics["app.cpuLoad"] * 100).toFixed(2)) || 0,
             }
@@ -596,7 +609,7 @@ export const fetchFunctionMemoryMetricGraphData = (httpClient, functionName, sta
                 region: region
             }
         }).then((resp) => {
-            // console.log("success - fetchFunctionMemoryMetricGraphData; resp: ", resp);
+            console.log("success - fetchFunctionMemoryMetricGraphData; resp: ", resp);
 
             const { buckets } = resp.data.memoryMetricByFunctionMetaInfo.aggregations.timeSeriesByMetricTime;
             const memoryMetric = buckets.map(bucket => {
