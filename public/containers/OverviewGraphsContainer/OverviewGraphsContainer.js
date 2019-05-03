@@ -107,7 +107,8 @@ class OverviewGraphsContainer extends React.Component {
                     <BarChart
                         onClick={(e) => this.onClick(e)}
                         data={DATA}
-                        width={300}
+                        margin={{ top: 0, right: 0, bottom: 0, left: 100 }}
+                        width={400}
                         height={250}
                         layout="vertical">
                         <CartesianGrid strokeDasharray="3 3" />
@@ -126,7 +127,8 @@ class OverviewGraphsContainer extends React.Component {
                     <BarChart
                         onClick={(e) => this.onClick(e)}
                         data={EDATA}
-                        width={300}
+                        margin={{ top: 0, right: 0, bottom: 0, left: 100 }}
+                        width={400}
                         height={250}
                         layout="vertical">
                         <CartesianGrid strokeDasharray="3 3" />
@@ -145,7 +147,8 @@ class OverviewGraphsContainer extends React.Component {
                     <BarChart
                         onClick={(e) => this.onClick(e)}
                         data={CDATA}
-                        width={300}
+                        margin={{ top: 0, right: 0, bottom: 0, left: 100 }}
+                        width={400}
                         height={250}
                         layout="vertical">
                         <CartesianGrid strokeDasharray="3 3" />

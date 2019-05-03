@@ -165,7 +165,8 @@ const DBSummary = [
 ]
     ;
 
-
+// TODO: if you want to use these SpanConstants, change props from "aws.lambda..." to "aws_lambda_..."
+// becuase index of ELK is different than console app.
 const SpanConstants = {
     "AWS-DynamoDB": {
         backgroundColor: SERVICES_ASSETS.DynamoDB.color,
@@ -664,14 +665,14 @@ class InvocationTraceChartContainer extends React.Component {
                         <EuiSpacer />
                         <EuiAccordion
                             id="accordion2"
-                            buttonContent={tags["error.kind"]}
+                            buttonContent={tags["error_kind"]}
                             paddingSize="l"
                         >
                             <EuiText>
                                 <span>Error Message:</span>
-                                <p>{tags["error.message"]}</p>
+                                <p>{tags["error_message"]}</p>
                                 <span>Error Stack:</span>
-                                <p>{tags["error.stack"]}</p>
+                                <p>{tags["error_stack"]}</p>
                             </EuiText>
                         </EuiAccordion>
                     </EuiPanel>
@@ -688,8 +689,8 @@ class InvocationTraceChartContainer extends React.Component {
 
             const applicationRuntime = firstSpan.applicationRuntime || "-";
             const stage = firstSpan.applicationStage || "-";
-            const region = firstSpan.tags["aws.region"] || "-";
-            const coldStart = firstSpan.tags["aws.lambda.invocation.coldstart"] || false
+            const region = firstSpan.tags["aws_region"] || "-";
+            const coldStart = firstSpan.tags["aws_lambda_invocation_coldstart"] || false
 
             // const invocationTime = firstSpan.startTime || "-";
             // const invocationTime = firstSpan.startTimestamp || "-";

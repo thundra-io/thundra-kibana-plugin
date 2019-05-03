@@ -14,8 +14,8 @@ export default function (server) {
             method: 'GET',
             handler(req, reply) {
                 let query = {
-                    // index: 'thundra-metric-*',
-                    index: elkIndex,
+                    index: 'thundra-metric-*',
+                    // index: elkIndex,
                     body: {
                         query: {
                             bool: {
@@ -165,7 +165,7 @@ export default function (server) {
                                     },
                                     {
                                         term: {
-                                            tags_s_aws_region: {
+                                            'tags.aws_region.keyword': {
                                                 value: req.query.region,
                                                 // value: "eu-west-1",
                                                 boost: 1
@@ -194,7 +194,8 @@ export default function (server) {
                                 aggregations: {
                                     metrics_d_app_cpuLoad: {
                                         avg: {
-                                            field: 'metrics_d_app_cpuLoad'
+                                            // field: 'metrics_d_app_cpuLoad'
+                                            field: 'metrics.app.cpuLoad'
                                         }
                                     }
                                 }
@@ -279,6 +280,7 @@ export default function (server) {
                                             applicationStage: [
                                                 req.query.stage,
                                                 // 'lab',
+                                                // 'user-honeycomb',
                                                 ''
                                             ],
                                             boost: 1
@@ -286,7 +288,7 @@ export default function (server) {
                                     },
                                     {
                                         term: {
-                                            tags_s_aws_region: {
+                                            'tags.aws_region.keyword': {
                                                 value: req.query.region,
                                                 // value: "eu-west-1",
                                                 boost: 1
@@ -314,7 +316,8 @@ export default function (server) {
                                 aggregations: {
                                     memoryPercentiles: {
                                         percentiles: {
-                                            field: 'metrics_l_metrics_app_usedMemory',
+                                            // field: 'metrics_l_metrics_app_usedMemory',
+                                            field: 'metrics.app.usedMemory',
                                             percents: [
                                                 50,
                                                 90,
@@ -329,12 +332,14 @@ export default function (server) {
                                     },
                                     metrics_l_app_usedMemory: {
                                         avg: {
-                                            field: 'metrics_l_app_usedMemory'
+                                            // field: 'metrics_l_app_usedMemory'
+                                            field: 'metrics.app.usedMemory'
                                         }
                                     },
                                     metrics_l_app_maxMemory: {
                                         avg: {
-                                            field: 'metrics_l_app_maxMemory'
+                                            // field: 'metrics_l_app_maxMemory'
+                                            field: 'metrics.app.maxMemory'
                                         }
                                     }
                                 }
@@ -349,7 +354,7 @@ export default function (server) {
         }
     );
 
-
+    // TODO: delete
     server.route(
         {
             path: '/api/thundra/memory-metrics',
@@ -421,6 +426,7 @@ export default function (server) {
         }
     );
 
+    // TODO: delete
     server.route(
         {
             path: '/api/thundra/cpu-metrics',

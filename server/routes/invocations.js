@@ -992,8 +992,8 @@ export default function (server) {
             method: 'GET',
             handler(req, reply) {
                 let query = {
-                    // index: 'thundra-log-*',
-                    index: elkIndex,
+                    index: 'thundra-log-*',
+                    // index: elkIndex,
                     body: {
                         size: 9999,
                         query: {
