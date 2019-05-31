@@ -1,6 +1,6 @@
 # Thundra ELK Plugin
 
-> Thundra ELK Plugin lets you monitor your Lambda functions right on your own Elastic search instance. If you are already using ES in your architecture and have concerns about wiring your data through 3rd party backends then this plugin is just perfect for you. You ca read more about [here](https://blog.thundra.io/stick-to-your-elk-stack-and-continue-to-observe-your-lambdas).
+> Thundra ELK Plugin lets you monitor your Lambda functions right on your own Elasticsearch instance. If you are already using ES in your architecture and have concerns about wiring your data through 3rd party backends then this plugin is just perfect for you. You can read more about [here](https://blog.thundra.io/stick-to-your-elk-stack-and-continue-to-observe-your-lambdas).
 ---
 
 ## Development
